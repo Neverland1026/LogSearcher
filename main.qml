@@ -26,7 +26,7 @@ ApplicationWindow {
         verticalAlignment: Text.AlignVCenter
         font { pointSize: 25; bold: true }
         color: "white"
-        text: "Search it !"
+        text: "Let's search it !"
     }
 
     // 容器用于存放动态创建的标签
@@ -40,7 +40,6 @@ ApplicationWindow {
             right: addTagBtn.left
             rightMargin: 10
         }
-        clip: true
         color: "#2FFFFFFF"
 
         // 标签样式
@@ -60,13 +59,19 @@ ApplicationWindow {
         // 滚动条
         ScrollView {
             anchors.fill: parent
+
             contentWidth: listView.width
             contentHeight: listView.height
 
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             ScrollBar.vertical.policy: ScrollBar.AlwaysOff
             ScrollBar.horizontal.interactive: true
+            ScrollBar.vertical.interactive: true
             //flickableDirection: Flickable.VerticalAndHorizontal
+
+            hoverEnabled: true
+            wheelEnabled: true
+            focus: true
 
             // 使用 ListView 管理标签
             ListView {
@@ -88,7 +93,7 @@ ApplicationWindow {
 
         // 动态添加标签
         function addTag() {
-            tagList.append({ keyword: "  " })
+            tagList.append({ keyword: "       " })
         }
     }
 

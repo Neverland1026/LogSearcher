@@ -2,6 +2,7 @@ QT += quick
 //QT += core5compat
 
 SOURCES += \
+        LogSearcher.cpp \
         main.cpp
 
 RESOURCES += qml.qrc
@@ -27,3 +28,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 #HEADERS += \
 #        CustomImageProvider.h
+
+HEADERS += \
+        LogSearcher.h
