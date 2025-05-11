@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>ui/TagModel.qml</file>
+        <file>image/cancel.svg</file>
+        <file>image/add.svg</file>
+    </qresource>
+</RCC>
