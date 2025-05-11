@@ -26,7 +26,7 @@ ApplicationWindow {
         verticalAlignment: Text.AlignVCenter
         font { pointSize: 25; bold: true }
         color: "white"
-        text: "······"
+        text: "Search it !"
     }
 
     // 容器用于存放动态创建的标签
@@ -50,6 +50,7 @@ ApplicationWindow {
                 anchors.verticalCenter: parent.verticalCenter
                 keyword: tagList.get(index).keyword
                 delBtnVisible: tagList.count > 1
+
                 onSigRemove: {
                     tagList.remove(index);
                 }
@@ -64,7 +65,7 @@ ApplicationWindow {
 
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-            //ScrollBar.horizontal.interactive: true
+            ScrollBar.horizontal.interactive: true
             //flickableDirection: Flickable.VerticalAndHorizontal
 
             // 使用 ListView 管理标签
@@ -88,7 +89,6 @@ ApplicationWindow {
         // 动态添加标签
         function addTag() {
             tagList.append({ keyword: "  " })
-            textArea.append("1")
         }
     }
 

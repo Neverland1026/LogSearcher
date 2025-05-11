@@ -10,10 +10,23 @@ Rectangle {
     color: "transparent"
     //border.color: "black"; border.width: 1;
 
+    property alias keywordColor: colorRect.color
     property alias keyword: textInput.text
     property alias delBtnVisible: delBtnRect.visible
 
     signal sigRemove();
+
+    QtObject {
+        id: privateObject
+
+        // 生成随机色
+        function generateRandomColor() {
+            var r = Math.random();
+            var g = Math.random();
+            var b = Math.random();
+            return Qt.rgba(r, g, b, 1.0);
+        }
+    }
 
     // 内容区域
     Rectangle {
@@ -31,7 +44,7 @@ Rectangle {
             width: parent.height * 0.4
             height: width
             radius: width
-            color: "red"
+            color: "yellow"
             anchors.left: parent.left
             anchors.leftMargin: 10
             anchors.verticalCenter: parent.verticalCenter
@@ -98,5 +111,9 @@ Rectangle {
             colorRect.color = colorDialog.selectedColor;
         }
         onRejected: {}
+    }
+
+    Component.onCompleted: {
+        colorRect.color = privateObject.generateRandomColor();
     }
 }
