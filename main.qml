@@ -171,8 +171,18 @@ ApplicationWindow {
                        window.requestActivate();
                        if (drop.hasUrls) {
                            logNameText.text = drop.urls[0];
+                           $LogSearcher.search(logNameText.text);
                            logNameText.text = logNameText.text.split("/").pop();
                        }
                    }
+    }
+
+    // C++ 消息响应
+    Connections {
+        target: $LogSearcher
+
+        function onAppendContent(conetnt) {
+            textArea.append(content);
+        }
     }
 }

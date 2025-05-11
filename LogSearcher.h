@@ -32,14 +32,23 @@ public:
     // 设置 WId
     void setWId(WId winid);
 
+    // 开始查找
+    Q_INVOKABLE void search(const QString& filePath);
+
 protected:
 
+    // 映射文件内容
+    void mapFile__(const QString& filePath);
 
+    // 后处理
+    void process__(const QString& fileContent);
 
 signals:
 
     void mousePosXChanged(int);
     void mousePosYChanged(int);
+
+    void appendContent(const QString/*&*/ content);
 
 private:
 
@@ -50,6 +59,9 @@ private:
 
     // 窗口 WId
     WId m_winId;
+
+    // 文本内容
+    QString m_fileContent;
 
 };
 
