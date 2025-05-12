@@ -110,26 +110,27 @@ void LogSearcher::mapFile__(const QString& filePath)
             // 注意：这里直接将内存地址转换为char*指针，并输出字符串内容
             // 在实际应用中，应根据文件内容格式进行相应处理
             char* fileContent = static_cast<char*>(lpBaseAddress);
-            /*m_fileContent = QString::fromUtf8(static_cast<char*>(lpBaseAddress), static_cast<int>(fileSize.QuadPart));*/
-            QString tmp(fileContent);
-            process__(tmp);
+            m_fileContent = QString::fromLocal8Bit(fileContent);
 
             // 取消映射并释放资源
             UnmapViewOfFile(lpBaseAddress);
             CloseHandle(hMapFile);
             CloseHandle(hFile);
+
+            // 后处理
+            process__();
         } while(0);
     };
 
     auto ret = QtConcurrent::run([&, filePath](){ read__(filePath.toStdWString().c_str()); });
 }
 
-void LogSearcher::process__(const QString& fileContent)
+void LogSearcher::process__()
 {
-    if(fileContent.isEmpty())
+    if(m_fileContent.isEmpty())
         return;
 
-    const QStringList lines = fileContent.split("\n");
+    const QStringList lines = m_fileContent.split("\n");
     for(const auto/*&*/ line : lines)
     {
         emit appendContent(line);

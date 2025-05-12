@@ -41,7 +41,7 @@ protected:
     void mapFile__(const QString& filePath);
 
     // 后处理
-    void process__(const QString& fileContent);
+    void process__();
 
 signals:
 
