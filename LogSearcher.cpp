@@ -90,7 +90,12 @@ void LogSearcher::mapFile__(const QString& filePath)
             }
 
             // 创建文件映射对象
-            HANDLE hMapFile = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+            HANDLE hMapFile = CreateFileMapping(hFile,
+                                                NULL,
+                                                PAGE_READONLY,
+                                                0,
+                                                fileSize.LowPart,
+                                                NULL);
             if (hMapFile == NULL)
             {
                 CloseHandle(hFile);
@@ -98,7 +103,11 @@ void LogSearcher::mapFile__(const QString& filePath)
             }
 
             // 映射视图到内存
-            LPVOID lpBaseAddress = MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, 0);
+            LPVOID lpBaseAddress = MapViewOfFile(hMapFile,
+                                                 FILE_MAP_READ,
+                                                 0,
+                                                 0,
+                                                 fileSize.LowPart);
             if (lpBaseAddress == NULL)
             {
                 CloseHandle(hMapFile);
@@ -109,8 +118,13 @@ void LogSearcher::mapFile__(const QString& filePath)
             // 读取文件内容（假设文件为文本文件，且内容较短）
             // 注意：这里直接将内存地址转换为char*指针，并输出字符串内容
             // 在实际应用中，应根据文件内容格式进行相应处理
-            char* fileContent = static_cast<char*>(lpBaseAddress);
-            m_fileContent = QString::fromLocal8Bit(fileContent);
+            const char* pData = static_cast<const char*>(lpBaseAddress);
+            if(pData)
+            {
+                //                QString tmp(pData, fileSize.LowPart);
+                m_fileContent = QString(static_cast<const char*>(pData), static_cast<int>(fileSize.LowPart));
+                [](){};
+            }
 
             // 取消映射并释放资源
             UnmapViewOfFile(lpBaseAddress);
@@ -131,7 +145,7 @@ void LogSearcher::process__()
         return;
 
     const QStringList lines = m_fileContent.split("\n");
-    for(const auto/*&*/ line : lines)
+    for(const auto& line : lines)
     {
         emit appendContent(line);
     }
