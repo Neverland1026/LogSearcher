@@ -50,8 +50,14 @@ ApplicationWindow {
                 keyword: tagList.get(index).keyword
                 delBtnVisible: tagList.count > 1
 
+                onSigAccepted: {
+                    keyword = keyword.trim();
+                    $LogSearcher.insertKeyword(index, keyword, keywordColor);
+                    tagContainer.addTag();
+                }
+
                 onSigRemove: {
-                    tagList.remove(index);
+                    $LogSearcher.removeKeyword(index);
                 }
             }
         }
@@ -139,7 +145,7 @@ ApplicationWindow {
         contentHeight: textArea.height
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+        //ScrollBar.vertical.policy: ScrollBar.AlwaysOff
         ScrollBar.horizontal.interactive: true
 
         TextArea {
@@ -159,7 +165,7 @@ ApplicationWindow {
             font.bold: true
             font.italic: false
 
-            color: "white"
+            textFormat: Text.RichText
         }
     }
 
@@ -181,7 +187,11 @@ ApplicationWindow {
     Connections {
         target: $LogSearcher
 
-        function onAppendContent(conetnt) {
+        function onRemoveKeywordFinish(index) {
+            tagList.remove(index);
+        }
+
+        function onAppendContent(content) {
             textArea.append(content);
         }
     }

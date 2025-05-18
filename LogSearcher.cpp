@@ -34,7 +34,9 @@ LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
     , m_mousePosY(0)
     , m_fileContent("")
 {
-
+    QObject::connect(this, &LogSearcher::dataReady, [&](const QString data) {
+        emit appendContent(data);
+    });
 }
 
 LogSearcher::~LogSearcher()
@@ -50,8 +52,24 @@ void LogSearcher::setWId(WId winid)
                    SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
 
+void LogSearcher::insertKeyword(const int index, const QString& keyword, const QString& color)
+{
+    m_searchTarget[index] = { keyword, color };
+    qDebug() << "LogSearcher::insertKeyword" << m_searchTarget;
+}
+
+void LogSearcher::removeKeyword(const int index)
+{
+    m_searchTarget.erase(std::next(m_searchTarget.begin(), index));
+    qDebug() << "LogSearcher::removeKeyword" << m_searchTarget;
+    emit removeKeywordFinish(index);
+}
+
 void LogSearcher::search(const QString& filePath)
 {
+    m_fileContent.clear();
+    m_allLineInfo.resize(0);
+
     // remove "file:///"
     QString convertedFilepath = filePath;
     const QString prefix = "file:///";
@@ -82,19 +100,12 @@ void LogSearcher::mapFile__(const QString& filePath)
                 break;
             }
 
-            // 获取文件大小
-            LARGE_INTEGER fileSize;
-            if (!GetFileSizeEx(hFile, &fileSize)) {
-                CloseHandle(hFile);
-                break;
-            }
-
             // 创建文件映射对象
             HANDLE hMapFile = CreateFileMapping(hFile,
                                                 NULL,
                                                 PAGE_READONLY,
                                                 0,
-                                                fileSize.LowPart,
+                                                0,
                                                 NULL);
             if (hMapFile == NULL)
             {
@@ -107,7 +118,7 @@ void LogSearcher::mapFile__(const QString& filePath)
                                                  FILE_MAP_READ,
                                                  0,
                                                  0,
-                                                 fileSize.LowPart);
+                                                 0);
             if (lpBaseAddress == NULL)
             {
                 CloseHandle(hMapFile);
@@ -121,9 +132,7 @@ void LogSearcher::mapFile__(const QString& filePath)
             const char* pData = static_cast<const char*>(lpBaseAddress);
             if(pData)
             {
-                //                QString tmp(pData, fileSize.LowPart);
-                m_fileContent = QString(static_cast<const char*>(pData), static_cast<int>(fileSize.LowPart));
-                [](){};
+                m_fileContent = QString(pData);
             }
 
             // 取消映射并释放资源
@@ -136,7 +145,7 @@ void LogSearcher::mapFile__(const QString& filePath)
         } while(0);
     };
 
-    auto ret = QtConcurrent::run([&, filePath](){ read__(filePath.toStdWString().c_str()); });
+    auto ret = std::async([&, filePath](){ read__(filePath.toStdWString().c_str()); });
 }
 
 void LogSearcher::process__()
@@ -144,9 +153,25 @@ void LogSearcher::process__()
     if(m_fileContent.isEmpty())
         return;
 
-    const QStringList lines = m_fileContent.split("\n");
-    for(const auto& line : lines)
+    const QStringList lines = m_fileContent.split("\r\n");
+    for(int i = 0; i < lines.size(); ++i)
     {
-        emit appendContent(line);
+        LineInfo li(this, i);
+        li.line = lines[i];
+        for(auto iter = m_searchTarget.begin(); iter != m_searchTarget.end(); ++iter)
+        {
+            int pos = lines[i].indexOf(iter.key());
+            if(pos >= 0)
+            {
+                li.containedKeywords.push_back({ iter.key(), pos });
+            }
+        }
+
+        if(li.existKeyword())
+        {
+            emit dataReady(li.colorful());
+        }
+
+        m_allLineInfo.push_back(std::move(li));
     }
 }

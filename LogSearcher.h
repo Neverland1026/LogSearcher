@@ -32,6 +32,12 @@ public:
     // 设置 WId
     void setWId(WId winid);
 
+    // 添加关键字
+    Q_INVOKABLE void insertKeyword(const int index, const QString& keyword, const QString& color);
+
+    // 删除关键字
+    Q_INVOKABLE void removeKeyword(const int index);
+
     // 开始查找
     Q_INVOKABLE void search(const QString& filePath);
 
@@ -48,7 +54,11 @@ signals:
     void mousePosXChanged(int);
     void mousePosYChanged(int);
 
-    void appendContent(const QString/*&*/ content);
+    void removeKeywordFinish(const int index);
+
+    void dataReady(const QString data);
+
+    void appendContent(const QString content);
 
 private:
 
@@ -60,8 +70,59 @@ private:
     // 窗口 WId
     WId m_winId;
 
+    // 查询关键字、关键字索引及对应前景色
+    QMap<int, QPair<QString, QString>> m_searchTarget = {};
+
     // 文本内容
     QString m_fileContent;
+
+    // 每行的信息
+    struct LineInfo
+    {
+        LogSearcher* parent = nullptr;
+        int lineNum = -1;
+        QString line = "";
+        using Keyword_Pos_Pair = QPair<QString, int>;
+        QVector<Keyword_Pos_Pair> containedKeywords = {};
+
+        LineInfo() = default;
+        LineInfo(LogSearcher* parent, const int lineNum = -1)
+        {
+            this->parent = parent;
+            this->lineNum = lineNum;
+            this->line = "";
+            this->containedKeywords.resize(0);
+        }
+
+        inline bool existKeyword() const
+        {
+            return !containedKeywords.empty();
+        }
+
+        QString colorful()
+        {
+            if(existKeyword())
+            {
+                // m_searchTarget 简化
+                QMap<QString, QString> kc;
+                for(auto iter = parent->m_searchTarget.begin(); iter != parent->m_searchTarget.end(); ++iter)
+                {
+                    kc[iter.value().first] = iter.value().second;
+                }
+
+                auto newLine = this->line;
+                Keyword_Pos_Pair kp = containedKeywords.first();
+                newLine.insert(kp.second, QString("<font color='%1'>").arg(kc[kp.first]));
+                newLine.insert(kp.second + 22 + kp.first.size(), QString("%1").arg("</font>"));
+                newLine = QString("<font color='#FFFFFF'>") + newLine + QString("</font>");
+
+                return newLine;
+            }
+
+            return this->line;
+        }
+    };
+    QVector<LineInfo> m_allLineInfo;
 
 };
 

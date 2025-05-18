@@ -14,6 +14,7 @@ Rectangle {
     property alias keyword: textInput.text
     property alias delBtnVisible: delBtnRect.visible
 
+    signal sigAccepted();
     signal sigRemove();
 
     QtObject {
@@ -69,6 +70,9 @@ Rectangle {
             font.bold: true
             color: "white"
             selectByMouse: true
+            onAccepted: root.sigAccepted()
+            //onFocusChanged: if(!focus) root.sigAccepted()
+            onEditingFinished: root.sigAccepted()
         }
     }
 
