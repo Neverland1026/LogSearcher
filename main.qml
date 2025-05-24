@@ -50,7 +50,18 @@ ApplicationWindow {
     // 容器用于存放动态创建的标签
     Rectangle {
         id: tagContainer
-        height: 60
+        height: {
+            var baseHeigght = 50;
+
+            var extraHeight = 60;
+            var itemBegin = repeater.itemAt(0);
+            var itemEnd = repeater.itemAt(repeater.count - 1);
+            if(itemBegin && itemEnd) {
+                extraHeight = Math.floor((itemEnd.y - itemBegin.y) / itemBegin.height) * extraHeight;
+            }
+
+            return (baseHeigght + extraHeight);
+        }
         anchors {
             top: logNameText.bottom
             left: parent.left
@@ -60,57 +71,35 @@ ApplicationWindow {
         }
         color: "#2FFFFFFF"
 
-        // 标签样式
-        Component {
-            id: tagModelComponent
-            TagModel {
-                anchors.verticalCenter: parent.verticalCenter
-                keyword: tagList.get(index).keyword
-                delBtnVisible: tagList.count > 1
+        // 使用 Flow 管理标签
+        Flow {
+            anchors.fill: tagContainer
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 5
+            flow: Flow.LeftToRight
 
-                onSigInsert: {
-                    keyword = keyword.trim();
-                    $LogSearcher.insertKeyword(index, keyword, keywordColor);
-                }
+            Repeater {
+                id: repeater
+                model: tagList
+                delegate: TagModel {
+                    keyword: tagList.get(index).keyword
+                    delBtnVisible: tagList.count > 1
 
-                onSigRemove: {
-                    $LogSearcher.removeKeyword(index);
-                }
+                    onSigInsert: {
+                        keyword = keyword.trim();
+                        $LogSearcher.insertKeyword(index, keyword, keywordColor);
+                    }
 
-                onSigAccepted: {
-                    if(index === tagList.count - 1) {
-                        tagContainer.addTag();
+                    onSigRemove: {
+                        $LogSearcher.removeKeyword(index);
+                    }
+
+                    onSigAccepted: {
+                        if(index === tagList.count - 1) {
+                            tagContainer.addTag();
+                        }
                     }
                 }
-            }
-        }
-
-        // 滚动条
-        ScrollView {
-            anchors.fill: parent
-
-            contentWidth: listView.width
-            contentHeight: listView.height
-
-            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-            ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-            ScrollBar.horizontal.interactive: true
-            ScrollBar.vertical.interactive: true
-            //flickableDirection: Flickable.VerticalAndHorizontal
-
-            hoverEnabled: true
-            wheelEnabled: true
-            focus: true
-
-            // 使用 ListView 管理标签
-            ListView {
-                id: listView
-                anchors.fill: parent
-                model: tagList
-                delegate: tagModelComponent
-                orientation: ListView.Horizontal
-                spacing: 0
-                clip: true
             }
         }
 
@@ -122,7 +111,8 @@ ApplicationWindow {
 
         // 动态添加标签
         function addTag() {
-            tagList.append({ keyword: "     " })
+            $LogSearcher.insertKeyword(tagList.count, "", "#FFFFFF");
+            tagList.append({ keyword: "     " });
         }
     }
 
@@ -222,27 +212,29 @@ ApplicationWindow {
     // 配置文件
     Settings {
         id: settings
-        property var keywords: JSON.stringify(listModelToJSONArray(tagList))
+        property var keywords: ""//JSON.stringify(listModelToJSONArray(tagList))
     }
 
     Component.onCompleted: {
-        var storedData = settings.keywords;
-        console.log("111", storedData)
-        if (storedData !== undefined) {
-            var jsonArray = JSON.parse(storedData);
-            console.log("222", jsonArray.length, "---", jsonArray);
+        $LogSearcher.insertKeyword(0, "", "#FFFFFF");
 
-            tagList.clear();
-            if(0 === jsonArray.length) {
-                tagList.append({ keyword: "__Calibrate__" });
-            } else {
-                for (var i = 0; i < jsonArray.length; ++i) {
-                    var element = jsonArray[i];
-                    console.log("333", i, "---", element);
-                    tagList.append({ keyword: element.toString() });
-                }
-            }
-        }
+        //        var storedData = settings.keywords;
+        //        console.log("111", storedData)
+        //        if (storedData !== undefined) {
+        //            var jsonArray = JSON.parse(storedData);
+        //            console.log("222", jsonArray.length, "---", jsonArray);
+
+        //            tagList.clear();
+        //            if(0 === jsonArray.length) {
+        //                tagList.append({ keyword: "__Calibrate__" });
+        //            } else {
+        //                for (var i = 0; i < jsonArray.length; ++i) {
+        //                    var element = jsonArray[i];
+        //                    console.log("333", i, "---", element);
+        //                    tagList.append({ keyword: element.toString() });
+        //                }
+        //            }
+        //        }
     }
 
 }
