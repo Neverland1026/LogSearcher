@@ -81,6 +81,27 @@ void LogSearcher::search(const QString& filePath)
     mapFile__(convertedFilepath);
 }
 
+void LogSearcher::refresh()
+{
+    if(m_allLineInfo.isEmpty())
+        return;
+
+    QString colorfulLog = "";
+
+    for(const auto& li : m_allLineInfo)
+    {
+        if(li.existKeyword())
+        {
+            colorfulLog += li.colorful() + "\n";
+        }
+    }
+
+    if(!colorfulLog.isEmpty())
+    {
+        emit dataReady(colorfulLog);
+    }
+}
+
 void LogSearcher::mapFile__(const QString& filePath)
 {
     auto read__ = [this](const LPCWSTR& filePath)
@@ -153,6 +174,8 @@ void LogSearcher::process__()
     if(m_fileContent.isEmpty())
         return;
 
+    QString colorfulLog = "";
+
     const QStringList lines = m_fileContent.split("\r\n");
     for(int i = 0; i < lines.size(); ++i)
     {
@@ -169,9 +192,14 @@ void LogSearcher::process__()
 
         if(li.existKeyword())
         {
-            emit dataReady(li.colorful());
+            colorfulLog += li.colorful() + "\n";
         }
 
         m_allLineInfo.push_back(std::move(li));
+    }
+
+    if(!colorfulLog.isEmpty())
+    {
+        emit dataReady(colorfulLog);
     }
 }

@@ -88,6 +88,7 @@ ApplicationWindow {
                     onSigInsert: {
                         keyword = keyword.trim();
                         $LogSearcher.insertKeyword(index, keyword, keywordColor);
+                        $LogSearcher.refresh();
                     }
 
                     onSigRemove: {
@@ -182,6 +183,36 @@ ApplicationWindow {
         }
     }
 
+    // 悬浮刷新按钮
+    Rectangle {
+        id: refreshBtn
+        width: 50
+        height: width
+        color: "#2FFFFFFF"
+        radius: width
+        anchors.right: parent.right
+        anchors.rightMargin: 20
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 20
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onEntered: parent.color = "#7FFFFFFF"
+            onExited: parent.color = "#2FFFFFFF"
+            onPressed: $LogSearcher.refresh();
+
+            Image {
+                width: parent.width * 0.7
+                height: width
+                anchors.centerIn: parent
+                fillMode: Image.PreserveAspectFit
+                source: "qrc:/image/refresh.svg"
+            }
+        }
+        z: 99999999
+    }
+
     // 拖拽
     DropArea {
         anchors.fill: parent
@@ -205,6 +236,7 @@ ApplicationWindow {
         }
 
         function onAppendContent(content) {
+            textArea.clear();
             textArea.append(content);
         }
     }

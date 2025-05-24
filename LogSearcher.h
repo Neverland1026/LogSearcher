@@ -41,6 +41,9 @@ public:
     // 开始查找
     Q_INVOKABLE void search(const QString& filePath);
 
+    // 刷新
+    Q_INVOKABLE void refresh();
+
 protected:
 
     // 映射文件内容
@@ -79,10 +82,11 @@ private:
     // 每行的信息
     struct LineInfo
     {
+        using Keyword_Pos_Pair = QPair<QString, int>;
+
         LogSearcher* parent = nullptr;
         int lineNum = -1;
         QString line = "";
-        using Keyword_Pos_Pair = QPair<QString, int>;
         QVector<Keyword_Pos_Pair> containedKeywords = {};
 
         LineInfo() = default;
@@ -99,7 +103,7 @@ private:
             return !containedKeywords.empty();
         }
 
-        QString colorful()
+        QString colorful() const
         {
             if(existKeyword())
             {
