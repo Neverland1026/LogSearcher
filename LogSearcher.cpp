@@ -160,10 +160,10 @@ void LogSearcher::process__()
         li.line = lines[i];
         for(auto iter = m_searchTarget.begin(); iter != m_searchTarget.end(); ++iter)
         {
-            int pos = lines[i].indexOf(iter.key());
+            int pos = lines[i].indexOf(iter.value().first);
             if(pos >= 0)
             {
-                li.containedKeywords.push_back({ iter.key(), pos });
+                li.containedKeywords.push_back({ iter.value().first, pos });
             }
         }
 

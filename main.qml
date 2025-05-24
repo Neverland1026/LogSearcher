@@ -1,5 +1,6 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
+import Qt.labs.settings
 import "./ui"
 
 ApplicationWindow {
@@ -13,6 +14,23 @@ ApplicationWindow {
     Rectangle {
         anchors.fill: parent
         color: "#1E1E1E"
+    }
+
+    // list 转 JSONArray
+    function listModelToJSONArray(listModel) {
+        var jsonArray = [];
+        for (var i = 0; i < listModel.count; ++i) {
+            var element = listModel.get(i);
+            var jsonObject = {
+                keyword: element.keyword/*,
+                age: element.age*/
+            };
+            jsonArray.push(jsonObject);
+        }
+
+        console.log("jsonArray ===>", jsonArray);
+
+        return jsonArray;
     }
 
     // 日志文件标题
@@ -50,14 +68,19 @@ ApplicationWindow {
                 keyword: tagList.get(index).keyword
                 delBtnVisible: tagList.count > 1
 
-                onSigAccepted: {
+                onSigInsert: {
                     keyword = keyword.trim();
                     $LogSearcher.insertKeyword(index, keyword, keywordColor);
-                    tagContainer.addTag();
                 }
 
                 onSigRemove: {
                     $LogSearcher.removeKeyword(index);
+                }
+
+                onSigAccepted: {
+                    if(index === tagList.count - 1) {
+                        tagContainer.addTag();
+                    }
                 }
             }
         }
@@ -94,12 +117,12 @@ ApplicationWindow {
         // 存储标签数据
         ListModel {
             id: tagList
-            ListElement { keyword: "Input Your Keyword" }
+            ListElement { keyword: "Input your keyword" }
         }
 
         // 动态添加标签
         function addTag() {
-            tagList.append({ keyword: "       " })
+            tagList.append({ keyword: "     " })
         }
     }
 
@@ -195,4 +218,31 @@ ApplicationWindow {
             textArea.append(content);
         }
     }
+
+    // 配置文件
+    Settings {
+        id: settings
+        property var keywords: JSON.stringify(listModelToJSONArray(tagList))
+    }
+
+    Component.onCompleted: {
+        var storedData = settings.keywords;
+        console.log("111", storedData)
+        if (storedData !== undefined) {
+            var jsonArray = JSON.parse(storedData);
+            console.log("222", jsonArray.length, "---", jsonArray);
+
+            tagList.clear();
+            if(0 === jsonArray.length) {
+                tagList.append({ keyword: "__Calibrate__" });
+            } else {
+                for (var i = 0; i < jsonArray.length; ++i) {
+                    var element = jsonArray[i];
+                    console.log("333", i, "---", element);
+                    tagList.append({ keyword: element.toString() });
+                }
+            }
+        }
+    }
+
 }

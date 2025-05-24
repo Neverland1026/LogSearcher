@@ -14,8 +14,9 @@ Rectangle {
     property alias keyword: textInput.text
     property alias delBtnVisible: delBtnRect.visible
 
-    signal sigAccepted();
+    signal sigInsert();
     signal sigRemove();
+    signal sigAccepted();
 
     QtObject {
         id: privateObject
@@ -70,9 +71,10 @@ Rectangle {
             font.bold: true
             color: "white"
             selectByMouse: true
+            selectionColor: "lightblue"
+            selectedTextColor: "black"
             onAccepted: root.sigAccepted()
-            //onFocusChanged: if(!focus) root.sigAccepted()
-            onEditingFinished: root.sigAccepted()
+            onTextEdited: root.sigInsert()
         }
     }
 
@@ -113,6 +115,7 @@ Rectangle {
         onAccepted: {
             console.log("你选择了颜色: " + colorDialog.selectedColor);
             colorRect.color = colorDialog.selectedColor;
+            root.sigInsert();
         }
         onRejected: {}
     }

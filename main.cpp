@@ -12,8 +12,8 @@ int main(int argc, char *argv[])
 
     app.setWindowIcon(QIcon(":/image/logo.ico"));
 
-    app.setOrganizationName("Neverland_LY");
-    app.setOrganizationDomain("Neverland_LY");
+    app.setApplicationName("LogSearcher");
+    app.setOrganizationName("LogSearcher_Organizatio");
 
     QQmlApplicationEngine engine;
 
