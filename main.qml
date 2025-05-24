@@ -37,13 +37,13 @@ ApplicationWindow {
     Text {
         id: logNameText
         width: parent.width
-        height: 70
+        height: 50
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        font { pointSize: 25; bold: true }
-        color: "white"
+        font { pointSize: 20; bold: true }
+        color: "#FC9000"
         text: "Let's search it !"
     }
 
@@ -179,13 +179,16 @@ ApplicationWindow {
             font.bold: true
             font.italic: false
 
+            selectByMouse: true
+            selectionColor: "lightblue"
+            selectedTextColor: "black"
+
             textFormat: Text.RichText
         }
     }
 
-    // 悬浮刷新按钮
+    // 悬浮显示/隐藏前缀按钮
     Rectangle {
-        id: refreshBtn
         width: 50
         height: width
         color: "#2FFFFFFF"
@@ -194,6 +197,35 @@ ApplicationWindow {
         anchors.rightMargin: 20
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 20
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onEntered: parent.color = "#7FFFFFFF"
+            onExited: parent.color = "#2FFFFFFF"
+            onPressed: $LogSearcher.togglePrefix();
+
+            Image {
+                width: parent.width * 0.7
+                height: width
+                anchors.centerIn: parent
+                fillMode: Image.PreserveAspectFit
+                source: "qrc:/image/refresh.svg"
+            }
+        }
+        z: 99999999
+    }
+
+    // 悬浮刷新按钮
+    Rectangle {
+        width: 50
+        height: width
+        color: "#2FFFFFFF"
+        radius: width
+        anchors.right: parent.right
+        anchors.rightMargin: 20
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 80
 
         MouseArea {
             anchors.fill: parent

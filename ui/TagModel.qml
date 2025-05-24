@@ -67,7 +67,7 @@ Rectangle {
             anchors.verticalCenter: colorRect.verticalCenter
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 20
+            font.pointSize: 14
             font.bold: true
             color: "white"
             selectByMouse: true

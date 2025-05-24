@@ -81,6 +81,12 @@ void LogSearcher::search(const QString& filePath)
     mapFile__(convertedFilepath);
 }
 
+void LogSearcher::togglePrefix()
+{
+    m_skipPrefix = !m_skipPrefix;
+    refresh();
+}
+
 void LogSearcher::refresh()
 {
     if(m_allLineInfo.isEmpty())
@@ -92,7 +98,8 @@ void LogSearcher::refresh()
     {
         if(li.existKeyword())
         {
-            colorfulLog += li.colorful() + "\n";
+            li.parent->m_skipPrefix = this->m_skipPrefix;
+            colorfulLog += li.colorful() + "<br>";
         }
     }
 
@@ -192,7 +199,7 @@ void LogSearcher::process__()
 
         if(li.existKeyword())
         {
-            colorfulLog += li.colorful() + "\n";
+            colorfulLog += li.colorful() + "<br>";
         }
 
         m_allLineInfo.push_back(std::move(li));

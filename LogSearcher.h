@@ -41,6 +41,9 @@ public:
     // 开始查找
     Q_INVOKABLE void search(const QString& filePath);
 
+    // 显隐前缀
+    Q_INVOKABLE void togglePrefix();
+
     // 刷新
     Q_INVOKABLE void refresh();
 
@@ -115,9 +118,15 @@ private:
                 }
 
                 auto newLine = this->line;
+                qDebug() << "newLine  ==> " << newLine;
                 Keyword_Pos_Pair kp = containedKeywords.first();
-                newLine.insert(kp.second, QString("<font color='%1'>").arg(kc[kp.first]));
-                newLine.insert(kp.second + 22 + kp.first.size(), QString("%1").arg("</font>"));
+                if(parent->m_skipPrefix)
+                {
+                    newLine = newLine.mid(kp.second);
+                    qDebug() << "newLine  ==========> " << newLine;
+                }
+                newLine.insert(parent->m_skipPrefix ? 0 : kp.second, QString("<font color='%1'>").arg(kc[kp.first]));
+                newLine.insert((parent->m_skipPrefix ? 0 : kp.second) + 22 + kp.first.size(), QString("%1").arg("</font>"));
                 newLine = QString("<font color='#FFFFFF'>") + newLine + QString("</font>");
 
                 return newLine;
@@ -127,6 +136,9 @@ private:
         }
     };
     QVector<LineInfo> m_allLineInfo;
+
+    // 裁剪前缀
+    bool m_skipPrefix = false;
 
 };
 
