@@ -37,6 +37,32 @@ LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
     QObject::connect(this, &LogSearcher::dataReady, [&](const QString data) {
         emit appendContent(data);
     });
+
+    // 配置文件
+    QTimer::singleShot(500, this, [&]() {
+        QStringList keywords = {};
+        if(!QFileInfo::exists(m_settingsPath))
+        {
+            const QString keyword = "__Calibrate__";
+            QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
+            settings.setValue("Global/Keywords", keyword);
+            settings.sync();
+
+            keywords.push_back(keyword + ";");
+        }
+        else
+        {
+            QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
+            keywords = settings.value("Global/Keywords").toString().split(";");
+        }
+
+        qDebug() << "------" << keywords;
+        for(const auto& keyword : keywords)
+        {
+            qDebug() << "---" << keyword;
+            emit addKeyword(keyword);
+        }
+    });
 }
 
 LogSearcher::~LogSearcher()
@@ -56,6 +82,8 @@ void LogSearcher::insertKeyword(const int index, const QString& keyword, const Q
 {
     m_searchTarget[index] = { keyword, color };
     qDebug() << "LogSearcher::insertKeyword" << m_searchTarget;
+
+    refreshSettings__();
 }
 
 void LogSearcher::removeKeyword(const int index)
@@ -63,6 +91,8 @@ void LogSearcher::removeKeyword(const int index)
     m_searchTarget.erase(std::next(m_searchTarget.begin(), index));
     qDebug() << "LogSearcher::removeKeyword" << m_searchTarget;
     emit removeKeywordFinish(index);
+
+    refreshSettings__();
 }
 
 void LogSearcher::search(const QString& filePath)
@@ -209,4 +239,19 @@ void LogSearcher::process__()
     {
         emit dataReady(colorfulLog);
     }
+}
+
+void LogSearcher::refreshSettings__()
+{
+    std::async(std::launch::async, [&](){
+        QString keywords = "";
+        for(auto iter = m_searchTarget.begin(); iter != m_searchTarget.end(); ++iter)
+        {
+            keywords += iter.value().first + ";";
+        }
+
+        QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
+        settings.setValue("Global/Keywords", keywords);
+        settings.sync();
+    });
 }

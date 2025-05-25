@@ -55,10 +55,16 @@ protected:
     // 后处理
     void process__();
 
+    // 跟新配置文件
+    void refreshSettings__();
+
 signals:
 
     void mousePosXChanged(int);
     void mousePosYChanged(int);
+
+    // 新增关键字
+    void addKeyword(const QString keyword);
 
     void removeKeywordFinish(const int index);
 
@@ -75,6 +81,9 @@ private:
 
     // 窗口 WId
     WId m_winId;
+
+    // 配置文件路径
+    const QString m_settingsPath = "./settings.ini";
 
     // 查询关键字、关键字索引及对应前景色
     QMap<int, QPair<QString, QString>> m_searchTarget = {};

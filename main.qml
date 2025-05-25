@@ -1,6 +1,5 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
-import Qt.labs.settings
 import "./ui"
 
 ApplicationWindow {
@@ -14,23 +13,6 @@ ApplicationWindow {
     Rectangle {
         anchors.fill: parent
         color: "#1E1E1E"
-    }
-
-    // list 转 JSONArray
-    function listModelToJSONArray(listModel) {
-        var jsonArray = [];
-        for (var i = 0; i < listModel.count; ++i) {
-            var element = listModel.get(i);
-            var jsonObject = {
-                keyword: element.keyword/*,
-                age: element.age*/
-            };
-            jsonArray.push(jsonObject);
-        }
-
-        console.log("jsonArray ===>", jsonArray);
-
-        return jsonArray;
     }
 
     // 日志文件标题
@@ -97,7 +79,7 @@ ApplicationWindow {
 
                     onSigAccepted: {
                         if(index === tagList.count - 1) {
-                            tagContainer.addTag();
+                            tagContainer.addTag("");
                         }
                     }
                 }
@@ -107,13 +89,14 @@ ApplicationWindow {
         // 存储标签数据
         ListModel {
             id: tagList
-            ListElement { keyword: "Input your keyword" }
+            /*ListElement { keyword: "Input your keyword" }*/
         }
 
         // 动态添加标签
-        function addTag() {
-            $LogSearcher.insertKeyword(tagList.count, "", "#FFFFFF");
-            tagList.append({ keyword: "     " });
+        function addTag(keyword) {
+            var transformed = (keyword === "" ? "          " : keyword);
+            $LogSearcher.insertKeyword(tagList.count, transformed, "#FFFFFF");
+            tagList.append({ keyword: transformed });
         }
     }
 
@@ -133,7 +116,7 @@ ApplicationWindow {
             hoverEnabled: true
             onEntered: parent.color = "#7FFFFFFF"
             onExited: parent.color = "#2FFFFFFF"
-            onPressed: tagContainer.addTag()
+            onPressed: tagContainer.addTag("")
 
             Image {
                 width: parent.width * 0.5
@@ -263,6 +246,10 @@ ApplicationWindow {
     Connections {
         target: $LogSearcher
 
+        function onAddKeyword(keyword) {
+            tagContainer.addTag(keyword);
+        }
+
         function onRemoveKeywordFinish(index) {
             tagList.remove(index);
         }
@@ -273,32 +260,8 @@ ApplicationWindow {
         }
     }
 
-    // 配置文件
-    Settings {
-        id: settings
-        property var keywords: ""//JSON.stringify(listModelToJSONArray(tagList))
-    }
-
     Component.onCompleted: {
-        $LogSearcher.insertKeyword(0, "", "#FFFFFF");
 
-        //        var storedData = settings.keywords;
-        //        console.log("111", storedData)
-        //        if (storedData !== undefined) {
-        //            var jsonArray = JSON.parse(storedData);
-        //            console.log("222", jsonArray.length, "---", jsonArray);
-
-        //            tagList.clear();
-        //            if(0 === jsonArray.length) {
-        //                tagList.append({ keyword: "__Calibrate__" });
-        //            } else {
-        //                for (var i = 0; i < jsonArray.length; ++i) {
-        //                    var element = jsonArray[i];
-        //                    console.log("333", i, "---", element);
-        //                    tagList.append({ keyword: element.toString() });
-        //                }
-        //            }
-        //        }
     }
 
 }
