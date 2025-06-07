@@ -8,10 +8,11 @@ Rectangle {
     width: 350; height: 350
     color: "transparent"
     border.color: "cyan"; border.width: 1
+    clip: true
 
     property var logModel
 
-    property real dynamicFontSize: 12  // 全局动态字体尺寸
+    property real dynamicFontSize: 18  // 全局动态字体尺寸
 
     function countDigits(number) {
         var count = 0;
@@ -32,7 +33,8 @@ Rectangle {
 
         anchors.fill: parent
         model: logModel  // 绑定C++模型
-        cacheBuffer: 2000
+        anchors.margins: 10
+        cacheBuffer: 500
 
         delegate:  Item {
             width: listView.width
@@ -46,12 +48,14 @@ Rectangle {
                     top: parent.top
                     bottom: parent.bottom
                 }
-                width: countDigits(listView.count) * 8
+                width: countDigits(listView.count) * 12
                 text: index + 1
                 font.family: "Consolas"
                 font.pixelSize: dynamicFontSize
+                font.bold: true
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
+                color: "white"
             }
 
             TextEdit {
@@ -78,7 +82,7 @@ Rectangle {
             }
         }
 
-        maximumFlickVelocity: 1500  // 限制最大滚动速度
+        maximumFlickVelocity: 2000  // 限制最大滚动速度
 
         ScrollBar.vertical: ScrollBar {
             policy: ScrollBar.AsNeeded
@@ -132,6 +136,7 @@ Rectangle {
             acceptedButtons: Qt.NoButton
             onWheel: {
                 if (wheel.modifiers & Qt.ControlModifier) {
+                    console.log("-----", dynamicFontSize)
                     dynamicFontSize += (wheel.angleDelta.y > 0) ? 1 : -1;
                     dynamicFontSize = Math.min(24, Math.max(8, dynamicFontSize));
                     wheel.accepted = true;

@@ -104,7 +104,6 @@ private:
         {
             if(existKeyword())
             {
-                // m_searchTarget 简化
                 QMap<QString, QString> kc;
                 for(auto iter = parent->m_searchTarget.begin(); iter != parent->m_searchTarget.end(); ++iter)
                 {
@@ -112,13 +111,12 @@ private:
                 }
 
                 auto newLine = this->line;
-                qDebug() << "newLine  ==> " << newLine;
                 Keyword_Pos_Pair kp = containedKeywords.first();
                 if(parent->m_skipPrefix)
                 {
                     newLine = newLine.mid(kp.second);
-                    qDebug() << "newLine  ==========> " << newLine;
                 }
+
                 newLine.insert(parent->m_skipPrefix ? 0 : kp.second, QString("<font color='%1'>").arg(kc[kp.first]));
                 newLine.insert((parent->m_skipPrefix ? 0 : kp.second) + 22 + kp.first.size(), QString("%1").arg("</font>"));
                 newLine = QString("<font color='#FFFFFF'>") + newLine + QString("</font>");
@@ -126,7 +124,7 @@ private:
                 return newLine;
             }
 
-            return this->line;
+            return QString("<font color='#FFFFFF'>%1</font>").arg(this->line);
         }
     };
     QVector<LineInfo> m_allLineInfo;

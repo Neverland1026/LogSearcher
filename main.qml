@@ -19,12 +19,12 @@ ApplicationWindow {
     Text {
         id: logNameText
         width: parent.width
-        height: 50
+        height: 40
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        font { pointSize: 20; bold: true }
+        font { pointSize: 17; bold: true }
         color: "#FC9000"
         text: "Let's search it !"
     }
@@ -106,13 +106,14 @@ ApplicationWindow {
 
         LogPanel {
             id: logPanel1
-            width: (parent.width - parent.spacing) / 2
+            width: parent.width//(parent.width - parent.spacing) / 2
             height: parent.height
             logModel: $LogModel1
         }
 
         LogPanel {
             id: logPanel2
+            visible: false
             width: (parent.width - parent.spacing) / 2
             height: parent.height
             logModel: $LogModel2

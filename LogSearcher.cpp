@@ -214,8 +214,6 @@ void LogSearcher::process__()
     if(m_fileContent.isEmpty())
         return;
 
-    QString colorfulLog = "";
-
     const QStringList lines = m_fileContent.split("\r\n");
     for(int i = 0; i < lines.size(); ++i)
     {
@@ -230,17 +228,9 @@ void LogSearcher::process__()
             }
         }
 
-        if(li.existKeyword())
-        {
-            colorfulLog += li.colorful() + "<br>";
-        }
-
         m_allLineInfo.push_back(std::move(li));
-    }
 
-    if(!colorfulLog.isEmpty())
-    {
-
+        m_logModel1->appendLog(li.colorful());
     }
 }
 
