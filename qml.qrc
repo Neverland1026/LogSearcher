@@ -5,5 +5,6 @@
         <file>image/cancel.svg</file>
         <file>image/add.svg</file>
         <file>image/refresh.svg</file>
+        <file>ui/LogPanel.qml</file>
     </qresource>
 </RCC>

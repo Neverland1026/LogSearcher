@@ -48,7 +48,7 @@ ApplicationWindow {
             top: logNameText.bottom
             left: parent.left
             leftMargin: 10
-            right: addTagBtn.left
+            right: parent.right
             rightMargin: 10
         }
         color: "#2FFFFFFF"
@@ -65,12 +65,14 @@ ApplicationWindow {
                 model: tagList
                 delegate: TagModel {
                     keyword: tagList.get(index).keyword
+                    keywordColor: tagList.get(index).color
                     delBtnVisible: tagList.count > 1
 
-                    onSigInsert: {
-                        keyword = keyword.trim();
-                        $LogSearcher.insertKeyword(index, keyword, keywordColor);
-                        $LogSearcher.refresh();
+                    onSigUpdate: {
+                        tagList.get(index).keyword = keyword.trim();
+                        tagList.get(index).color = keywordColor;
+                        $LogSearcher.insertKeyword(index, tagList.get(index).keyword, tagList.get(index).color);
+                        //$LogSearcher.refresh();
                     }
 
                     onSigRemove: {
@@ -79,7 +81,7 @@ ApplicationWindow {
 
                     onSigAccepted: {
                         if(index === tagList.count - 1) {
-                            tagContainer.addTag("");
+                            $LogSearcher.insertKeyword(-1, "", "");
                         }
                     }
                 }
@@ -87,86 +89,33 @@ ApplicationWindow {
         }
 
         // 存储标签数据
-        ListModel {
-            id: tagList
-            /*ListElement { keyword: "Input your keyword" }*/
-        }
-
-        // 动态添加标签
-        function addTag(keyword) {
-            var transformed = (keyword === "" ? "          " : keyword);
-            $LogSearcher.insertKeyword(tagList.count, transformed, "#FFFFFF");
-            tagList.append({ keyword: transformed });
-        }
-    }
-
-    // 标签添加按钮
-    Rectangle {
-        id: addTagBtn
-        width: height
-        height: tagContainer.height
-        color: "#2FFFFFFF"
-        radius: 5
-        anchors.right: parent.right
-        anchors.rightMargin: 10
-        anchors.verticalCenter: tagContainer.verticalCenter
-
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            onEntered: parent.color = "#7FFFFFFF"
-            onExited: parent.color = "#2FFFFFFF"
-            onPressed: tagContainer.addTag("")
-
-            Image {
-                width: parent.width * 0.5
-                height: width
-                anchors.centerIn: parent
-                fillMode: Image.PreserveAspectFit
-                source: "qrc:/image/add.svg"
-            }
-        }
+        ListModel { id: tagList }
     }
 
     // 搜索结果
-    ScrollView {
+    Row {
         anchors {
             left: parent.left
             right: parent.right
             top: tagContainer.bottom
             bottom: parent.bottom
-            margins: 10
+            margins: 5
         }
 
-        contentWidth: textArea.width
-        contentHeight: textArea.height
+        spacing: 5
 
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        //ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-        ScrollBar.horizontal.interactive: true
+        LogPanel {
+            id: logPanel1
+            width: (parent.width - parent.spacing) / 2
+            height: parent.height
+            logModel: $LogModel1
+        }
 
-        TextArea {
-            id: textArea
-            anchors.fill: parent
-            wrapMode: TextArea.Wrap
-
-            // 设置背景颜色
-            background: Rectangle {
-                color: "#2FFFFFFF"
-                radius: 5
-            }
-
-            // 设置字体
-            font.family: "Consolas"
-            font.pointSize: 16
-            font.bold: true
-            font.italic: false
-
-            selectByMouse: true
-            selectionColor: "lightblue"
-            selectedTextColor: "black"
-
-            textFormat: Text.RichText
+        LogPanel {
+            id: logPanel2
+            width: (parent.width - parent.spacing) / 2
+            height: parent.height
+            logModel: $LogModel2
         }
     }
 
@@ -246,17 +195,29 @@ ApplicationWindow {
     Connections {
         target: $LogSearcher
 
-        function onAddKeyword(keyword) {
-            tagContainer.addTag(keyword);
+        function onAddKeywordFinish(keyword, color) {
+            tagList.append({ keyword: keyword, color: color });
         }
 
         function onRemoveKeywordFinish(index) {
             tagList.remove(index);
         }
+    }
 
-        function onAppendContent(content) {
-            textArea.clear();
-            textArea.append(content);
+    // C++ 消息响应
+    Connections {
+        target: $LogModel1
+
+        function onRowsInserted() {
+            logPanel1.positionViewAtEnd();
+        }
+    }
+
+    Connections {
+        target: $LogModel2
+
+        function onRowsInserted() {
+            logPanel2.positionViewAtEnd();
         }
     }
 

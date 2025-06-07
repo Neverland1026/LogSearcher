@@ -11,20 +11,13 @@
 #include <QVector>
 #include <thread>
 
+#include "LogModel.h"
+
 class LogSearcher : public QObject
 {
     Q_OBJECT
 
 public:
-
-    Q_PROPERTY(int mousePosX READ mousePosX WRITE setMousePosX NOTIFY mousePosXChanged);
-    Q_PROPERTY(int mousePosY READ mousePosY WRITE setMousePosY NOTIFY mousePosYChanged);
-
-    int mousePosX() const;
-    void setMousePosX(int mousePosX);
-
-    int mousePosY() const;
-    void setMousePosY(int mousePosY);
 
     explicit LogSearcher(QObject *parent = nullptr);
     ~LogSearcher();
@@ -47,6 +40,9 @@ public:
     // 刷新
     Q_INVOKABLE void refresh();
 
+    // 设置日志对象
+    void setLogModel(LogModel* model1, LogModel* model2);
+
 protected:
 
     // 映射文件内容
@@ -60,22 +56,11 @@ protected:
 
 signals:
 
-    void mousePosXChanged(int);
-    void mousePosYChanged(int);
-
     // 新增关键字
-    void addKeyword(const QString keyword);
+    void addKeywordFinish(const QString keyword, const QString color);
 
+    // 删除关键字完成
     void removeKeywordFinish(const int index);
-
-    void dataReady(const QString data);
-
-    void appendContent(const QString content);
-
-private:
-
-    // 鼠标相对于单个视图窗口在左上角的位置
-    int m_mousePosX, m_mousePosY;
 
 private:
 
@@ -148,6 +133,10 @@ private:
 
     // 裁剪前缀
     bool m_skipPrefix = false;
+
+    // 日志对象模型
+    LogModel* m_logModel1 = nullptr;
+    LogModel* m_logModel2 = nullptr;
 
 };
 

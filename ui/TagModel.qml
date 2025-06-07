@@ -10,24 +10,16 @@ Rectangle {
     color: "transparent"
     //border.color: "black"; border.width: 1;
 
-    property alias keywordColor: colorRect.color
     property alias keyword: textInput.text
+    property alias keywordColor: colorRect.color
     property alias delBtnVisible: delBtnRect.visible
 
-    signal sigInsert();
+    signal sigUpdate();
     signal sigRemove();
     signal sigAccepted();
 
     QtObject {
         id: privateObject
-
-        // 生成随机色
-        function generateRandomColor() {
-            var r = Math.random();
-            var g = Math.random();
-            var b = Math.random();
-            return Qt.rgba(r, g, b, 1.0);
-        }
     }
 
     // 内容区域
@@ -74,7 +66,7 @@ Rectangle {
             selectionColor: "lightblue"
             selectedTextColor: "black"
             onAccepted: root.sigAccepted()
-            onTextEdited: root.sigInsert()
+            onTextEdited: root.sigUpdate()
         }
     }
 
@@ -84,13 +76,13 @@ Rectangle {
         width: 20
         height: width
         visible: false
-        color: contentRect.color
+        color: /*contentRect.color*/"transparent"
         radius: contentRect.radius
         anchors.left: contentRect.right
         anchors.leftMargin: -width / 3 * 2
         anchors.bottom: contentRect.top
         anchors.bottomMargin: -width / 3 * 2
-        border.color: contentRect.border.color; border.width: contentRect.border.width;
+        border.color: contentRect.border.color; border.width: /*contentRect.border.width*/0;
 
         MouseArea {
             anchors.fill: parent
@@ -115,12 +107,8 @@ Rectangle {
         onAccepted: {
             console.log("你选择了颜色: " + colorDialog.selectedColor);
             colorRect.color = colorDialog.selectedColor;
-            root.sigInsert();
+            root.sigUpdate();
         }
         onRejected: {}
-    }
-
-    Component.onCompleted: {
-        colorRect.color = privateObject.generateRandomColor();
     }
 }

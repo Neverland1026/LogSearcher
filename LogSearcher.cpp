@@ -2,65 +2,44 @@
 #include <QtConcurrent>
 #include <windows.h>
 
-int LogSearcher::mousePosX() const
+QColor randomColorRGB_Safe()
 {
-    return m_mousePosX;
-}
+    QColor color;
+    do {
+        color = QColor(rand() % 256, rand() % 256, rand() % 256);
+    } while (color.red() > 230 && color.green() > 230 && color.blue() > 230);
 
-void LogSearcher::setMousePosX(int mousePosX)
-{
-    if (mousePosX != m_mousePosX) {
-        m_mousePosX = mousePosX;
-        emit mousePosXChanged(m_mousePosX);
-    }
-}
-
-int LogSearcher::mousePosY() const
-{
-    return m_mousePosY;
-}
-
-void LogSearcher::setMousePosY(int mousePosY)
-{
-    if (mousePosY != m_mousePosY) {
-        m_mousePosY = mousePosY;
-        emit mousePosYChanged(m_mousePosY);
-    }
+    return color;
 }
 
 LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
     : QObject{parent}
-    , m_mousePosX(0)
-    , m_mousePosY(0)
     , m_fileContent("")
 {
-    QObject::connect(this, &LogSearcher::dataReady, [&](const QString data) {
-        emit appendContent(data);
-    });
-
     // 配置文件
     QTimer::singleShot(500, this, [&]() {
-        QStringList keywords = {};
+        QString config = {};
         if(!QFileInfo::exists(m_settingsPath))
         {
-            const QString keyword = "__Calibrate__";
+            const QString keyword = "__Default__";
             QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
             settings.setValue("Global/Keywords", keyword);
             settings.sync();
 
-            keywords.push_back(keyword + ";");
+            config.push_back(keyword + ";");
         }
         else
         {
             QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
-            keywords = settings.value("Global/Keywords").toString().split(";");
+            config = settings.value("Global/Keywords").toString();
         }
 
-        qDebug() << "------" << keywords;
-        for(const auto& keyword : keywords)
+        QStringList keywords = config.split(";");
+        keywords.removeAll("");
+
+        for(int i = 0; i < keywords.size(); ++i)
         {
-            qDebug() << "---" << keyword;
-            emit addKeyword(keyword);
+            insertKeyword(-1, keywords[i], randomColorRGB_Safe().name());
         }
     });
 }
@@ -80,8 +59,25 @@ void LogSearcher::setWId(WId winid)
 
 void LogSearcher::insertKeyword(const int index, const QString& keyword, const QString& color)
 {
-    m_searchTarget[index] = { keyword, color };
-    qDebug() << "LogSearcher::insertKeyword" << m_searchTarget;
+    QString finalColor = color;
+    if(finalColor.isEmpty())
+    {
+        finalColor = randomColorRGB_Safe().name();
+    }
+
+    if(index < 0)
+    {
+        // 添加
+        m_searchTarget[m_searchTarget.size()] = { keyword, finalColor };
+        qDebug() << "LogSearcher::insertKeyword [ Add ]" << m_searchTarget;
+        emit addKeywordFinish(keyword.isEmpty() ? "     " : keyword, finalColor);
+    }
+    else
+    {
+        // 修改
+        m_searchTarget[index] = { keyword, finalColor };
+        qDebug() << "LogSearcher::insertKeyword [ Modify ]" << m_searchTarget;
+    }
 
     refreshSettings__();
 }
@@ -89,10 +85,11 @@ void LogSearcher::insertKeyword(const int index, const QString& keyword, const Q
 void LogSearcher::removeKeyword(const int index)
 {
     m_searchTarget.erase(std::next(m_searchTarget.begin(), index));
-    qDebug() << "LogSearcher::removeKeyword" << m_searchTarget;
+    refreshSettings__();
+
     emit removeKeywordFinish(index);
 
-    refreshSettings__();
+    qDebug() << "LogSearcher::removeKeyword" << m_searchTarget;
 }
 
 void LogSearcher::search(const QString& filePath)
@@ -135,8 +132,14 @@ void LogSearcher::refresh()
 
     if(!colorfulLog.isEmpty())
     {
-        emit dataReady(colorfulLog);
+
     }
+}
+
+void LogSearcher::setLogModel(LogModel* model1, LogModel* model2)
+{
+    m_logModel1 = model1;
+    m_logModel2 = model2;
 }
 
 void LogSearcher::mapFile__(const QString& filePath)
@@ -237,7 +240,7 @@ void LogSearcher::process__()
 
     if(!colorfulLog.isEmpty())
     {
-        emit dataReady(colorfulLog);
+
     }
 }
 
@@ -247,7 +250,10 @@ void LogSearcher::refreshSettings__()
         QString keywords = "";
         for(auto iter = m_searchTarget.begin(); iter != m_searchTarget.end(); ++iter)
         {
-            keywords += iter.value().first + ";";
+            if(!iter.value().first.isEmpty())
+            {
+                keywords += iter.value().first + ";";
+            }
         }
 
         QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
