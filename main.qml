@@ -95,15 +95,15 @@ ApplicationWindow {
     // 日志加载进度
     Rectangle {
         id: progressBar
-        visible: (value > 1 && value < 95)
+        visible: value > 0
         anchors {
             left: tagContainer.left
             top: tagContainer.bottom
         }
-        width: value / 100 * tagContainer.width
+        width: value * tagContainer.width
         height: 2
         color: "cyan"
-        property real value: 0
+        property real value: -1
     }
 
     // 搜索结果
@@ -158,6 +158,10 @@ ApplicationWindow {
 
         function onRemoveKeywordFinish(index) {
             tagList.remove(index);
+        }
+
+        function onLineNumWidth(width) {
+            logPanel1.lineNumWidth = width;
         }
 
         function onProgressChanged(value) {

@@ -57,8 +57,11 @@ signals:
     // 删除关键字完成
     void removeKeywordFinish(const int index);
 
+    // 行号显示宽度
+    void lineNumWidth(int width);
+
     // 进度更新
-    void progressChanged(int value);
+    void progressChanged(float value);
 
 private:
 

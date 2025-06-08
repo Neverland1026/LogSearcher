@@ -18,9 +18,11 @@ public slots:
 
 signals:
 
+    void lineNumWidth(int width);
+
     void newLogAvailable(const QString newlog);
 
-    void progressChanged(int value);
+    void progressChanged(float value);
 
 protected:
 

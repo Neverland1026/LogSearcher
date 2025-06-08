@@ -1,5 +1,6 @@
 ﻿#include "LogLoaderThread.h"
 #include <windows.h>
+#include <QThread>
 
 void LogLoaderThread::analyze()
 {
@@ -76,12 +77,33 @@ void LogLoaderThread::process__()
     if(m_fileContent.isEmpty())
         return;
 
+    // 按照换行符分隔
     const QStringList lines = m_fileContent.split("\r\n");
+
+    // 推测行号宽度
+    int count = 0;
+    int totalCount = lines.size();
+    while (totalCount != 0) {
+        count++;
+        totalCount /= 10;
+    }
+    emit lineNumWidth(count);
+
+    // 日志解析
     for(int i = 0; i < lines.size(); ++i)
     {
         emit newLogAvailable(QString("<font color='#FFFFFF'>%1</font>").arg(lines[i]));
 
-        emit progressChanged(std::ceil((float)(i + 2) / lines.size() * 100));
+        if(0 == i % 100 || (lines.size() - 1 == i))
+        {
+            emit progressChanged((float)(i) / lines.size());
+            QThread::msleep(5);
+        }
+
+        if(lines.size() - 1 == i)
+        {
+            emit progressChanged(-1);
+        }
 
         //        LineInfo li(this, i);
         //        li.line = lines[i];
