@@ -5,8 +5,8 @@ import "./ui"
 ApplicationWindow {
     id: window
     visible: true
-    width: 1000
-    height: 600
+    width: Screen.desktopAvailableWidth / 3 * 2
+    height: width * 9 / 16
     title: "LogSearcher"
 
     // 背景
@@ -51,7 +51,7 @@ ApplicationWindow {
             right: parent.right
             rightMargin: 10
         }
-        color: "#2FFFFFFF"
+        color: "#50FFFFFF"
 
         // 使用 Flow 管理标签
         Flow {
@@ -92,6 +92,20 @@ ApplicationWindow {
         ListModel { id: tagList }
     }
 
+    // 日志加载进度
+    Rectangle {
+        id: progressBar
+        visible: (value > 1 && value < 95)
+        anchors {
+            left: tagContainer.left
+            top: tagContainer.bottom
+        }
+        width: value / 100 * tagContainer.width
+        height: 2
+        color: "cyan"
+        property real value: 0
+    }
+
     // 搜索结果
     Row {
         anchors {
@@ -120,64 +134,6 @@ ApplicationWindow {
         }
     }
 
-    // 悬浮显示/隐藏前缀按钮
-    Rectangle {
-        width: 50
-        height: width
-        color: "#2FFFFFFF"
-        radius: width
-        anchors.right: parent.right
-        anchors.rightMargin: 20
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 20
-
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            onEntered: parent.color = "#7FFFFFFF"
-            onExited: parent.color = "#2FFFFFFF"
-            onPressed: $LogSearcher.togglePrefix();
-
-            Image {
-                width: parent.width * 0.7
-                height: width
-                anchors.centerIn: parent
-                fillMode: Image.PreserveAspectFit
-                source: "qrc:/image/refresh.svg"
-            }
-        }
-        z: 99999999
-    }
-
-    // 悬浮刷新按钮
-    Rectangle {
-        width: 50
-        height: width
-        color: "#2FFFFFFF"
-        radius: width
-        anchors.right: parent.right
-        anchors.rightMargin: 20
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 80
-
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            onEntered: parent.color = "#7FFFFFFF"
-            onExited: parent.color = "#2FFFFFFF"
-            onPressed: $LogSearcher.refresh();
-
-            Image {
-                width: parent.width * 0.7
-                height: width
-                anchors.centerIn: parent
-                fillMode: Image.PreserveAspectFit
-                source: "qrc:/image/refresh.svg"
-            }
-        }
-        z: 99999999
-    }
-
     // 拖拽
     DropArea {
         anchors.fill: parent
@@ -203,23 +159,21 @@ ApplicationWindow {
         function onRemoveKeywordFinish(index) {
             tagList.remove(index);
         }
+
+        function onProgressChanged(value) {
+            progressBar.value = value;
+        }
     }
 
     // C++ 消息响应
     Connections {
         target: $LogModel1
 
-        function onRowsInserted() {
-            logPanel1.positionViewAtEnd();
-        }
     }
 
     Connections {
         target: $LogModel2
 
-        function onRowsInserted() {
-            logPanel2.positionViewAtEnd();
-        }
     }
 
     Component.onCompleted: {

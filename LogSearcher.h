@@ -12,6 +12,7 @@
 #include <thread>
 
 #include "LogModel.h"
+#include "LogLoaderThread.h"
 
 class LogSearcher : public QObject
 {
@@ -45,12 +46,6 @@ public:
 
 protected:
 
-    // 映射文件内容
-    void mapFile__(const QString& filePath);
-
-    // 后处理
-    void process__();
-
     // 跟新配置文件
     void refreshSettings__();
 
@@ -62,6 +57,9 @@ signals:
     // 删除关键字完成
     void removeKeywordFinish(const int index);
 
+    // 进度更新
+    void progressChanged(int value);
+
 private:
 
     // 窗口 WId
@@ -72,9 +70,6 @@ private:
 
     // 查询关键字、关键字索引及对应前景色
     QMap<int, QPair<QString, QString>> m_searchTarget = {};
-
-    // 文本内容
-    QString m_fileContent;
 
     // 每行的信息
     struct LineInfo
@@ -135,6 +130,10 @@ private:
     // 日志对象模型
     LogModel* m_logModel1 = nullptr;
     LogModel* m_logModel2 = nullptr;
+
+    // 日志加载线程
+    QThread* m_thread = nullptr;
+    LogLoaderThread* m_logLoaderThread = nullptr;
 
 };
 

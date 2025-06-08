@@ -7,7 +7,7 @@ Rectangle {
 
     width: 350; height: 350
     color: "transparent"
-    border.color: "cyan"; border.width: 1
+    //border.color: "cyan"; border.width: 1
     clip: true
 
     property var logModel
@@ -34,7 +34,7 @@ Rectangle {
         anchors.fill: parent
         model: logModel  // 绑定C++模型
         anchors.margins: 10
-        cacheBuffer: 500
+        cacheBuffer: 1000
 
         delegate:  Item {
             width: listView.width
