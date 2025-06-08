@@ -1,6 +1,7 @@
 ﻿#include "LogLoaderThread.h"
 #include <windows.h>
 #include <QThread>
+#include <QDebug>
 
 void LogLoaderThread::analyze()
 {
@@ -78,7 +79,7 @@ void LogLoaderThread::process__()
         return;
 
     // 按照换行符分隔
-    const QStringList lines = m_fileContent.split("\r\n");
+    /*const*/ QStringList lines = m_fileContent.split("\r\n");
 
     // 推测行号宽度
     int count = 0;
@@ -89,10 +90,44 @@ void LogLoaderThread::process__()
     }
     emit lineNumWidth(count);
 
+    // 颜色处理
+    auto colorful__ = [&](QString& line, const bool skip = false)
+    {
+        QString keyword = "";
+        QString color = "";
+        int insertIndex = -1;
+        for(auto iter = m_keywordAndColorMap.begin(); iter != m_keywordAndColorMap.end(); ++iter)
+        {
+            insertIndex = line.indexOf(iter.key());
+            if(insertIndex >= 0)
+            {
+                keyword = iter.key();
+                color = iter.value();
+                break;
+            }
+        }
+
+        if(insertIndex < 0)
+            return QString("<font color='#FFFFFF'>%1</font>").arg(line);
+
+        auto newLine = line;
+        newLine.insert(insertIndex + keyword.size(), QString("%1").arg("</font>"));
+        newLine.insert(insertIndex, QString("<font color='%1'>").arg(color));
+        newLine = QString("<font color='#FFFFFF'>%1</font>").arg(newLine);
+
+        static int loop = 0;
+        if(loop++ < 6)
+        {
+            qDebug() << "_____" << newLine;
+        }
+
+        return newLine;
+    };
+
     // 日志解析
     for(int i = 0; i < lines.size(); ++i)
     {
-        emit newLogAvailable(QString("<font color='#FFFFFF'>%1</font>").arg(lines[i]));
+        emit newLogAvailable(colorful__(lines[i]));
 
         if(0 == i % 100 || (lines.size() - 1 == i))
         {
@@ -104,21 +139,5 @@ void LogLoaderThread::process__()
         {
             emit progressChanged(-1);
         }
-
-        //        LineInfo li(this, i);
-        //        li.line = lines[i];
-        //        for(auto iter = m_searchTarget.begin(); iter != m_searchTarget.end(); ++iter)
-        //        {
-        //            int pos = lines[i].indexOf(iter.value().first);
-        //            if(pos >= 0)
-        //            {
-        //                li.containedKeywords.push_back({ iter.value().first, pos });
-        //            }
-        //        }
-
-        //        emit appendLog(li.colorful());
-
-
-
     }
 }

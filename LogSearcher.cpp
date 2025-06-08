@@ -117,7 +117,16 @@ void LogSearcher::search(const QString& filePath)
         convertedFilepath = convertedFilepath.mid(prefix.size());
     }
 
+    // 设置查询属性
     m_logLoaderThread->setTargetLog(convertedFilepath);
+    QMap<QString, QString> kcm;
+    for(auto iter = m_searchTarget.begin(); iter != m_searchTarget.end(); ++iter)
+    {
+        kcm[iter.value().first] = iter.value().second;
+    }
+    m_logLoaderThread->setTargetKeywordAndColor(kcm);
+
+    // 开始查询
     m_thread->start();
 }
 
