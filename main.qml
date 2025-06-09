@@ -99,7 +99,7 @@ ApplicationWindow {
         }
 
         function onLineNumWidth(width) {
-            logPanel1.lineNumWidth = width;
+            logPanel1.lineNumWidth = logPanel2.lineNumWidth = width;
         }
 
         function onProgressChanged(value) {

@@ -74,26 +74,23 @@ void LogLoaderThread::process__()
         }
 
         if(insertIndex < 0)
-            return QString("<font color='#FFFFFF'>%1</font>").arg(line);
-
-        auto newLine = line;
-        newLine.insert(insertIndex + keyword.size(), QString("%1").arg("</font>"));
-        newLine.insert(insertIndex, QString("<font color='%1'>").arg(color));
-        newLine = QString("<font color='#FFFFFF'>%1</font>").arg(newLine);
-
-        static int loop = 0;
-        if(loop++ < 6)
         {
-            qDebug() << "_____" << newLine;
+            line = QString("<font color='#FFFFFF'>%1</font>").arg(line);
+            return false;
         }
 
-        return newLine;
+        line.insert(insertIndex + keyword.size(), QString("%1").arg("</font>"));
+        line.insert(insertIndex, QString("<font color='%1'>").arg(color));
+        line = QString("<font color='#FFFFFF'>%1</font>").arg(line);
+
+        return true;
     };
 
     // 日志解析
     for(int i = 0; i < lines.size(); ++i)
     {
-        emit newLogAvailable(colorful__(lines[i]));
+        const bool&& containKeyword = colorful__(lines[i]);
+        emit newLogAvailable(containKeyword, lines[i]);
 
         if(0 == i % 100 || (lines.size() - 1 == i))
         {

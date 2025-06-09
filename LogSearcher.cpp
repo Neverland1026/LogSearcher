@@ -49,8 +49,12 @@ LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
 
     QObject::connect(m_thread, &QThread::started, m_logLoaderThread, &LogLoaderThread::analyze);
     QObject::connect(m_logLoaderThread, &LogLoaderThread::lineNumWidth, this, [&](int width){ emit lineNumWidth(width); });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [&](const QString newlog){
-        m_logModel->appendLog(newlog);
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [&](const bool containKeyword, const QString log){
+        m_logModel->appendLog(log);
+        if(containKeyword)
+        {
+            m_resultModel->appendLog(log);
+        }
     });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::progressChanged, this, [&](float value){ emit progressChanged(value); });
     //QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);

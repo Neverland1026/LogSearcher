@@ -24,7 +24,7 @@ signals:
 
     void lineNumWidth(int width);
 
-    void newLogAvailable(const QString newlog);
+    void newLogAvailable(const bool containKeyword, const QString log);
 
     void progressChanged(float value);
 
