@@ -35,9 +35,6 @@ public:
     // 开始查找
     Q_INVOKABLE void search(const QString& filePath);
 
-    // 显隐前缀
-    Q_INVOKABLE void togglePrefix();
-
     // 设置日志对象
     void setSearchModel(LogModel* model1, LogModel* model2);
 
@@ -70,9 +67,6 @@ private:
 
     // 查询关键字、关键字索引及对应前景色
     QMap<int, QPair<QString, QString>> m_searchTarget = {};
-
-    // 裁剪前缀
-    bool m_skipPrefix = false;
 
     // 日志对象模型
     LogModel* m_logModel = nullptr;

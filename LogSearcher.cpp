@@ -128,13 +128,6 @@ void LogSearcher::search(const QString& filePath)
     m_thread->start();
 }
 
-void LogSearcher::togglePrefix()
-{
-    m_skipPrefix = !m_skipPrefix;
-}
-
-
-
 void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2)
 {
     m_logModel = model1;
