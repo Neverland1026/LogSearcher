@@ -20,13 +20,13 @@ int main(int argc, char *argv[])
     LogSearcher* searcher = new LogSearcher;
     engine.rootContext()->setContextProperty("$LogSearcher", searcher);
 
-    LogModel* logModel1 = new LogModel();
-    engine.rootContext()->setContextProperty("$LogModel1", logModel1);
+    LogModel* logModel = new LogModel();
+    engine.rootContext()->setContextProperty("$LogModel", logModel);
 
-    LogModel* logModel2 = new LogModel();
-    engine.rootContext()->setContextProperty("$LogModel2", logModel2);
+    LogModel* resultModel = new LogModel();
+    engine.rootContext()->setContextProperty("$ResultModel", resultModel);
 
-    searcher->setLogModel(logModel1, logModel2);
+    searcher->setSearchModel(logModel, resultModel);
 
     const QUrl url(u"qrc:/main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

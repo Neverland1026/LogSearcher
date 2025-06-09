@@ -6,5 +6,6 @@
         <file>image/add.svg</file>
         <file>image/refresh.svg</file>
         <file>ui/LogPanel.qml</file>
+        <file>ui/KeywordTagContainer.qml</file>
     </qresource>
 </RCC>

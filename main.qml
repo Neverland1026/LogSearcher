@@ -1,5 +1,6 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
+import Qt.labs.settings 1.1
 import "./ui"
 
 ApplicationWindow {
@@ -30,107 +31,44 @@ ApplicationWindow {
     }
 
     // 容器用于存放动态创建的标签
-    Rectangle {
-        id: tagContainer
-        height: {
-            var baseHeigght = 50;
-
-            var extraHeight = 60;
-            var itemBegin = repeater.itemAt(0);
-            var itemEnd = repeater.itemAt(repeater.count - 1);
-            if(itemBegin && itemEnd) {
-                extraHeight = Math.floor((itemEnd.y - itemBegin.y) / itemBegin.height) * extraHeight;
-            }
-
-            return (baseHeigght + extraHeight);
-        }
-        anchors {
-            top: logNameText.bottom
-            left: parent.left
-            leftMargin: 10
-            right: parent.right
-            rightMargin: 10
-        }
-        color: "#50FFFFFF"
-
-        // 使用 Flow 管理标签
-        Flow {
-            anchors.fill: tagContainer
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 5
-            flow: Flow.LeftToRight
-
-            Repeater {
-                id: repeater
-                model: tagList
-                delegate: TagModel {
-                    keyword: tagList.get(index).keyword
-                    keywordColor: tagList.get(index).color
-                    delBtnVisible: tagList.count > 1
-
-                    onSigUpdate: {
-                        tagList.get(index).keyword = keyword.trim();
-                        tagList.get(index).color = keywordColor;
-                        $LogSearcher.insertKeyword(index, tagList.get(index).keyword, tagList.get(index).color);
-                        //$LogSearcher.refresh();
-                    }
-
-                    onSigRemove: {
-                        $LogSearcher.removeKeyword(index);
-                    }
-
-                    onSigAccepted: {
-                        if(index === tagList.count - 1) {
-                            $LogSearcher.insertKeyword(-1, "", "");
-                        }
-                    }
-                }
-            }
-        }
-
-        // 存储标签数据
-        ListModel { id: tagList }
+    KeywordTagContainer {
+        id: keywordTagContainer
+        anchors { top: logNameText.bottom; left: parent.left; leftMargin: 10; right: parent.right; rightMargin: 10 }
     }
 
     // 日志加载进度
     Rectangle {
         id: progressBar
         visible: value > 0
-        anchors {
-            left: tagContainer.left
-            top: tagContainer.bottom
-        }
-        width: value * tagContainer.width
+        anchors { left: keywordTagContainer.left; top: keywordTagContainer.bottom }
+        width: value * keywordTagContainer.width
         height: 2
         color: "cyan"
         property real value: -1
     }
 
-    // 搜索结果
-    Row {
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: tagContainer.bottom
-            bottom: parent.bottom
-            margins: 5
-        }
+    // 日志内容 + 搜索结果
+    SplitView {
+        id: splitView
+        anchors { left: parent.left; right: parent.right; top: keywordTagContainer.bottom; bottom: parent.bottom; margins: 5}
+        orientation: Qt.Vertical
 
-        spacing: 5
-
-        LogPanel {
-            id: logPanel1
-            width: parent.width//(parent.width - parent.spacing) / 2
-            height: parent.height
-            logModel: $LogModel1
+        handle: Rectangle {
+            implicitHeight: 1
+            color: "white"
+            MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; }
         }
 
         LogPanel {
-            id: logPanel2
-            visible: false
-            width: (parent.width - parent.spacing) / 2
-            height: parent.height
-            logModel: $LogModel2
+            id: logPanel
+            implicitHeight: parent.height * 0.8
+            logModel: $LogModel
+        }
+
+        LogPanel {
+            id: resultPanel
+            SplitView.fillHeight: true
+            logModel: $ResultModel
         }
     }
 
@@ -153,11 +91,11 @@ ApplicationWindow {
         target: $LogSearcher
 
         function onAddKeywordFinish(keyword, color) {
-            tagList.append({ keyword: keyword, color: color });
+            keywordTagContainer.append(keyword, color);
         }
 
         function onRemoveKeywordFinish(index) {
-            tagList.remove(index);
+            keywordTagContainer.remove(index);
         }
 
         function onLineNumWidth(width) {
@@ -169,19 +107,12 @@ ApplicationWindow {
         }
     }
 
-    // C++ 消息响应
-    Connections {
-        target: $LogModel1
-
+    // 保存和恢复 SplitView 的状态
+    Settings {
+        id: settings
+        property var splitViewState
     }
-
-    Connections {
-        target: $LogModel2
-
-    }
-
-    Component.onCompleted: {
-
-    }
+    Component.onCompleted: splitView.restoreState(settings.splitViewState)
+    Component.onDestruction: settings.splitViewState = splitView.saveState()
 
 }

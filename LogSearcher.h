@@ -42,7 +42,7 @@ public:
     Q_INVOKABLE void refresh();
 
     // 设置日志对象
-    void setLogModel(LogModel* model1, LogModel* model2);
+    void setSearchModel(LogModel* model1, LogModel* model2);
 
 protected:
 
@@ -131,8 +131,8 @@ private:
     bool m_skipPrefix = false;
 
     // 日志对象模型
-    LogModel* m_logModel1 = nullptr;
-    LogModel* m_logModel2 = nullptr;
+    LogModel* m_logModel = nullptr;
+    LogModel* m_resultModel = nullptr;
 
     // 日志加载线程
     QThread* m_thread = nullptr;
