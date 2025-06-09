@@ -34,4 +34,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
         LogLoaderThread.h \
         LogModel.h \
-        LogSearcher.h
+        LogSearcher.h \
+        LogUltraSearchTool.h

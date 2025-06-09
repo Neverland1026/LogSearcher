@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <QThread>
 #include <QDebug>
+#include <QFile>
 
 void LogLoaderThread::analyze()
 {
@@ -11,66 +12,31 @@ void LogLoaderThread::analyze()
 
 void LogLoaderThread::mapFile__()
 {
-    auto read__ = [this](const LPCWSTR& filePath)
+    auto read_method2__ = [this](const QString& filePath)
     {
         do
         {
-            // 打开文件
-            HANDLE hFile = CreateFile(filePath,
-                                      GENERIC_READ,
-                                      FILE_SHARE_READ,
-                                      NULL,
-                                      OPEN_EXISTING,
-                                      FILE_ATTRIBUTE_NORMAL,
-                                      NULL);
-            if (hFile == INVALID_HANDLE_VALUE)
-            {
+            QFile file(filePath);
+            if (!file.open(QIODevice::ReadOnly))
                 break;
-            }
 
-            // 创建文件映射对象
-            HANDLE hMapFile = CreateFileMapping(hFile,
-                                                NULL,
-                                                PAGE_READONLY,
-                                                0,
-                                                0,
-                                                NULL);
-            if (hMapFile == NULL)
-            {
-                CloseHandle(hFile);
+            const qint64 fileSize = file.size();
+            uchar *memory = file.map(0, fileSize);
+            if (!memory)
                 break;
-            }
 
-            // 映射视图到内存
-            LPVOID lpBaseAddress = MapViewOfFile(hMapFile,
-                                                 FILE_MAP_READ,
-                                                 0,
-                                                 0,
-                                                 0);
-            if (lpBaseAddress == NULL)
+            const char *data = reinterpret_cast<const char*>(memory);
+            if(data)
             {
-                CloseHandle(hMapFile);
-                CloseHandle(hFile);
-                break;
+                m_fileContent = QString(data);
             }
 
-            // 读取文件内容（假设文件为文本文件，且内容较短）
-            // 注意：这里直接将内存地址转换为char*指针，并输出字符串内容
-            // 在实际应用中，应根据文件内容格式进行相应处理
-            const char* pData = static_cast<const char*>(lpBaseAddress);
-            if(pData)
-            {
-                m_fileContent = QString(pData);
-            }
-
-            // 取消映射并释放资源
-            UnmapViewOfFile(lpBaseAddress);
-            CloseHandle(hMapFile);
-            CloseHandle(hFile);
+            file.unmap(memory);
+            file.close();
         } while(0);
     };
 
-    read__(m_logPath.toStdWString().c_str());
+    read_method2__(m_logPath);
 }
 
 void LogLoaderThread::process__()
