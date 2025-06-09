@@ -38,9 +38,6 @@ public:
     // 显隐前缀
     Q_INVOKABLE void togglePrefix();
 
-    // 刷新
-    Q_INVOKABLE void refresh();
-
     // 设置日志对象
     void setSearchModel(LogModel* model1, LogModel* model2);
 
@@ -73,59 +70,6 @@ private:
 
     // 查询关键字、关键字索引及对应前景色
     QMap<int, QPair<QString, QString>> m_searchTarget = {};
-
-    // 每行的信息
-    struct LineInfo
-    {
-        using Keyword_Pos_Pair = QPair<QString, int>;
-
-        LogSearcher* parent = nullptr;
-        int lineNum = -1;
-        QString line = "";
-        QVector<Keyword_Pos_Pair> containedKeywords = {};
-
-        LineInfo() = default;
-        LineInfo(LogSearcher* parent, const int lineNum = -1)
-        {
-            this->parent = parent;
-            this->lineNum = lineNum;
-            this->line = "";
-            this->containedKeywords.resize(0);
-        }
-
-        inline bool existKeyword() const
-        {
-            return !containedKeywords.empty();
-        }
-
-        QString colorful() const
-        {
-            if(existKeyword())
-            {
-                QMap<QString, QString> kc;
-                for(auto iter = parent->m_searchTarget.begin(); iter != parent->m_searchTarget.end(); ++iter)
-                {
-                    kc[iter.value().first] = iter.value().second;
-                }
-
-                auto newLine = this->line;
-                Keyword_Pos_Pair kp = containedKeywords.first();
-                if(parent->m_skipPrefix)
-                {
-                    newLine = newLine.mid(kp.second);
-                }
-
-                newLine.insert(parent->m_skipPrefix ? 0 : kp.second, QString("<font color='%1'>").arg(kc[kp.first]));
-                newLine.insert((parent->m_skipPrefix ? 0 : kp.second) + 22 + kp.first.size(), QString("%1").arg("</font>"));
-                newLine = QString("<font color='#FFFFFF'>") + newLine + QString("</font>");
-
-                return newLine;
-            }
-
-            return QString("<font color='#FFFFFF'>%1</font>").arg(this->line);
-        }
-    };
-    QVector<LineInfo> m_allLineInfo;
 
     // 裁剪前缀
     bool m_skipPrefix = false;

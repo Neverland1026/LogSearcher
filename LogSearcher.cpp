@@ -107,8 +107,6 @@ void LogSearcher::removeKeyword(const int index)
 
 void LogSearcher::search(const QString& filePath)
 {
-    m_allLineInfo.resize(0);
-
     // remove "file:///"
     QString convertedFilepath = filePath;
     const QString prefix = "file:///";
@@ -133,30 +131,9 @@ void LogSearcher::search(const QString& filePath)
 void LogSearcher::togglePrefix()
 {
     m_skipPrefix = !m_skipPrefix;
-    refresh();
 }
 
-void LogSearcher::refresh()
-{
-    if(m_allLineInfo.isEmpty())
-        return;
 
-    QString colorfulLog = "";
-
-    for(const auto& li : m_allLineInfo)
-    {
-        if(li.existKeyword())
-        {
-            li.parent->m_skipPrefix = this->m_skipPrefix;
-            colorfulLog += li.colorful() + "<br>";
-        }
-    }
-
-    if(!colorfulLog.isEmpty())
-    {
-
-    }
-}
 
 void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2)
 {
