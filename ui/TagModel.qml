@@ -8,7 +8,7 @@ Rectangle {
     width: contentRect.width + 20
     height: 50
     color: "transparent"
-    //border.color: "black"; border.width: 1;
+    //border.color: "yellow"; border.width: 1;
 
     property alias keyword: textInput.text
     property alias keywordColor: colorRect.color

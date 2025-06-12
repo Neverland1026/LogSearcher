@@ -16,24 +16,10 @@ ApplicationWindow {
         color: "#1E1E1E"
     }
 
-    // 日志文件标题
-    Text {
-        id: logNameText
-        width: parent.width
-        height: 40
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        font { pointSize: 17; bold: true }
-        color: "#FC9000"
-        text: "Let's search it !"
-    }
-
     // 容器用于存放动态创建的标签
     KeywordTagContainer {
         id: keywordTagContainer
-        anchors { top: logNameText.bottom; left: parent.left; leftMargin: 10; right: parent.right; rightMargin: 10 }
+        anchors { top: parent.top; left: parent.left; right: parent.right; }
     }
 
     // 日志加载进度
@@ -79,9 +65,9 @@ ApplicationWindow {
         onDropped: (drop)=> {
                        window.requestActivate();
                        if (drop.hasUrls) {
-                           logNameText.text = drop.urls[0];
-                           $LogSearcher.search(logNameText.text);
-                           logNameText.text = logNameText.text.split("/").pop();
+                           var fullPath = drop.urls[0];
+                           $LogSearcher.search(fullPath);
+                           window.title = fullPath.toString().substring(8, fullPath.toString().length);
                        }
                    }
     }

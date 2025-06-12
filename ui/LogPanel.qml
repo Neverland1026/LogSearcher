@@ -12,7 +12,7 @@ Rectangle {
 
     property var logModel
 
-    property real dynamicFontSize: 18  // 全局动态字体尺寸
+    property real dynamicFontSize: 16  // 全局动态字体尺寸
 
     property int lineNumWidth: 7
 
@@ -66,7 +66,7 @@ Rectangle {
                 selectedTextColor: "navy"
                 font.family: "Consolas"
                 font.pixelSize: dynamicFontSize
-                font.bold: true
+                //font.bold: true
 
                 onSelectedTextChanged: {
                     console.log("textEdit.selectedText = ", selectedText);
