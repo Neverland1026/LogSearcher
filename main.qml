@@ -18,12 +18,17 @@ ApplicationWindow {
 
     // 日志内容 + 搜索结果
     SplitView {
-        id: splitView
         anchors { left: parent.left; right: parent.right; top: keywordTagContainer.bottom; bottom: parent.bottom; margins: 5}
         orientation: Qt.Vertical
         LogPanel { id: logPanel; implicitHeight: parent.height * 0.7; logModel: $LogModel; }
         handle: Rectangle { implicitHeight: 1; color: "white"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; } }
-        LogPanel { id: resultPanel; SplitView.fillHeight: true; logModel: $ResultModel; }
+        SplitView {
+            SplitView.fillHeight: true
+            orientation: Qt.Horizontal
+            LogPanel { id: resultPanel; SplitView.fillWidth: true; logModel: $ResultModel; }
+            handle: Rectangle { implicitWidth: 1.5; color: "white"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeHorCursor; } }
+            LogPanel { id: findPanel; implicitWidth: parent.width * 0.5; logModel: $FindModel; }
+        }
     }
 
     // 拖拽

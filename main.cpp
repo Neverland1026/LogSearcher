@@ -74,7 +74,10 @@ int main(int argc, char *argv[])
     LogModel* resultModel = new LogModel();
     engine.rootContext()->setContextProperty("$ResultModel", resultModel);
 
-    searcher->setSearchModel(logModel, resultModel);
+    LogModel* findModel = new LogModel();
+    engine.rootContext()->setContextProperty("$FindModel", findModel);
+
+    searcher->setSearchModel(logModel, resultModel, findModel);
 
     const QUrl url(u"qrc:/main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

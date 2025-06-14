@@ -31,10 +31,11 @@ void LogSearcher::setWId(WId winid)
     //                   SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
 
-void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2)
+void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2, LogModel* model3)
 {
     m_logModel = model1;
     m_resultModel = model2;
+    m_findModel = model3;
 }
 
 void LogSearcher::init()
@@ -120,6 +121,7 @@ void LogSearcher::openLog(const QString& filePath)
         if(containKeyword)
         {
             m_resultModel->appendLog(log);
+            m_findModel->appendLog(log);
         }
     });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(); });

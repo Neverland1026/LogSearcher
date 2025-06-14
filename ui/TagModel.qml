@@ -35,7 +35,7 @@ Rectangle {
         // 选择颜色
         Rectangle {
             id: colorRect
-            width: parent.height * 0.4
+            width: parent.height * 0.6
             height: width
             radius: width
             color: "yellow"

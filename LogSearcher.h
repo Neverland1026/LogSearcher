@@ -27,7 +27,7 @@ public:
     void setWId(WId winid);
 
     // 设置日志对象
-    Q_INVOKABLE void setSearchModel(LogModel* model1, LogModel* model2);
+    Q_INVOKABLE void setSearchModel(LogModel* model1, LogModel* model2, LogModel* model3);
 
     // 初始化
     Q_INVOKABLE void init();
@@ -81,6 +81,7 @@ private:
     // 日志对象模型
     LogModel* m_logModel = nullptr;
     LogModel* m_resultModel = nullptr;
+    LogModel* m_findModel = nullptr;
 
     // 日志加载线程
     QThread* m_thread = nullptr;
