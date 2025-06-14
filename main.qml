@@ -6,8 +6,8 @@ import "./ui"
 ApplicationWindow {
     id: window
     visible: true
-    width: Screen.desktopAvailableWidth / 3 * 2
-    height: Screen.desktopAvailableHeight / 3 * 2
+    width: Screen.desktopAvailableWidth / 4 * 3
+    height: Screen.desktopAvailableHeight / 4 * 3
     title: "LogSearcher"
 
     // 背景
@@ -64,6 +64,11 @@ ApplicationWindow {
         }
     }
 
-    Timer { id: timer; running: false; interval: 2000; onTriggered: $LogSearcher.init(); }
-    Component.onCompleted: timer.start()
+    Shortcut {
+        sequence: "Ctrl+End"
+        onActivated: console.log("Ctrl+End triggered")
+        onActivatedAmbiguously: console.log("Ctrl+End triggered")
+    }
+
+    Component.onCompleted: $LogSearcher.init()
 }

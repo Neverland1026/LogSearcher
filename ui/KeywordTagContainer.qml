@@ -33,7 +33,7 @@ Rectangle {
     // 使用 Flow 管理标签
     Flow {
         anchors.fill: root
-        //anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenter: parent.verticalCenter
         spacing: 1
         flow: Flow.LeftToRight
 
@@ -41,9 +41,9 @@ Rectangle {
             id: repeater
             model: tagList
             delegate: TagModel {
-                //keyword: tagList.get(index).keyword
-                //keywordColor: tagList.get(index).color
-                //delBtnVisible: tagList.count > 1
+                keyword: tagList.get(index).keyword
+                keywordColor: tagList.get(index).color
+                delBtnVisible: tagList.count > 1
 
                 onSigUpdate: {
                     //tagList.get(index).keyword = keyword.trim();

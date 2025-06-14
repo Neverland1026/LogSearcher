@@ -12,7 +12,7 @@ Rectangle {
 
     property var logModel
 
-    property real dynamicFontSize: 16  // 全局动态字体尺寸
+    property real dynamicFontSize: 18  // 全局动态字体尺寸
 
     property int lineNumWidth: 7
 
@@ -28,12 +28,8 @@ Rectangle {
         anchors.margins: 10
         cacheBuffer: 2000
 
-        //asynchronous: true
-
         boundsBehavior: Flickable.StopAtBounds
-        //flickDeceleration: 0
         maximumFlickVelocity: 1200
-        //highlightMoveDuration: 0
 
         delegate:  Item {
             width: listView.width
@@ -67,6 +63,7 @@ Rectangle {
                 }
                 text: display
                 textFormat: TextEdit.RichText
+                verticalAlignment: Text.AlignVCenter
                 readOnly: true
                 selectByMouse: true
                 selectionColor: "lightblue"
@@ -75,6 +72,11 @@ Rectangle {
                 font.pixelSize: dynamicFontSize
                 //font.bold: true
                 //wrapMode: TextEdit.Wrap
+                Rectangle {
+                    anchors.fill: parent
+                    color: parent.activeFocus ? "#7FFF0000" : "transparent"
+                    z: -1
+                }
 
                 onSelectedTextChanged: {
                     //console.log("textEdit.selectedText = ", selectedText);
