@@ -15,8 +15,28 @@ QColor randomColorRGB_Safe()
 LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
     : QObject{parent}
 {
+    // 创建并启动工作线程
+    m_thread = new QThread(this);
+    m_logLoaderThread = new LogLoaderThread;
+    m_logLoaderThread->moveToThread(m_thread);
+
+    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, &LogLoaderThread::analyze);
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::lineNumWidth, this, [&](int width){ emit lineNumWidth(width); });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [&](const bool containKeyword, const QString log){
+        m_logModel->appendLog(log);
+        if(containKeyword)
+        {
+            m_resultModel->appendLog(log);
+        }
+    });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(); });
+    //QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);
+    //QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
+
     // 配置文件
-    QTimer::singleShot(500, this, [&]() {
+    QtConcurrent::run([&](){
+        QThread::msleep(500);
+
         QString config = {};
         if(!QFileInfo::exists(m_settingsPath))
         {
@@ -38,27 +58,9 @@ LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
 
         for(int i = 0; i < keywords.size(); ++i)
         {
-            insertKeyword(-1, keywords[i], randomColorRGB_Safe().name());
+            //insertKeyword(-1, keywords[i], randomColorRGB_Safe().name());
         }
     });
-
-    // 创建并启动工作线程
-    m_thread = new QThread(this);
-    m_logLoaderThread = new LogLoaderThread;
-    m_logLoaderThread->moveToThread(m_thread);
-
-    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, &LogLoaderThread::analyze);
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::lineNumWidth, this, [&](int width){ emit lineNumWidth(width); });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [&](const bool containKeyword, const QString log){
-        m_logModel->appendLog(log);
-        if(containKeyword)
-        {
-            m_resultModel->appendLog(log);
-        }
-    });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(); });
-    //QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);
-    //QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
 }
 
 LogSearcher::~LogSearcher()
@@ -69,9 +71,9 @@ void LogSearcher::setWId(WId winid)
 {
     m_winId = winid;
 
-//    ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
-//                   HWND_TOPMOST, 0, 0, 0, 0,
-//                   SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+    //    ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
+    //                   HWND_TOPMOST, 0, 0, 0, 0,
+    //                   SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
 
 void LogSearcher::insertKeyword(const int index, const QString& keyword, const QString& color)
@@ -129,6 +131,7 @@ void LogSearcher::search(const QString& filePath)
     m_logLoaderThread->setTargetKeywordAndColor(kcm);
 
     // 开始查询
+    emit loadStart();
     m_thread->start();
 }
 

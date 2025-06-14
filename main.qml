@@ -7,7 +7,7 @@ ApplicationWindow {
     id: window
     visible: true
     width: Screen.desktopAvailableWidth / 3 * 2
-    height: width * 9 / 16
+    height: Screen.desktopAvailableHeight / 3 * 2
     title: "LogSearcher"
 
     // 背景
@@ -33,9 +33,23 @@ ApplicationWindow {
                        if (drop.hasUrls) {
                            var fullPath = drop.urls[0];
                            $LogSearcher.search(fullPath);
-                           window.title = fullPath.toString().substring(8, fullPath.toString().length);
+                           window.title = "LogSearcher" + "  -  " + fullPath.toString().substring(8, fullPath.toString().length);
                        }
                    }
+    }
+
+    // 加载进度
+    BusyIndicator {
+        id: busyIndicator
+        anchors.centerIn: parent
+        width: 200; height: width
+        visible: false
+        running: true
+        background: Rectangle {
+            anchors.fill: parent
+            radius: parent.width
+            color: "steelblue"
+        }
     }
 
     // C++ 消息响应
@@ -54,8 +68,12 @@ ApplicationWindow {
             logPanel1.lineNumWidth = logPanel2.lineNumWidth = width;
         }
 
-        function onLoadFinish() {
+        function onLoadStart() {
+            busyIndicator.visible = true;
+        }
 
+        function onLoadFinish() {
+            busyIndicator.visible = false;
         }
     }
 }

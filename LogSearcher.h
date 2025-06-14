@@ -54,7 +54,10 @@ signals:
     // 行号显示宽度
     void lineNumWidth(int width);
 
-    // 进度更新
+    // 加载开始
+    void loadStart();
+
+    // 结束加载
     void loadFinish();
 
 private:

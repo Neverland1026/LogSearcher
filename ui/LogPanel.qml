@@ -26,7 +26,14 @@ Rectangle {
         anchors.fill: parent
         model: logModel  // 绑定C++模型
         anchors.margins: 10
-        cacheBuffer: 1000
+        cacheBuffer: height * 2
+
+        //asynchronous: true
+
+        boundsBehavior: Flickable.StopAtBounds
+        //flickDeceleration: 0
+        maximumFlickVelocity: 1200
+        //highlightMoveDuration: 0
 
         delegate:  Item {
             width: listView.width
@@ -44,7 +51,7 @@ Rectangle {
                 text: index + 1
                 font.family: "Consolas"
                 font.pixelSize: dynamicFontSize
-                font.bold: true
+                //font.bold: true
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 color: "white"
@@ -67,6 +74,7 @@ Rectangle {
                 font.family: "Consolas"
                 font.pixelSize: dynamicFontSize
                 //font.bold: true
+                //wrapMode: TextEdit.Wrap
 
                 onSelectedTextChanged: {
                     console.log("textEdit.selectedText = ", selectedText);
@@ -74,11 +82,12 @@ Rectangle {
             }
         }
 
-        maximumFlickVelocity: 2000  // 限制最大滚动速度
-
         ScrollBar.vertical: ScrollBar {
             policy: ScrollBar.AsNeeded
         }
+        //ScrollBar.horizontal: ScrollBar {
+        //    policy: ScrollBar.AsNeeded
+        //}
 
         // 拦截滚轮事件
         MouseArea {
