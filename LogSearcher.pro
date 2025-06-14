@@ -2,8 +2,8 @@ QT += quick
 //QT += core5compat
 
 SOURCES += \
-        LogLoaderThread.cpp \
-        LogModel.cpp \
+        LogLoad/LogLoaderThread.cpp \
+        LogModel/LogModel.cpp \
         LogSearcher.cpp \
         main.cpp
 
@@ -32,7 +32,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 #        CustomImageProvider.h
 
 HEADERS += \
-        LogLoaderThread.h \
-        LogModel.h \
+        LogAnalysis/LogUltraSearchTool.h \
+        LogLoad/LogLoaderThread.h \
+        LogModel/LogModel.h \
         LogSearcher.h \
         LogUltraSearchTool.h

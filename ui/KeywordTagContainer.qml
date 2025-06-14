@@ -13,7 +13,7 @@ Rectangle {
     }
 
     height: {
-        var baseHeigght = 50;
+        var baseHeigght = 38;
 
         var extraHeight = 60;
         var itemBegin = repeater.itemAt(0);
@@ -31,7 +31,7 @@ Rectangle {
     Flow {
         anchors.fill: root
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 5
+        spacing: 0
         flow: Flow.LeftToRight
 
         Repeater {

@@ -11,8 +11,8 @@
 #include <QVector>
 #include <thread>
 
-#include "LogModel.h"
-#include "LogLoaderThread.h"
+#include "LogModel/LogModel.h"
+#include "LogLoad/LogLoaderThread.h"
 
 class LogSearcher : public QObject
 {
@@ -55,7 +55,7 @@ signals:
     void lineNumWidth(int width);
 
     // 进度更新
-    void progressChanged(float value);
+    void loadFinish();
 
 private:
 

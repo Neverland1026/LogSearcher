@@ -26,7 +26,7 @@ signals:
 
     void newLogAvailable(const bool containKeyword, const QString log);
 
-    void progressChanged(float value);
+    void loadFinish();
 
 protected:
 

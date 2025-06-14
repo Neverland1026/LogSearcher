@@ -56,7 +56,7 @@ LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
             m_resultModel->appendLog(log);
         }
     });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::progressChanged, this, [&](float value){ emit progressChanged(value); });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(); });
     //QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);
     //QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
 }
@@ -69,9 +69,9 @@ void LogSearcher::setWId(WId winid)
 {
     m_winId = winid;
 
-    ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
-                   HWND_TOPMOST, 0, 0, 0, 0,
-                   SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+//    ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
+//                   HWND_TOPMOST, 0, 0, 0, 0,
+//                   SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
 
 void LogSearcher::insertKeyword(const int index, const QString& keyword, const QString& color)

@@ -91,16 +91,8 @@ void LogLoaderThread::process__()
     {
         const bool&& containKeyword = colorful__(lines[i]);
         emit newLogAvailable(containKeyword, lines[i]);
-
-        if(0 == i % 100 || (lines.size() - 1 == i))
-        {
-            emit progressChanged((float)(i) / lines.size());
-            QThread::msleep(5);
-        }
-
-        if(lines.size() - 1 == i)
-        {
-            emit progressChanged(-1);
-        }
     }
+
+    // 解析结束
+    emit loadFinish();
 }

@@ -5,8 +5,8 @@ import QtQuick.Dialogs
 // TagModel
 Rectangle {
     id: root
-    width: contentRect.width + 20
-    height: 50
+    width: contentRect.width + 10
+    height: 40
     color: "transparent"
     //border.color: "yellow"; border.width: 1;
 
@@ -30,7 +30,7 @@ Rectangle {
         anchors.centerIn: parent
         color: "#1E1E1E"
         radius: 5
-        border.color: "#7F000000"; border.width: 1;
+        //border.color: /*"#7F000000"*/"yellow"; border.width: 1;
 
         // 选择颜色
         Rectangle {
@@ -59,8 +59,9 @@ Rectangle {
             anchors.verticalCenter: colorRect.verticalCenter
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
+            font.family: "Consolas"
             font.pointSize: 14
-            font.bold: true
+            //font.bold: true
             color: "white"
             selectByMouse: true
             selectionColor: "lightblue"
