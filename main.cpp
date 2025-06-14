@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     app.setApplicationName("LogSearcher");
     app.setOrganizationName("LogSearcher_Organizatio");
 
-    qInstallMessageHandler(myMessageHandler);
+    //qInstallMessageHandler(myMessageHandler);
 
     QQmlApplicationEngine engine;
 

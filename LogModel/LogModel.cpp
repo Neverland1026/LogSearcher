@@ -1,4 +1,4 @@
-#include "LogModel.h"
+﻿#include "LogModel.h"
 
 LogModel::LogModel(QObject *parent) : QAbstractListModel(parent) {}
 
@@ -22,4 +22,11 @@ void LogModel::appendLog(const QString &log) {
     beginInsertRows(QModelIndex(), m_logs.size(), m_logs.size());
     m_logs.append(log);
     endInsertRows();
+}
+
+void LogModel::clearAll()
+{
+    beginResetModel();
+    m_logs.resize(0);
+    endResetModel();
 }

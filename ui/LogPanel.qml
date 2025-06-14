@@ -16,6 +16,8 @@ Rectangle {
 
     property int lineNumWidth: 7
 
+    property string selectedText: ""
+
     function positionViewAtEnd() {
         listView.positionViewAtEnd()
     }
@@ -79,7 +81,8 @@ Rectangle {
                 }
 
                 onSelectedTextChanged: {
-                    //console.log("textEdit.selectedText = ", selectedText);
+                    root.selectedText = selectedText;
+                    rightMenu.existToBeFindKeyword = (selectedText !== "");
                 }
             }
         }
@@ -94,10 +97,9 @@ Rectangle {
         // 拦截滚轮事件
         MouseArea {
             anchors.fill: parent
-            acceptedButtons: Qt.NoButton
+            acceptedButtons: Qt.NoButton | Qt.RightButton
             onWheel: {
                 if (wheel.modifiers & Qt.ControlModifier) {
-                    console.log("-----", dynamicFontSize)
                     dynamicFontSize += (wheel.angleDelta.y > 0) ? 1 : -1;
                     dynamicFontSize = Math.min(24, Math.max(8, dynamicFontSize));
                     wheel.accepted = true;
@@ -105,6 +107,40 @@ Rectangle {
                     wheel.accepted = false;
                 }
             }
+
+            onPressed: (mouse) => {
+                           if(mouse.button === Qt.LeftButton) {
+
+                           } else if(mouse.button === Qt.MiddleButton) {
+
+                           } else if(mouse.button === Qt.RightButton) {
+                               var pos = parent.mapToItem(root, mouseX, mouseY);
+                               rightMenu.x =  pos.x;
+                               rightMenu.y = pos.y;
+                               rightMenu.visible = true
+                           }
+                       }
+        }
+    }
+
+    // 右键菜单
+    RightMenu {
+        id: rightMenu
+
+        onSigFindTargetKeyword: {
+            $LogSearcher.find(root.selectedText);
+        }
+
+        onSigAddKeyword: {
+            $LogSearcher.insertKeyword(-1, root.selectedText, "");
+        }
+
+        onSigOpenLatestLog: {
+            $LogSearcher.openLatestIndexLog(0);
+        }
+
+        onSigOpenNextLatestLog: {
+            $LogSearcher.openLatestIndexLog(1);
         }
     }
 }

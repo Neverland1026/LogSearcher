@@ -46,19 +46,19 @@ Rectangle {
                 delBtnVisible: tagList.count > 1
 
                 onSigUpdate: {
-                    //tagList.get(index).keyword = keyword.trim();
-                    //tagList.get(index).color = keywordColor;
-                    //$LogSearcher.insertKeyword(index, tagList.get(index).keyword, tagList.get(index).color);
+                    tagList.get(index).keyword = keyword.trim();
+                    tagList.get(index).color = keywordColor;
+                    $LogSearcher.insertKeyword(index, tagList.get(index).keyword, tagList.get(index).color);
                 }
 
                 onSigRemove: {
-                    //$LogSearcher.removeKeyword(index);
+                    $LogSearcher.removeKeyword(index);
                 }
 
                 onSigAccepted: {
-                    //if(index === tagList.count - 1) {
-                    //    $LogSearcher.insertKeyword(-1, "", "");
-                    //}
+                    if(index === tagList.count - 1) {
+                        $LogSearcher.insertKeyword(-1, "", "");
+                    }
                 }
             }
         }

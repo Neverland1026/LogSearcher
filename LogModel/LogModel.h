@@ -1,4 +1,4 @@
-#ifndef LOGMODEL_H
+﻿#ifndef LOGMODEL_H
 #define LOGMODEL_H
 
 #include <QAbstractListModel>
@@ -15,6 +15,7 @@ public:
 
 public slots:
     void appendLog(const QString &log);
+    void clearAll();
 
 private:
     QStringList m_logs;

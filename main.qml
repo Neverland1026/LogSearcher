@@ -32,7 +32,7 @@ ApplicationWindow {
                        window.requestActivate();
                        if (drop.hasUrls) {
                            var fullPath = drop.urls[0];
-                           $LogSearcher.search(fullPath);
+                           $LogSearcher.openLog(fullPath);
                            window.title = "LogSearcher" + "  -  " + fullPath.toString().substring(8, fullPath.toString().length);
                        }
                    }
@@ -43,7 +43,6 @@ ApplicationWindow {
         target: $LogSearcher
 
         function onAddKeywordFinish(keyword, color) {
-            console.log("__Release__ 000", keyword, color)
             keywordTagContainer.append(keyword, color);
         }
 
@@ -52,7 +51,7 @@ ApplicationWindow {
         }
 
         function onLineNumWidth(width) {
-            logPanel1.lineNumWidth = logPanel2.lineNumWidth = width;
+            logPanel.lineNumWidth = resultPanel.lineNumWidth = width;
         }
 
         function onLoadStart() {

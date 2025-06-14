@@ -26,6 +26,9 @@ public:
     // 设置 WId
     void setWId(WId winid);
 
+    // 设置日志对象
+    Q_INVOKABLE void setSearchModel(LogModel* model1, LogModel* model2);
+
     // 初始化
     Q_INVOKABLE void init();
 
@@ -35,11 +38,12 @@ public:
     // 删除关键字
     Q_INVOKABLE void removeKeyword(const int index);
 
-    // 开始查找
-    Q_INVOKABLE void search(const QString& filePath);
+    // 打开日志
+    Q_INVOKABLE void openLog(const QString& filePath);
+    Q_INVOKABLE void openLatestIndexLog(const int latestIndex);
 
-    // 设置日志对象
-    void setSearchModel(LogModel* model1, LogModel* model2);
+    // 查找指定关键字
+    Q_INVOKABLE void find(const QString& targetKeyword);
 
 protected:
 

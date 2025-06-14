@@ -15,23 +15,7 @@ QColor randomColorRGB_Safe()
 LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
     : QObject{parent}
 {
-    // 创建并启动工作线程
-    m_thread = new QThread(this);
-    m_logLoaderThread = new LogLoaderThread;
-    m_logLoaderThread->moveToThread(m_thread);
 
-    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, &LogLoaderThread::analyze);
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::lineNumWidth, this, [&](int width){ emit lineNumWidth(width); });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [&](const bool containKeyword, const QString log){
-        m_logModel->appendLog(log);
-        if(containKeyword)
-        {
-            m_resultModel->appendLog(log);
-        }
-    });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(); });
-    //QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);
-    //QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
 }
 
 LogSearcher::~LogSearcher()
@@ -45,6 +29,12 @@ void LogSearcher::setWId(WId winid)
     //    ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
     //                   HWND_TOPMOST, 0, 0, 0, 0,
     //                   SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+}
+
+void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2)
+{
+    m_logModel = model1;
+    m_resultModel = model2;
 }
 
 void LogSearcher::init()
@@ -86,14 +76,12 @@ void LogSearcher::insertKeyword(const int index, const QString& keyword, const Q
     {
         // 添加
         m_searchTarget[m_searchTarget.size()] = { keyword, finalColor };
-        //qDebug() << "LogSearcher::insertKeyword [ Add ]" << m_searchTarget;
         emit addKeywordFinish(keyword.isEmpty() ? "     " : keyword, finalColor);
     }
     else
     {
         // 修改
         m_searchTarget[index] = { keyword, finalColor };
-        //qDebug() << "LogSearcher::insertKeyword [ Modify ]" << m_searchTarget;
     }
 
     refreshSettings__();
@@ -109,7 +97,7 @@ void LogSearcher::removeKeyword(const int index)
     //qDebug() << "LogSearcher::removeKeyword" << m_searchTarget;
 }
 
-void LogSearcher::search(const QString& filePath)
+void LogSearcher::openLog(const QString& filePath)
 {
     // remove "file:///"
     QString convertedFilepath = filePath;
@@ -118,6 +106,25 @@ void LogSearcher::search(const QString& filePath)
     {
         convertedFilepath = convertedFilepath.mid(prefix.size());
     }
+
+    qDebug() << "LogSearcher::openLog [" << convertedFilepath << "]";
+
+    // 创建并启动工作线程
+    m_thread = new QThread(this);
+    m_logLoaderThread = new LogLoaderThread;
+    m_logLoaderThread->moveToThread(m_thread);
+    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, &LogLoaderThread::analyze);
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::lineNumWidth, this, [&](int width){ emit lineNumWidth(width); });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [&](const bool containKeyword, const QString log){
+        m_logModel->appendLog(log);
+        if(containKeyword)
+        {
+            m_resultModel->appendLog(log);
+        }
+    });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(); });
+    QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);
+    QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
 
     // 设置查询属性
     m_logLoaderThread->setTargetLog(convertedFilepath);
@@ -128,15 +135,46 @@ void LogSearcher::search(const QString& filePath)
     }
     m_logLoaderThread->setTargetKeywordAndColor(kcm);
 
+    // 清空上一次结果
+    m_logModel->clearAll();
+    m_resultModel->clearAll();
+
     // 开始查询
     emit loadStart();
     m_thread->start();
 }
 
-void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2)
+void LogSearcher::openLatestIndexLog(const int latestIndex)
 {
-    m_logModel = model1;
-    m_resultModel = model2;
+    const QString prefix = "ScanService";
+    QDir dir("C:/Users/Neverland_LY/Desktop/");
+    if (!dir.exists())
+    {
+        return;
+    }
+
+    dir.setFilter(QDir::Files);
+    QFileInfoList fileInfoList = dir.entryInfoList();
+
+    QMap<QDateTime, QString> filePathMap;
+    for (const QFileInfo &fileInfo : fileInfoList)
+    {
+        if (fileInfo.fileName().startsWith(prefix, Qt::CaseInsensitive))
+        {
+            filePathMap[fileInfo.lastModified()] = fileInfo.filePath();
+        }
+    }
+
+    if(filePathMap.size() > latestIndex)
+    {
+        const auto iter = std::next(filePathMap.begin(), filePathMap.size() - 1 - latestIndex);
+        openLog(iter.value());
+    }
+}
+
+void LogSearcher::find(const QString& targetKeyword)
+{
+    qDebug() << "__find__" << targetKeyword;
 }
 
 void LogSearcher::refreshSettings__()
