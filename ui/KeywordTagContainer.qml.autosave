@@ -33,7 +33,7 @@ Rectangle {
     // 使用 Flow 管理标签
     Flow {
         anchors.fill: root
-        //anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenter: parent.verticalCenter
         spacing: 1
         flow: Flow.LeftToRight
 

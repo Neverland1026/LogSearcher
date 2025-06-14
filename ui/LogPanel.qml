@@ -26,7 +26,7 @@ Rectangle {
         anchors.fill: parent
         model: logModel  // 绑定C++模型
         anchors.margins: 10
-        cacheBuffer: height * 2
+        cacheBuffer: 2000
 
         //asynchronous: true
 
@@ -77,7 +77,7 @@ Rectangle {
                 //wrapMode: TextEdit.Wrap
 
                 onSelectedTextChanged: {
-                    console.log("textEdit.selectedText = ", selectedText);
+                    //console.log("textEdit.selectedText = ", selectedText);
                 }
             }
         }

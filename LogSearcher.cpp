@@ -32,35 +32,6 @@ LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
     QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(); });
     //QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);
     //QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
-
-    // 配置文件
-    QtConcurrent::run([&](){
-        QThread::msleep(500);
-
-        QString config = {};
-        if(!QFileInfo::exists(m_settingsPath))
-        {
-            const QString keyword = "__Default__";
-            QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
-            settings.setValue("Global/Keywords", keyword);
-            settings.sync();
-
-            config.push_back(keyword + ";");
-        }
-        else
-        {
-            QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
-            config = settings.value("Global/Keywords").toString();
-        }
-
-        QStringList keywords = config.split(";");
-        keywords.removeAll("");
-
-        for(int i = 0; i < keywords.size(); ++i)
-        {
-            //insertKeyword(-1, keywords[i], randomColorRGB_Safe().name());
-        }
-    });
 }
 
 LogSearcher::~LogSearcher()
@@ -76,6 +47,33 @@ void LogSearcher::setWId(WId winid)
     //                   SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
 
+void LogSearcher::init()
+{
+    QString config = {};
+    if(!QFileInfo::exists(m_settingsPath))
+    {
+        const QString keyword = "__Default__";
+        QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
+        settings.setValue("Global/Keywords", keyword);
+        settings.sync();
+
+        config.push_back(keyword + ";");
+    }
+    else
+    {
+        QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
+        config = settings.value("Global/Keywords").toString();
+    }
+
+    QStringList keywords = config.split(";");
+    keywords.removeAll("");
+
+    for(int i = 0; i < keywords.size(); ++i)
+    {
+        insertKeyword(-1, keywords[i], randomColorRGB_Safe().name());
+    }
+}
+
 void LogSearcher::insertKeyword(const int index, const QString& keyword, const QString& color)
 {
     QString finalColor = color;
@@ -88,14 +86,14 @@ void LogSearcher::insertKeyword(const int index, const QString& keyword, const Q
     {
         // 添加
         m_searchTarget[m_searchTarget.size()] = { keyword, finalColor };
-        qDebug() << "LogSearcher::insertKeyword [ Add ]" << m_searchTarget;
+        //qDebug() << "LogSearcher::insertKeyword [ Add ]" << m_searchTarget;
         emit addKeywordFinish(keyword.isEmpty() ? "     " : keyword, finalColor);
     }
     else
     {
         // 修改
         m_searchTarget[index] = { keyword, finalColor };
-        qDebug() << "LogSearcher::insertKeyword [ Modify ]" << m_searchTarget;
+        //qDebug() << "LogSearcher::insertKeyword [ Modify ]" << m_searchTarget;
     }
 
     refreshSettings__();
@@ -108,7 +106,7 @@ void LogSearcher::removeKeyword(const int index)
 
     emit removeKeywordFinish(index);
 
-    qDebug() << "LogSearcher::removeKeyword" << m_searchTarget;
+    //qDebug() << "LogSearcher::removeKeyword" << m_searchTarget;
 }
 
 void LogSearcher::search(const QString& filePath)

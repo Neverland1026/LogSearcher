@@ -26,6 +26,9 @@ public:
     // 设置 WId
     void setWId(WId winid);
 
+    // 初始化
+    Q_INVOKABLE void init();
+
     // 添加关键字
     Q_INVOKABLE void insertKeyword(const int index, const QString& keyword, const QString& color);
 

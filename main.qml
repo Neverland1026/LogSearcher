@@ -38,25 +38,12 @@ ApplicationWindow {
                    }
     }
 
-    // 加载进度
-    BusyIndicator {
-        id: busyIndicator
-        anchors.centerIn: parent
-        width: 200; height: width
-        visible: false
-        running: true
-        background: Rectangle {
-            anchors.fill: parent
-            radius: parent.width
-            color: "steelblue"
-        }
-    }
-
     // C++ 消息响应
     Connections {
         target: $LogSearcher
 
         function onAddKeywordFinish(keyword, color) {
+            console.log("__Release__ 000", keyword, color)
             keywordTagContainer.append(keyword, color);
         }
 
@@ -69,11 +56,14 @@ ApplicationWindow {
         }
 
         function onLoadStart() {
-            busyIndicator.visible = true;
+
         }
 
         function onLoadFinish() {
-            busyIndicator.visible = false;
+
         }
     }
+
+    Timer { id: timer; running: false; interval: 2000; onTriggered: $LogSearcher.init(); }
+    Component.onCompleted: timer.start()
 }
