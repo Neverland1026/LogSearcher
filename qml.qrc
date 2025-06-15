@@ -8,5 +8,6 @@
         <file>ui/LogPanel.qml</file>
         <file>ui/KeywordTagContainer.qml</file>
         <file>ui/RightMenu.qml</file>
+        <file>ui/FindResultWindow.qml</file>
     </qresource>
 </RCC>

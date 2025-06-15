@@ -1,6 +1,5 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
-import Qt.labs.settings 1.1
 import "./ui"
 
 ApplicationWindow {
@@ -9,6 +8,10 @@ ApplicationWindow {
     width: Screen.desktopAvailableWidth / 4 * 3
     height: Screen.desktopAvailableHeight / 4 * 3
     title: "LogSearcher"
+
+    // 搜索窗口
+    property FindResultWindow findResultWindow: null
+    property bool findResultWindowAlreadyCreated: false
 
     // 背景
     Rectangle { anchors.fill: parent; color: "#1E1E1E"; }
@@ -65,6 +68,28 @@ ApplicationWindow {
 
         function onLoadFinish() {
 
+        }
+
+        function onFindFinish(targetKeyword) {
+            if(!findResultWindowAlreadyCreated) {
+                var component = Qt.createComponent("qrc:/ui/FindResultWindow.qml");
+                if (component.status === Component.Ready) {
+                    findResultWindow = component.createObject(window);
+                    findResultWindow.show();
+
+                    findResultWindowAlreadyCreated = true;
+
+                    // 连接新窗口的信号到主窗口的槽
+                    findResultWindow.sigPositionViewAtIndex.connect(function cb(index) {
+                        console.log("__FIND__", index);
+                    });
+                    findResultWindow.sigClose.connect(function cb() {
+                        findResultWindowAlreadyCreated = false;
+                    });
+                }
+            }
+
+            findResultWindow.title = "Find Result" + "  -  " + targetKeyword;
         }
     }
 

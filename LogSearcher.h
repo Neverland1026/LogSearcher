@@ -67,6 +67,9 @@ signals:
     // 结束加载
     void loadFinish();
 
+    // 查找结束
+    void findFinish(const QString& targetKeyword);
+
 private:
 
     // 窗口 WId

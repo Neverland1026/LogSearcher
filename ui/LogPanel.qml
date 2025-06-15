@@ -87,18 +87,40 @@ Rectangle {
             }
         }
 
-        ScrollBar.vertical: ScrollBar {
-            policy: ScrollBar.AsNeeded
+//        ScrollBar.vertical: ScrollBar {
+//            policy: ScrollBar.AsNeeded
+//        }
+//        //ScrollBar.horizontal: ScrollBar {
+//        //    policy: ScrollBar.AsNeeded
+//        //}
+
+
+        ScrollIndicator.vertical: ScrollIndicator {
+            id: indicator
+            parent: listView
+            anchors {
+                top: listView.top
+                right: listView.right
+                bottom: listView.bottom
+            }
+            width: 100
+
+            contentItem: Rectangle {
+                implicitWidth: 6
+                radius: width / 2
+                //color: indicator.pressed ? "#555555" : "#888888"
+                color: indicator.pressed ? "yellow" : "yellow"
+                opacity: 0.7
+            }
         }
-        //ScrollBar.horizontal: ScrollBar {
-        //    policy: ScrollBar.AsNeeded
-        //}
+
+
 
         // 拦截滚轮事件
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.NoButton | Qt.RightButton
-            onWheel: {
+            onWheel: (wheel) => {
                 if (wheel.modifiers & Qt.ControlModifier) {
                     dynamicFontSize += (wheel.angleDelta.y > 0) ? 1 : -1;
                     dynamicFontSize = Math.min(24, Math.max(8, dynamicFontSize));

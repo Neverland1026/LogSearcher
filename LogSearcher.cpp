@@ -177,6 +177,8 @@ void LogSearcher::openLatestIndexLog(const int latestIndex)
 void LogSearcher::find(const QString& targetKeyword)
 {
     qDebug() << "__find__" << targetKeyword;
+
+    emit findFinish(targetKeyword);
 }
 
 void LogSearcher::refreshSettings__()
