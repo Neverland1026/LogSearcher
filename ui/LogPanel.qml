@@ -88,24 +88,24 @@ Rectangle {
                     console.log(root.selectedText)
                 }
 
-                MouseArea {
-                    anchors.fill: parent
-                    acceptedButtons: Qt.LeftButton
-                    propagateComposedEvents: true
+//                MouseArea {
+////                    anchors.fill: parent
+////                    acceptedButtons: Qt.LeftButton
+////                    propagateComposedEvents: true
 
-                    onDoubleClicked: {
-                        textEdit.selectWord();
-                        sigDoubleClicked(lineNumber);
-                    }
-
-//                    onClicked: {
-//                        //mouse.accepted = false;
+//                    onDoubleClicked: {
+//                        textEdit.selectWord();
+//                        sigDoubleClicked(lineNumber);
 //                    }
 
-//                    onPressed: {
-//                        textEdit.forceActiveFocus();
-//                    }
-                }
+//////                    onClicked: {
+//////                        //mouse.accepted = false;
+//////                    }
+
+//////                    onPressed: {
+//////                        textEdit.forceActiveFocus();
+//////                    }
+//                }
 
                 onActiveFocusChanged: {
                     backgroundRect.color = activeFocus ? "#1FFF0000" : "transparent";
