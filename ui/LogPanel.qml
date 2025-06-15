@@ -20,7 +20,7 @@ Rectangle {
 
     function positionViewAtIndex(lineNumber) {
         listView.positionViewAtIndex(lineNumber, ListView.Center);
-        listView.itemAtIndex(lineNumber).children[1].forceActiveFocus();
+        listView.itemAtIndex(lineNumber).children[0].forceActiveFocus();
     }
 
     signal sigDoubleClicked(var lineNumber);
@@ -43,6 +43,8 @@ Rectangle {
             width: listView.width
             height: dynamicFontSize * 1.1
 
+            Rectangle { id: backgroundRect; anchors.fill: parent }
+
             Text {
                 id: lineNumText
                 anchors {
@@ -54,7 +56,7 @@ Rectangle {
                 width: lineNumWidth * 12
                 text: lineNumber + 1
                 font.family: "Consolas"
-                font.bold: textEdit.activeFocus
+                font.bold: parent.activeFocus
                 font.pixelSize: dynamicFontSize
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -79,27 +81,34 @@ Rectangle {
                 selectedTextColor: "navy"
                 font.family: "Consolas"
                 font.pixelSize: dynamicFontSize
-                Rectangle {
-                    anchors.fill: parent
-                    color: textEdit.activeFocus ? "#1FFF0000" : "transparent"
-                    z: -1
-
-                    MouseArea {
-                        anchors.fill: parent
-                        propagateComposedEvents: true
-                        onPressed: textEdit.forceActiveFocus();
-                        onDoubleClicked: {
-                            console.log("1111111111111111111111111")
-                            textEdit.selectWordAt(mouse.x, mouse.y);
-                            textEdit.forceActiveFocus();
-                            sigDoubleClicked(lineNumber);
-                        }
-                    }
-                }
 
                 onSelectedTextChanged: {
                     root.selectedText = selectedText;
                     rightMenu.existToBeFindKeyword = (selectedText !== "");
+                    console.log(root.selectedText)
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton
+                    propagateComposedEvents: true
+
+                    onDoubleClicked: {
+                        textEdit.selectWord();
+                        sigDoubleClicked(lineNumber);
+                    }
+
+//                    onClicked: {
+//                        //mouse.accepted = false;
+//                    }
+
+//                    onPressed: {
+//                        textEdit.forceActiveFocus();
+//                    }
+                }
+
+                onActiveFocusChanged: {
+                    backgroundRect.color = activeFocus ? "#1FFF0000" : "transparent";
                 }
 
                 //MouseArea {
