@@ -1,4 +1,5 @@
 ﻿#include "LogUtils.h"
+#include <random>
 
 QMap<int, QPair<QString, QString>> LogUtils::m_searchTarget = {};
 QMap<QString, QString> LogUtils::m_formatedSearchTarget = {};
@@ -13,7 +14,10 @@ QMap<QString, QString> LogUtils::FormatedKeywordMap()
     m_formatedSearchTarget.clear();
     for(auto iter = m_searchTarget.begin(); iter != m_searchTarget.end(); ++iter)
     {
-        m_formatedSearchTarget[iter.value().first] = iter.value().second;
+        if(!iter.value().first.isEmpty())
+        {
+            m_formatedSearchTarget[iter.value().first] = iter.value().second;
+        }
     }
 
     return m_formatedSearchTarget;
@@ -21,6 +25,8 @@ QMap<QString, QString> LogUtils::FormatedKeywordMap()
 
 bool LogUtils::ConvertHTML(const QString& normalLine, QString& htmlLine, const QString findTarget /*= ""*/)
 {
+    FormatedKeywordMap();
+
     htmlLine = normalLine;
 
     QString keyword = "";
@@ -59,3 +65,21 @@ bool LogUtils::ConvertHTML(const QString& normalLine, QString& htmlLine, const Q
 
     return true;
 }
+
+QColor LogUtils::GenerateRandomColorRGB_Safe()
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 255);
+    const int random_number_1 = dis(gen);
+    const int random_number_2 = dis(gen);
+    const int random_number_3 = dis(gen);
+
+    QColor color;
+    do {
+        color = QColor(random_number_1 % 256, random_number_2 % 256, random_number_3 % 256);
+    } while (color.red() > 230 && color.green() > 230 && color.blue() > 230);
+
+    return color;
+}
+

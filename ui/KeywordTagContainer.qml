@@ -8,7 +8,7 @@ Rectangle {
     ListModel { id: tagList }
 
     function append(keyword, color) {
-        //tagList.append({ keyword: keyword, color: color });
+        tagList.append({ keyword: keyword, color: color });
     }
 
     function remove(index) {
@@ -46,9 +46,8 @@ Rectangle {
                 delBtnVisible: tagList.count > 1
 
                 onSigUpdate: {
-                    tagList.get(index).keyword = keyword.trim();
-                    tagList.get(index).color = keywordColor;
-                    $LogSearcher.insertKeyword(index, tagList.get(index).keyword, tagList.get(index).color);
+                    tagList.set(index, { keyword: keyword__.trim(), color: color__ });
+                    $LogSearcher.insertKeyword(index, keyword__.trim(), color__);
                 }
 
                 onSigRemove: {

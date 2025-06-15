@@ -2,23 +2,6 @@
 #include "LogAnalysis/LogUtils.h"
 #include <windows.h>
 
-QColor randomColorRGB_Safe()
-{
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, 255);
-    const int random_number_1 = dis(gen);
-    const int random_number_2 = dis(gen);
-    const int random_number_3 = dis(gen);
-
-    QColor color;
-    do {
-        color = QColor(random_number_1 % 256, random_number_2 % 256, random_number_3 % 256);
-    } while (color.red() > 230 && color.green() > 230 && color.blue() > 230);
-
-    return color;
-}
-
 LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
     : QObject{parent}
 {
@@ -68,7 +51,7 @@ void LogSearcher::init()
 
     for(int i = 0; i < keywords.size(); ++i)
     {
-        insertKeyword(-1, keywords[i], randomColorRGB_Safe().name());
+        insertKeyword(-1, keywords[i], LogUtils::GenerateRandomColorRGB_Safe().name());
     }
 }
 
@@ -77,7 +60,7 @@ void LogSearcher::insertKeyword(const int index, const QString& keyword, const Q
     QString finalColor = color;
     if(finalColor.isEmpty())
     {
-        finalColor = randomColorRGB_Safe().name();
+        finalColor = LogUtils::GenerateRandomColorRGB_Safe().name();
     }
 
     if(index < 0)
@@ -92,6 +75,8 @@ void LogSearcher::insertKeyword(const int index, const QString& keyword, const Q
         LogUtils::Keywords()[index] = { keyword, finalColor };
     }
 
+    openLog("", true);
+
     refreshSettings__();
 }
 
@@ -103,14 +88,20 @@ void LogSearcher::removeKeyword(const int index)
     emit removeKeywordFinish(index);
 }
 
-void LogSearcher::openLog(const QString& filePath)
+void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= false*/)
 {
-    // remove "file:///"
-    QString convertedFilepath = filePath;
-    const QString prefix = "file:///";
-    if(convertedFilepath.contains(prefix))
+    // 静态变量，以便用于二次加载
+    static QString s_convertedFilepath;
+    if(!repeatOpen)
     {
-        convertedFilepath = convertedFilepath.mid(prefix.size());
+        s_convertedFilepath = filePath;
+
+        // remove "file:///"
+        const QString prefix = "file:///";
+        if(s_convertedFilepath.contains(prefix))
+        {
+            s_convertedFilepath = s_convertedFilepath.mid(prefix.size());
+        }
     }
 
     // 创建并启动工作线程
@@ -141,7 +132,7 @@ void LogSearcher::openLog(const QString& filePath)
     //QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
 
     // 设置查询属性
-    m_logLoaderThread->setTargetLog(convertedFilepath);
+    m_logLoaderThread->setTargetLog(s_convertedFilepath);
     m_logLoaderThread->setTargetKeywordAndColor(LogUtils::FormatedKeywordMap());
 
     // 清空上一次结果

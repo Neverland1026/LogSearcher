@@ -41,7 +41,7 @@ public:
     Q_INVOKABLE void removeKeyword(const int index);
 
     // 打开日志
-    Q_INVOKABLE void openLog(const QString& filePath);
+    Q_INVOKABLE void openLog(const QString& filePath, const bool repeatOpen = false);
     Q_INVOKABLE void openLatestIndexLog(const int latestIndex);
 
     // 查找指定关键字

@@ -14,7 +14,7 @@ Rectangle {
     property alias keywordColor: colorRect.color
     property alias delBtnVisible: delBtnRect.visible
 
-    signal sigUpdate();
+    signal sigUpdate(var keyword__, var color__);
     signal sigRemove();
     signal sigAccepted();
 
@@ -66,7 +66,7 @@ Rectangle {
             selectionColor: "lightblue"
             selectedTextColor: "black"
             onAccepted: root.sigAccepted()
-            onTextEdited: root.sigUpdate()
+            onTextEdited: root.sigUpdate(textInput.text, colorRect.color)
         }
     }
 
@@ -104,9 +104,9 @@ Rectangle {
         //showAlphaChannel: false  // 显示透明度调节滑块
         modality: Qt.WindowModal // 设置为模态对话框
         onAccepted: {
-            console.log("你选择了颜色: " + colorDialog.selectedColor);
+            //console.log("你选择了颜色: " + colorDialog.selectedColor);
             colorRect.color = colorDialog.selectedColor;
-            root.sigUpdate();
+            root.sigUpdate(textInput.text, colorRect.color);
         }
         onRejected: {}
     }

@@ -2,6 +2,7 @@
 #define LOGUTILS_H
 
 #include <QMap>
+#include <QColor>
 
 class LogUtils
 {
@@ -15,6 +16,9 @@ public:
 
     // 将普通字符串转转化为HTML字符串
     static bool ConvertHTML(const QString& normalLine, QString& htmlLine, const QString findTarget = "");
+
+    // 生成随机色
+    static QColor GenerateRandomColorRGB_Safe();
 
 private:
 
