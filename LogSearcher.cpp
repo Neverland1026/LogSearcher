@@ -122,15 +122,25 @@ void LogSearcher::openLog(const QString& filePath)
     m_logLoaderThread = new LogLoaderThread;
     m_logLoaderThread->moveToThread(m_thread);
     QObject::connect(m_thread, &QThread::started, m_logLoaderThread, &LogLoaderThread::analyze);
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::lineNumWidth, this, [&](int width){ emit lineNumWidth(width); });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [&](const bool containKeyword, const QString log){
-        m_logModel->appendLog(log);
-        if(containKeyword)
-        {
-            m_resultModel->appendLog(log);
-            m_findModel->appendLog(log);
-        }
-    });
+    QObject::connect(m_logLoaderThread,
+                     &LogLoaderThread::lineNumWidth,
+                     this,
+                     [&](int width) {
+                         emit lineNumWidth(width);
+                     });
+    QObject::connect(m_logLoaderThread,
+                     &LogLoaderThread::newLogAvailable,
+                     this,
+                     [&](const bool containKeyword,
+                         const int lineIndex,
+                         const QString log) {
+                         m_logModel->appendLog(-1, log);
+                         if(containKeyword)
+                         {
+                             m_resultModel->appendLog(lineIndex, log);
+                             m_findModel->appendLog(lineIndex, log);
+                         }
+                     });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(); });
     QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);
     QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
@@ -147,6 +157,7 @@ void LogSearcher::openLog(const QString& filePath)
     // 清空上一次结果
     m_logModel->clearAll();
     m_resultModel->clearAll();
+    m_findModel->clearAll();
 
     // 开始查询
     emit loadStart();

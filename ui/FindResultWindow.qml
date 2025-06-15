@@ -7,6 +7,10 @@ Window {
     height: Screen.desktopAvailableHeight / 4
     title: "Find Result"
 
+    function setLineNumWidth(lineNumWidth) {
+        logPanel.lineNumWidth = lineNumWidth;
+    }
+
     signal sigPositionViewAtIndex(var index);
 
     signal sigClose();
@@ -15,7 +19,7 @@ Window {
     Rectangle { anchors.fill: parent; color: "white"; }
 
     // 搜索结果
-    LogPanel { anchors.fill: parent; /*logModel: $FindModel;*/ }
+    LogPanel { id: logPanel; anchors.fill: parent; logModel: $FindModel; }
 
     onClosing: { sigClose(); }
 }

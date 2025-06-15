@@ -18,6 +18,13 @@ Rectangle {
 
     property string selectedText: ""
 
+    function positionViewAtIndex(lineNumber) {
+        listView.positionViewAtIndex(lineNumber, ListView.Center);
+        listView.itemAtIndex(lineNumber).children[1].forceActiveFocus();
+    }
+
+    signal sigDoubleClicked(var lineNumber);
+
     ListView {
         id: listView
 
@@ -45,8 +52,9 @@ Rectangle {
                     bottom: parent.bottom
                 }
                 width: lineNumWidth * 12
-                text: index + 1
+                text: lineNumber + 1
                 font.family: "Consolas"
+                font.bold: textEdit.activeFocus
                 font.pixelSize: dynamicFontSize
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -54,6 +62,7 @@ Rectangle {
             }
 
             TextEdit {
+                id: textEdit
                 anchors {
                     left: lineNumText.right
                     leftMargin: 5
@@ -61,7 +70,7 @@ Rectangle {
                     top: parent.top
                     bottom: parent.bottom
                 }
-                text: display
+                text: lineContent
                 textFormat: TextEdit.RichText
                 verticalAlignment: Text.AlignVCenter
                 readOnly: true
@@ -72,13 +81,23 @@ Rectangle {
                 font.pixelSize: dynamicFontSize
                 Rectangle {
                     anchors.fill: parent
-                    color: parent.activeFocus ? "#1FFF0000" : "transparent"
+                    color: textEdit.activeFocus ? "#1FFF0000" : "transparent"
                     z: -1
                 }
 
                 onSelectedTextChanged: {
                     root.selectedText = selectedText;
                     rightMenu.existToBeFindKeyword = (selectedText !== "");
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    propagateComposedEvents: true
+                    onPressed: textEdit.forceActiveFocus();
+                    onDoubleClicked: {
+                        textEdit.forceActiveFocus();
+                        sigDoubleClicked(lineNumber);
+                    }
                 }
             }
         }

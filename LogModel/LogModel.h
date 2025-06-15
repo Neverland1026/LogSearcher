@@ -14,11 +14,12 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
 public slots:
-    void appendLog(const QString &log);
+    void appendLog(const int lineNumber, const QString& log);
     void clearAll();
 
 private:
-    QStringList m_logs;
+    QList<int> m_lineNumber = {};
+    QStringList m_logs = {};
 };
 
 #endif // LOGMODEL_H

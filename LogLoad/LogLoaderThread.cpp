@@ -90,7 +90,7 @@ void LogLoaderThread::process__()
     for(int i = 0; i < lines.size(); ++i)
     {
         const bool&& containKeyword = colorful__(lines[i]);
-        emit newLogAvailable(containKeyword, lines[i]);
+        emit newLogAvailable(containKeyword, i, lines[i]);
     }
 
     // 解析结束

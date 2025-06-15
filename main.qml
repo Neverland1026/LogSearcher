@@ -28,7 +28,11 @@ ApplicationWindow {
         SplitView {
             SplitView.fillHeight: true
             orientation: Qt.Horizontal
-            LogPanel { id: resultPanel; SplitView.fillWidth: true; logModel: $ResultModel; }
+            LogPanel { id: resultPanel; SplitView.fillWidth: true; logModel: $ResultModel;
+                onSigDoubleClicked: {
+                    logPanel.positionViewAtIndex(lineNumber);
+                }
+            }
             handle: Rectangle { implicitWidth: 1.5; color: "black"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeHorCursor; } }
             LogPanel { id: findPanel; implicitWidth: parent.width * 0.5; logModel: $FindModel; }
         }
@@ -76,6 +80,7 @@ ApplicationWindow {
                 var component = Qt.createComponent("qrc:/ui/FindResultWindow.qml");
                 if (component.status === Component.Ready) {
                     findResultWindow = component.createObject(window);
+                    findResultWindow.setLineNumWidth(logPanel.lineNumWidth);
                     findResultWindow.show();
 
                     findResultWindowAlreadyCreated = true;

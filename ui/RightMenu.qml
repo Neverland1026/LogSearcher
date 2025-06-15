@@ -48,7 +48,7 @@ Popup {
             width: parent.width
             height: 40
             radius: 3
-            color: mouseArea.containsMouse ? "#EEE9E9" : "#FFFAFA"
+            color: mouseArea.containsMouse ? "#E0E0E0" : "#F5F5F5"
             enabled: (index === 0 || index === 1) ? existToBeFindKeyword : true
             Row {
                 anchors.fill: parent

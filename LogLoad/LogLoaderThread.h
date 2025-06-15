@@ -24,7 +24,7 @@ signals:
 
     void lineNumWidth(int width);
 
-    void newLogAvailable(const bool containKeyword, const QString log);
+    void newLogAvailable(const bool containKeyword, const int lineIndex, const QString log);
 
     void loadFinish();
 
