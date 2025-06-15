@@ -32,6 +32,9 @@ Rectangle {
 
         boundsBehavior: Flickable.StopAtBounds
         maximumFlickVelocity: 1200
+        //flickDeceleration: 5000
+
+        clip: true
 
         delegate:  Item {
             width: listView.width
@@ -52,7 +55,7 @@ Rectangle {
                 //font.bold: true
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-                color: "white"
+                color: "black"
             }
 
             TextEdit {
@@ -76,7 +79,7 @@ Rectangle {
                 //wrapMode: TextEdit.Wrap
                 Rectangle {
                     anchors.fill: parent
-                    color: parent.activeFocus ? "#7FFF0000" : "transparent"
+                    color: parent.activeFocus ? "#1FFF0000" : "transparent"
                     z: -1
                 }
 
@@ -87,48 +90,29 @@ Rectangle {
             }
         }
 
-//        ScrollBar.vertical: ScrollBar {
-//            policy: ScrollBar.AsNeeded
-//        }
-//        //ScrollBar.horizontal: ScrollBar {
-//        //    policy: ScrollBar.AsNeeded
-//        //}
+        ScrollBar.vertical: ScrollBar {
+            id: vbar
+            policy: ScrollBar.AsNeeded
+            anchors.right: listView.right
 
-
-        ScrollIndicator.vertical: ScrollIndicator {
-            id: indicator
-            parent: listView
-            anchors {
-                top: listView.top
-                right: listView.right
-                bottom: listView.bottom
-            }
-            width: 100
-
-            contentItem: Rectangle {
-                implicitWidth: 6
-                radius: width / 2
-                //color: indicator.pressed ? "#555555" : "#888888"
-                color: indicator.pressed ? "yellow" : "yellow"
-                opacity: 0.7
+            background: Rectangle {
+                color: "transparent"
             }
         }
-
-
 
         // 拦截滚轮事件
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.NoButton | Qt.RightButton
             onWheel: (wheel) => {
-                if (wheel.modifiers & Qt.ControlModifier) {
-                    dynamicFontSize += (wheel.angleDelta.y > 0) ? 1 : -1;
-                    dynamicFontSize = Math.min(24, Math.max(8, dynamicFontSize));
-                    wheel.accepted = true;
-                } else {
-                    wheel.accepted = false;
-                }
-            }
+                         if (wheel.modifiers & Qt.ControlModifier) {
+                             dynamicFontSize += (wheel.angleDelta.y > 0) ? 1 : -1;
+                             dynamicFontSize = Math.min(24, Math.max(8, dynamicFontSize));
+                             wheel.accepted = true;
+                         } else {
+                             wheel.accepted = false;
+                         }
+                     }
 
             onPressed: (mouse) => {
                            if(mouse.button === Qt.LeftButton) {

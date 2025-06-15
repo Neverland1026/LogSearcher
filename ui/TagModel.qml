@@ -28,9 +28,9 @@ Rectangle {
         width: colorRect.width + 20 + textInput.width + 20
         height: parent.height - 10
         anchors.centerIn: parent
-        color: "#1E1E1E"
+        color: "white"
         radius: 5
-        //border.color: /*"#7F000000"*/"yellow"; border.width: 1;
+        //border.color: "black"; border.width: 0.5;
 
         // 选择颜色
         Rectangle {
@@ -42,7 +42,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 10
             anchors.verticalCenter: parent.verticalCenter
-            border.color: "#000000"; border.width: 1;
+            //border.color: "#000000"; border.width: 1;
 
             MouseArea {
                 anchors.fill: parent
@@ -61,8 +61,7 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             font.family: "Consolas"
             font.pointSize: 14
-            //font.bold: true
-            color: "white"
+            color: "black"
             selectByMouse: true
             selectionColor: "lightblue"
             selectedTextColor: "black"
@@ -74,7 +73,7 @@ Rectangle {
     // 删除标签
     Rectangle {
         id: delBtnRect
-        width: 20
+        width: 10
         height: width
         visible: false
         color: /*contentRect.color*/"transparent"
@@ -102,7 +101,6 @@ Rectangle {
     ColorDialog {
         id: colorDialog
         title: "请选择颜色"
-        //color: "red"
         //showAlphaChannel: false  // 显示透明度调节滑块
         modality: Qt.WindowModal // 设置为模态对话框
         onAccepted: {

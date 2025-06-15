@@ -4,9 +4,17 @@
 
 QColor randomColorRGB_Safe()
 {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 255);
+    const int random_number_1 = dis(gen);
+    const int random_number_2 = dis(gen);
+    const int random_number_3 = dis(gen);
+
     QColor color;
     do {
-        color = QColor(rand() % 256, rand() % 256, rand() % 256);
+        color = QColor(random_number_1 % 256, random_number_2 % 256, random_number_3 % 256);
+        color = QColor(rand() % 256, rand()  % 256, rand()  % 256);
     } while (color.red() > 230 && color.green() > 230 && color.blue() > 230);
 
     return color;
@@ -26,9 +34,9 @@ void LogSearcher::setWId(WId winid)
 {
     m_winId = winid;
 
-    //    ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
-    //                   HWND_TOPMOST, 0, 0, 0, 0,
-    //                   SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+    ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
+                   HWND_TOPMOST, 0, 0, 0, 0,
+                   SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
 
 void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2, LogModel* model3)

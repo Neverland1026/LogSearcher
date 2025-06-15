@@ -14,7 +14,7 @@ ApplicationWindow {
     property bool findResultWindowAlreadyCreated: false
 
     // 背景
-    Rectangle { anchors.fill: parent; color: "#1E1E1E"; }
+    Rectangle { anchors.fill: parent; color: "white"; }
 
     // 容器用于存放动态创建的标签
     KeywordTagContainer { id: keywordTagContainer; anchors { top: parent.top; left: parent.left; right: parent.right; }}
@@ -24,12 +24,12 @@ ApplicationWindow {
         anchors { left: parent.left; right: parent.right; top: keywordTagContainer.bottom; bottom: parent.bottom; margins: 5}
         orientation: Qt.Vertical
         LogPanel { id: logPanel; implicitHeight: parent.height * 0.7; logModel: $LogModel; }
-        handle: Rectangle { implicitHeight: 1; color: "white"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; } }
+        handle: Rectangle { implicitHeight: 1; color: "black"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; } }
         SplitView {
             SplitView.fillHeight: true
             orientation: Qt.Horizontal
             LogPanel { id: resultPanel; SplitView.fillWidth: true; logModel: $ResultModel; }
-            handle: Rectangle { implicitWidth: 1.5; color: "white"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeHorCursor; } }
+            handle: Rectangle { implicitWidth: 1.5; color: "black"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeHorCursor; } }
             LogPanel { id: findPanel; implicitWidth: parent.width * 0.5; logModel: $FindModel; }
         }
     }
@@ -59,7 +59,8 @@ ApplicationWindow {
         }
 
         function onLineNumWidth(width) {
-            logPanel.lineNumWidth = resultPanel.lineNumWidth = width;
+            var minWidth = Math.max(width, 5);
+            logPanel.lineNumWidth = resultPanel.lineNumWidth = minWidth;
         }
 
         function onLoadStart() {

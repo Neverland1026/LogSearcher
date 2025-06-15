@@ -48,7 +48,7 @@ Popup {
             width: parent.width
             height: 40
             radius: 3
-            color: mouseArea.containsMouse ? "#666666" : "#363636"
+            color: mouseArea.containsMouse ? "#EEE9E9" : "#FFFAFA"
             enabled: (index === 0 || index === 1) ? existToBeFindKeyword : true
             Row {
                 anchors.fill: parent
@@ -60,7 +60,7 @@ Popup {
                     height: parent.height
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: enabled ? "white" : "#AFAFAF"
+                    color: enabled ? "black" : "#4F000000"
                     font { pointSize: 13; bold: true; family: "Consola"; }
                     text: model.text
                 }

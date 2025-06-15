@@ -12,7 +12,7 @@ Window {
     signal sigClose();
 
     // 背景
-    Rectangle { anchors.fill: parent; color: "#1E1E1E"; }
+    Rectangle { anchors.fill: parent; color: "white"; }
 
     // 搜索结果
     LogPanel { anchors.fill: parent; /*logModel: $FindModel;*/ }

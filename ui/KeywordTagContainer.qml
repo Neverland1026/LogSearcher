@@ -18,7 +18,7 @@ Rectangle {
     height: {
         var baseHeigght = 38;
 
-        var extraHeight = 60;
+        var extraHeight = 45;
         var itemBegin = repeater.itemAt(0);
         var itemEnd = repeater.itemAt(repeater.count - 1);
         if(itemBegin && itemEnd) {
@@ -28,7 +28,7 @@ Rectangle {
         return (baseHeigght + extraHeight);
     }
     width: 400
-    color: "#50FFFFFF"
+    color: "#1A000000"
 
     // 使用 Flow 管理标签
     Flow {
