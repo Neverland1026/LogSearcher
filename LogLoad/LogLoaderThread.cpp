@@ -79,8 +79,8 @@ void LogLoaderThread::process__()
             return false;
         }
 
-        line.insert(insertIndex + keyword.size(), QString("%1").arg("</font>"));
-        line.insert(insertIndex, QString("<font color='%1>").arg(color));
+        line.insert(insertIndex + keyword.size(), QString("%1").arg("</b></font>"));
+        line.insert(insertIndex, QString("<font color='%1'><b>").arg(color));
         line = QString("<font color='#000000'>%1</font>").arg(line);
 
         return true;
