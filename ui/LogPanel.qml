@@ -83,6 +83,18 @@ Rectangle {
                     anchors.fill: parent
                     color: textEdit.activeFocus ? "#1FFF0000" : "transparent"
                     z: -1
+
+                    MouseArea {
+                        anchors.fill: parent
+                        propagateComposedEvents: true
+                        onPressed: textEdit.forceActiveFocus();
+                        onDoubleClicked: {
+                            console.log("1111111111111111111111111")
+                            textEdit.selectWordAt(mouse.x, mouse.y);
+                            textEdit.forceActiveFocus();
+                            sigDoubleClicked(lineNumber);
+                        }
+                    }
                 }
 
                 onSelectedTextChanged: {
@@ -90,15 +102,16 @@ Rectangle {
                     rightMenu.existToBeFindKeyword = (selectedText !== "");
                 }
 
-                MouseArea {
-                    anchors.fill: parent
-                    propagateComposedEvents: true
-                    onPressed: textEdit.forceActiveFocus();
-                    onDoubleClicked: {
-                        textEdit.forceActiveFocus();
-                        sigDoubleClicked(lineNumber);
-                    }
-                }
+                //MouseArea {
+                //    anchors.fill: parent
+                //    propagateComposedEvents: true
+                //    onPressed: textEdit.forceActiveFocus();
+                //    onDoubleClicked: {
+                //        textEdit.selectWordAt(mouse.x, mouse.y);
+                //        textEdit.forceActiveFocus();
+                //        sigDoubleClicked(lineNumber);
+                //    }
+                //}
             }
         }
 

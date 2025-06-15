@@ -87,7 +87,7 @@ ApplicationWindow {
 
                     // 连接新窗口的信号到主窗口的槽
                     findResultWindow.sigPositionViewAtIndex.connect(function cb(index) {
-                        console.log("__FIND__", index);
+                        logPanel.positionViewAtIndex(lineNumber);
                     });
                     findResultWindow.sigClose.connect(function cb() {
                         findResultWindowAlreadyCreated = false;

@@ -11,7 +11,7 @@ Window {
         logPanel.lineNumWidth = lineNumWidth;
     }
 
-    signal sigPositionViewAtIndex(var index);
+    signal sigPositionViewAtIndex(var lineNumber);
 
     signal sigClose();
 
@@ -19,7 +19,11 @@ Window {
     Rectangle { anchors.fill: parent; color: "white"; }
 
     // 搜索结果
-    LogPanel { id: logPanel; anchors.fill: parent; logModel: $FindModel; }
+    LogPanel { id: logPanel; anchors.fill: parent; logModel: $FindModel;
+        onSigDoubleClicked: {
+            sigPositionViewAtIndex(lineNumber);
+        }
+    }
 
     onClosing: { sigClose(); }
 }
