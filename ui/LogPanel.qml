@@ -88,6 +88,7 @@ Rectangle {
                 }
 
                 TapHandler {
+                    cursorShape: Qt.BusyCursor
                     onDoubleTapped: {
                         sigDoubleClicked(lineNumber);
                     }

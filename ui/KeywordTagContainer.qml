@@ -8,7 +8,7 @@ Rectangle {
     ListModel { id: tagList }
 
     function append(keyword, color) {
-        tagList.append({ keyword: keyword, color: color });
+        //tagList.append({ keyword: keyword, color: color });
     }
 
     function remove(index) {

@@ -33,6 +33,7 @@ void LogModel::appendLog(const int lineNumber, const QString& log) {
 void LogModel::clearAll()
 {
     beginResetModel();
+    m_lineNumber.resize(0);
     m_logs.resize(0);
     endResetModel();
 }
