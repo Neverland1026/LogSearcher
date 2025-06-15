@@ -14,7 +14,6 @@ QColor randomColorRGB_Safe()
     QColor color;
     do {
         color = QColor(random_number_1 % 256, random_number_2 % 256, random_number_3 % 256);
-        //color = QColor(rand() % 256, rand()  % 256, rand()  % 256);
     } while (color.red() > 230 && color.green() > 230 && color.blue() > 230);
 
     return color;

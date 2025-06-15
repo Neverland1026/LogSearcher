@@ -18,10 +18,6 @@ Rectangle {
 
     property string selectedText: ""
 
-    function positionViewAtEnd() {
-        listView.positionViewAtEnd()
-    }
-
     ListView {
         id: listView
 
@@ -52,7 +48,6 @@ Rectangle {
                 text: index + 1
                 font.family: "Consolas"
                 font.pixelSize: dynamicFontSize
-                //font.bold: true
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 color: "black"
@@ -75,8 +70,6 @@ Rectangle {
                 selectedTextColor: "navy"
                 font.family: "Consolas"
                 font.pixelSize: dynamicFontSize
-                //font.bold: true
-                //wrapMode: TextEdit.Wrap
                 Rectangle {
                     anchors.fill: parent
                     color: parent.activeFocus ? "#1FFF0000" : "transparent"
@@ -91,10 +84,13 @@ Rectangle {
         }
 
         ScrollBar.vertical: ScrollBar {
-            id: vbar
             policy: ScrollBar.AsNeeded
-            anchors.right: listView.right
-
+            background: Rectangle {
+                color: "transparent"
+            }
+        }
+        ScrollBar.horizontal: ScrollBar {
+            policy: ScrollBar.AsNeeded
             background: Rectangle {
                 color: "transparent"
             }
@@ -149,4 +145,14 @@ Rectangle {
             $LogSearcher.openLatestIndexLog(1);
         }
     }
+
+    Keys.onPressed: (event) => {
+                        if ((event.key === Qt.Key_End) && (event.modifiers & Qt.ControlModifier)) {
+                            listView.positionViewAtEnd();
+                            event.accepted = true;
+                        } else if ((event.key === Qt.Key_Home) && (event.modifiers & Qt.ControlModifier)) {
+                            listView.positionViewAtBeginning();
+                            event.accepted = true;
+                        }
+                    }
 }

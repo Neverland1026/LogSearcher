@@ -94,11 +94,5 @@ ApplicationWindow {
         }
     }
 
-    Shortcut {
-        sequence: "Ctrl+End"
-        onActivated: console.log("Ctrl+End triggered")
-        onActivatedAmbiguously: console.log("Ctrl+End triggered")
-    }
-
     Component.onCompleted: $LogSearcher.init()
 }
