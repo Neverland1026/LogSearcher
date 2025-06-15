@@ -20,7 +20,7 @@ Rectangle {
 
     function positionViewAtIndex(lineNumber) {
         listView.positionViewAtIndex(lineNumber, ListView.Center);
-        listView.itemAtIndex(lineNumber).children[0].forceActiveFocus();
+        listView.itemAtIndex(lineNumber).forceActiveFocus();
     }
 
     signal sigDoubleClicked(var lineNumber);
@@ -85,42 +85,17 @@ Rectangle {
                 onSelectedTextChanged: {
                     root.selectedText = selectedText;
                     rightMenu.existToBeFindKeyword = (selectedText !== "");
-                    console.log(root.selectedText)
                 }
 
-//                MouseArea {
-////                    anchors.fill: parent
-////                    acceptedButtons: Qt.LeftButton
-////                    propagateComposedEvents: true
-
-//                    onDoubleClicked: {
-//                        textEdit.selectWord();
-//                        sigDoubleClicked(lineNumber);
-//                    }
-
-//////                    onClicked: {
-//////                        //mouse.accepted = false;
-//////                    }
-
-//////                    onPressed: {
-//////                        textEdit.forceActiveFocus();
-//////                    }
-//                }
+                TapHandler {
+                    onDoubleTapped: {
+                        sigDoubleClicked(lineNumber);
+                    }
+                }
 
                 onActiveFocusChanged: {
                     backgroundRect.color = activeFocus ? "#1FFF0000" : "transparent";
                 }
-
-                //MouseArea {
-                //    anchors.fill: parent
-                //    propagateComposedEvents: true
-                //    onPressed: textEdit.forceActiveFocus();
-                //    onDoubleClicked: {
-                //        textEdit.selectWordAt(mouse.x, mouse.y);
-                //        textEdit.forceActiveFocus();
-                //        sigDoubleClicked(lineNumber);
-                //    }
-                //}
             }
         }
 
