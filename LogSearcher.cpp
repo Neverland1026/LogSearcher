@@ -1,5 +1,5 @@
 ﻿#include "LogSearcher.h"
-#include <QtConcurrent>
+#include "LogAnalysis/LogUtils.h"
 #include <windows.h>
 
 QColor randomColorRGB_Safe()
@@ -33,9 +33,9 @@ void LogSearcher::setWId(WId winid)
 {
     m_winId = winid;
 
-    ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
-                   HWND_TOPMOST, 0, 0, 0, 0,
-                   SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+    //    ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
+    //                   HWND_TOPMOST, 0, 0, 0, 0,
+    //                   SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
 
 void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2, LogModel* model3)
@@ -83,13 +83,13 @@ void LogSearcher::insertKeyword(const int index, const QString& keyword, const Q
     if(index < 0)
     {
         // 添加
-        m_searchTarget[m_searchTarget.size()] = { keyword, finalColor };
+        LogUtils::Keywords()[LogUtils::Keywords().size()] = { keyword, finalColor };
         emit addKeywordFinish(keyword.isEmpty() ? "     " : keyword, finalColor);
     }
     else
     {
         // 修改
-        m_searchTarget[index] = { keyword, finalColor };
+        LogUtils::Keywords()[index] = { keyword, finalColor };
     }
 
     refreshSettings__();
@@ -97,12 +97,10 @@ void LogSearcher::insertKeyword(const int index, const QString& keyword, const Q
 
 void LogSearcher::removeKeyword(const int index)
 {
-    m_searchTarget.erase(std::next(m_searchTarget.begin(), index));
+    LogUtils::Keywords().erase(std::next(LogUtils::Keywords().begin(), index));
     refreshSettings__();
 
     emit removeKeywordFinish(index);
-
-    //qDebug() << "LogSearcher::removeKeyword" << m_searchTarget;
 }
 
 void LogSearcher::openLog(const QString& filePath)
@@ -114,8 +112,6 @@ void LogSearcher::openLog(const QString& filePath)
     {
         convertedFilepath = convertedFilepath.mid(prefix.size());
     }
-
-    qDebug() << "LogSearcher::openLog [" << convertedFilepath << "]";
 
     // 创建并启动工作线程
     m_thread = new QThread(this);
@@ -138,21 +134,15 @@ void LogSearcher::openLog(const QString& filePath)
                          if(containKeyword)
                          {
                              m_resultModel->appendLog(lineIndex, log);
-                             m_findModel->appendLog(lineIndex, log);
                          }
                      });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(); });
-    QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);
-    QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
+    //QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);
+    //QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
 
     // 设置查询属性
     m_logLoaderThread->setTargetLog(convertedFilepath);
-    QMap<QString, QString> kcm;
-    for(auto iter = m_searchTarget.begin(); iter != m_searchTarget.end(); ++iter)
-    {
-        kcm[iter.value().first] = iter.value().second;
-    }
-    m_logLoaderThread->setTargetKeywordAndColor(kcm);
+    m_logLoaderThread->setTargetKeywordAndColor(LogUtils::FormatedKeywordMap());
 
     // 清空上一次结果
     m_logModel->clearAll();
@@ -194,16 +184,49 @@ void LogSearcher::openLatestIndexLog(const int latestIndex)
 
 void LogSearcher::find(const QString& targetKeyword)
 {
-    qDebug() << "__find__" << targetKeyword;
+    m_elapsedTimer.start();
 
-    emit findFinish(targetKeyword);
+    watcher.disconnect();
+    QObject::connect(&watcher, &QFutureWatcher<LogSearcher::LineNumber_Line_Pair>::finished, &watcher, [this, targetKeyword](){
+        m_findModel->clearAll();
+        for (const LogSearcher::LineNumber_Line_Pair& partialResult : watcher.future().results())
+        {
+            if(!partialResult.second.isEmpty())
+            {
+                QString dstLine;
+                LogUtils::ConvertHTML(partialResult.second, dstLine, targetKeyword);
+                m_findModel->appendLog(partialResult.first, dstLine);
+            }
+        }
+        emit findFinish(targetKeyword, m_findModel->rowCount(), m_elapsedTimer.elapsed());
+    });
+
+    // 启动并行搜索
+    const QVector<QPair<int, QString>> lines = m_logLoaderThread->getAllLines();
+    QFuture<LogSearcher::LineNumber_Line_Pair> future = QtConcurrent::mapped(
+        lines,
+        [targetKeyword, this](const LineNumber_Line_Pair& line) { return find__(line, targetKeyword); }
+        );
+
+    watcher.setFuture(future);
+}
+
+LogSearcher::LineNumber_Line_Pair LogSearcher::find__(const LineNumber_Line_Pair& line, const QString &keyword)
+{
+    if (line.second.contains(keyword))
+    {
+        return line;
+    }
+
+    return LineNumber_Line_Pair{};
 }
 
 void LogSearcher::refreshSettings__()
 {
     std::async(std::launch::async, [&](){
         QString keywords = "";
-        for(auto iter = m_searchTarget.begin(); iter != m_searchTarget.end(); ++iter)
+        const QMap<int, QPair<QString, QString>>& keywordMap = LogUtils::Keywords();
+        for(auto iter = keywordMap.begin(); iter != keywordMap.end(); ++iter)
         {
             if(!iter.value().first.isEmpty())
             {

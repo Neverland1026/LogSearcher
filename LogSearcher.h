@@ -4,11 +4,13 @@
 #include "qdir.h"
 #include <QObject>
 #include <QMap>
+#include <QtConcurrent>
 #include <QFileSystemWatcher>
 #include <QWindow>
 #include <QFileInfo>
 #include <QDebug>
 #include <QVector>
+#include <QElapsedTimer>
 #include <thread>
 
 #include "LogModel/LogModel.h"
@@ -47,7 +49,11 @@ public:
 
 protected:
 
-    // 跟新配置文件
+    // 查找
+    using LineNumber_Line_Pair = QPair<int, QString>;
+    LineNumber_Line_Pair find__(const LineNumber_Line_Pair& line, const QString &keyword);
+
+    // 更新配置文件
     void refreshSettings__();
 
 signals:
@@ -68,7 +74,7 @@ signals:
     void loadFinish();
 
     // 查找结束
-    void findFinish(const QString& targetKeyword);
+    void findFinish(const QString& targetKeyword, const int findCount, const int findTimeCost);
 
 private:
 
@@ -78,9 +84,6 @@ private:
     // 配置文件路径
     const QString m_settingsPath = "./settings.ini";
 
-    // 查询关键字、关键字索引及对应前景色
-    QMap<int, QPair<QString, QString>> m_searchTarget = {};
-
     // 日志对象模型
     LogModel* m_logModel = nullptr;
     LogModel* m_resultModel = nullptr;
@@ -89,6 +92,10 @@ private:
     // 日志加载线程
     QThread* m_thread = nullptr;
     LogLoaderThread* m_logLoaderThread = nullptr;
+
+    // 在日志中查找关键字
+    QElapsedTimer m_elapsedTimer;
+    QFutureWatcher<LineNumber_Line_Pair> watcher;
 
 };
 

@@ -3,6 +3,7 @@
 #include <QThread>
 #include <QDebug>
 #include <QFile>
+#include "LogAnalysis/LogUtils.h"
 
 void LogLoaderThread::analyze()
 {
@@ -45,52 +46,32 @@ void LogLoaderThread::process__()
         return;
 
     // 按照换行符分隔
-    /*const*/ QStringList lines = m_fileContent.split("\r\n");
+    const QStringList&& qstrlist = m_fileContent.split("\r\n");
+    for(int i = 0; i < qstrlist.size(); ++i)
+    {
+        m_fileAllLines.emplace_back(i, qstrlist[i]);
+    }
 
     // 推测行号宽度
     int count = 0;
-    int totalCount = lines.size();
+    int totalCount = m_fileAllLines.size();
     while (totalCount != 0) {
         count++;
         totalCount /= 10;
     }
     emit lineNumWidth(count);
 
-    // 颜色处理
-    auto colorful__ = [&](QString& line, const bool skip = false)
+// 日志解析
+#pragma omp parallel for
+    for(int i = 0; i < m_fileAllLines.size(); ++i)
     {
-        QString keyword = "";
-        QString color = "";
-        int insertIndex = -1;
-        for(auto iter = m_keywordAndColorMap.begin(); iter != m_keywordAndColorMap.end(); ++iter)
+        QString dstLine;
+        const bool&& containKeyword = LogUtils::ConvertHTML(m_fileAllLines[i].second, dstLine);
+
+#pragma omp ordered
         {
-            insertIndex = line.indexOf(iter.key());
-            if(insertIndex >= 0)
-            {
-                keyword = iter.key();
-                color = iter.value();
-                break;
-            }
+            emit newLogAvailable(containKeyword, i, dstLine);
         }
-
-        if(insertIndex < 0)
-        {
-            line = QString("<font color='#000000'>%1</font>").arg(line);
-            return false;
-        }
-
-        line.insert(insertIndex + keyword.size(), QString("%1").arg("</b></font>"));
-        line.insert(insertIndex, QString("<font color='%1'><b>").arg(color));
-        line = QString("<font color='#000000'>%1</font>").arg(line);
-
-        return true;
-    };
-
-    // 日志解析
-    for(int i = 0; i < lines.size(); ++i)
-    {
-        const bool&& containKeyword = colorful__(lines[i]);
-        emit newLogAvailable(containKeyword, i, lines[i]);
     }
 
     // 解析结束

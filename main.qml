@@ -75,18 +75,17 @@ ApplicationWindow {
 
         }
 
-        function onFindFinish(targetKeyword) {
+        function onFindFinish(targetKeyword, findCount, findTimeCost) {
             if(!findResultWindowAlreadyCreated) {
                 var component = Qt.createComponent("qrc:/ui/FindResultWindow.qml");
                 if (component.status === Component.Ready) {
                     findResultWindow = component.createObject(window);
-                    findResultWindow.setLineNumWidth(logPanel.lineNumWidth);
                     findResultWindow.show();
 
                     findResultWindowAlreadyCreated = true;
 
                     // 连接新窗口的信号到主窗口的槽
-                    findResultWindow.sigPositionViewAtIndex.connect(function cb(index) {
+                    findResultWindow.sigPositionViewAtIndex.connect(function cb(lineNumber) {
                         logPanel.positionViewAtIndex(lineNumber);
                     });
                     findResultWindow.sigClose.connect(function cb() {
@@ -95,6 +94,9 @@ ApplicationWindow {
                 }
             }
 
+            findResultWindow.setLineNumWidth(logPanel.lineNumWidth);
+            findResultWindow.findCount = findCount;
+            findResultWindow.findTimeCost = findTimeCost;
             findResultWindow.title = "Find Result" + "  -  " + targetKeyword;
         }
     }

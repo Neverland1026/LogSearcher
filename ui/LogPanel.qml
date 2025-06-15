@@ -95,6 +95,7 @@ Rectangle {
 
                 onActiveFocusChanged: {
                     backgroundRect.color = activeFocus ? "#1FFF0000" : "transparent";
+                    lineNumText.font.bold = activeFocus;
                 }
             }
         }
