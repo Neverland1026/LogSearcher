@@ -17,6 +17,7 @@ Rectangle {
 
     height: {
         var baseHeight = 38;
+        return baseHeight;
         if(repeater.count === 0)
             return baseHeight;
 

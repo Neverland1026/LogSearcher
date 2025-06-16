@@ -3,8 +3,8 @@ import QtQuick.Controls 2.15
 
 Window {
     id: root
-    width: Screen.desktopAvailableWidth / 5 * 3
-    height: Screen.desktopAvailableHeight / 3
+    width: Screen.width / 5 * 3
+    height: Screen.height / 3
     title: "Find Result"
 
     function setLineNumWidth(lineNumWidth) {

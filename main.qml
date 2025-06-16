@@ -1,12 +1,13 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtQuick.Window 2.15
 import "./ui"
 
 ApplicationWindow {
     id: window
     visible: true
-    width: Screen.desktopAvailableWidth / 4 * 3
-    height: Screen.desktopAvailableHeight / 4 * 3
+    width: Screen.width / 4 * 3
+    height: Screen.height / 4 * 3
     title: "LogSearcher"
 
     // 搜索窗口
