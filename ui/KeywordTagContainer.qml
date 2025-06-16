@@ -16,7 +16,9 @@ Rectangle {
     }
 
     height: {
-        var baseHeigght = 38;
+        var baseHeight = 38;
+        if(repeater.count === 0)
+            return baseHeight;
 
         var extraHeight = 45;
         var itemBegin = repeater.itemAt(0);
@@ -25,7 +27,7 @@ Rectangle {
             extraHeight = Math.floor((itemEnd.y - itemBegin.y) / itemBegin.height) * extraHeight;
         }
 
-        return (baseHeigght + extraHeight);
+        return (baseHeight + extraHeight);
     }
     width: 400
     color: "#1A000000"
