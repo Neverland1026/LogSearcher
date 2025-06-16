@@ -15,30 +15,25 @@ Rectangle {
         tagList.remove(index);
     }
 
-    height: {
-        var baseHeight = 38;
-        return baseHeight;
-        if(repeater.count === 0)
-            return baseHeight;
-
-        var extraHeight = 45;
-        var itemBegin = repeater.itemAt(0);
-        var itemEnd = repeater.itemAt(repeater.count - 1);
-        if(itemBegin && itemEnd) {
-            extraHeight = Math.floor((itemEnd.y - itemBegin.y) / itemBegin.height) * extraHeight;
-        }
-
-        return (baseHeight + extraHeight);
-    }
+    height: flow.rowCount > 2 ? ((flow.rowCount - 1) * 40) : 38
     width: 400
     color: "#1A000000"
 
     // 使用 Flow 管理标签
     Flow {
+        id: flow
         anchors.fill: root
         anchors.verticalCenter: parent.verticalCenter
         spacing: 1
         flow: Flow.LeftToRight
+
+        readonly property int rowCount: {
+            if(children.length > 0) {
+                return Math.ceil(childrenRect.height / (children[0].height));
+            }
+            return 0;
+        }
+        onRowCountChanged: console.log("rowCount =", rowCount)
 
         Repeater {
             id: repeater

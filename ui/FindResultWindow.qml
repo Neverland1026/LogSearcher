@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 
 Window {
     id: root
-    width: Screen.width / 5 * 3
+    width: Screen.width / 6 * 5
     height: Screen.height / 3
     title: "Find Result"
 
