@@ -25,7 +25,7 @@ ApplicationWindow {
         anchors { left: parent.left; right: parent.right; top: keywordTagContainer.bottom; bottom: parent.bottom; margins: 5}
         orientation: Qt.Vertical
         LogPanel { id: logPanel; implicitHeight: parent.height * 0.7; logModel: $LogModel; }
-        handle: Rectangle { implicitHeight: 1; color: "black"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; } }
+        handle: Rectangle { implicitHeight: 3; color: "#22000000"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; } }
         SplitView {
             SplitView.fillHeight: true
             orientation: Qt.Horizontal
@@ -34,7 +34,7 @@ ApplicationWindow {
                     logPanel.positionViewAtIndex(lineNumber);
                 }
             }
-            handle: Rectangle { implicitWidth: 1.5; color: "black"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeHorCursor; } }
+            handle: Rectangle { implicitWidth: 3; color: "#22000000"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeHorCursor; } }
             LogPanel { id: findPanel; implicitWidth: parent.width * 0.5; logModel: $FindModel; }
         }
     }

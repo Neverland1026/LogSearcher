@@ -20,7 +20,8 @@ Rectangle {
 
     function positionViewAtIndex(lineNumber) {
         listView.positionViewAtIndex(lineNumber, ListView.Center);
-        listView.itemAtIndex(lineNumber).forceActiveFocus();
+        listView.findTargetPosition = lineNumber;
+        console.log("lineNumber = ", lineNumber)
     }
 
     signal sigDoubleClicked(var lineNumber);
@@ -29,15 +30,17 @@ Rectangle {
         id: listView
 
         anchors.fill: parent
-        model: logModel  // 绑定C++模型
         anchors.margins: 10
-        cacheBuffer: 2000
 
+        model: logModel
+
+        cacheBuffer: 2000
         boundsBehavior: Flickable.StopAtBounds
         maximumFlickVelocity: 1200
         //flickDeceleration: 5000
-
         clip: true
+
+        property int findTargetPosition: -1
 
         delegate:  Item {
             width: listView.width
@@ -75,7 +78,7 @@ Rectangle {
                 text: lineContent
                 textFormat: TextEdit.RichText
                 verticalAlignment: Text.AlignVCenter
-                readOnly: true
+                //readOnly: true
                 selectByMouse: true
                 selectionColor: "lightblue"
                 selectedTextColor: "navy"
@@ -95,24 +98,25 @@ Rectangle {
                 }
 
                 onActiveFocusChanged: {
-                    backgroundRect.color = activeFocus ? "#1FFF0000" : "transparent";
+                    console.log("onActiveFocusChanged", lineNumber)
+                    backgroundRect.color = (activeFocus || lineNumber === listView.findTargetPosition) ? "#1FFF0000" : "transparent";
                     lineNumText.font.bold = activeFocus;
                 }
             }
         }
 
-        ScrollBar.vertical: ScrollBar {
-            policy: ScrollBar.AsNeeded
-            background: Rectangle {
-                color: "transparent"
-            }
-        }
-        ScrollBar.horizontal: ScrollBar {
-            policy: ScrollBar.AsNeeded
-            background: Rectangle {
-                color: "transparent"
-            }
-        }
+        //ScrollBar.vertical: ScrollBar {
+        //    policy: ScrollBar.AsNeeded
+        //    background: Rectangle {
+        //        color: "transparent"
+        //    }
+        //}
+        //ScrollBar.horizontal: ScrollBar {
+        //    policy: ScrollBar.AsNeeded
+        //    background: Rectangle {
+        //        color: "transparent"
+        //    }
+        //}
 
         // 拦截滚轮事件
         MouseArea {

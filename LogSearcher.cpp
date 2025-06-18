@@ -6,6 +6,8 @@ LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
     : QObject{parent}
 {
 
+    // 设置合适的线程数
+    QThreadPool::globalInstance()->setMaxThreadCount(QThread::idealThreadCount());
 }
 
 LogSearcher::~LogSearcher()
