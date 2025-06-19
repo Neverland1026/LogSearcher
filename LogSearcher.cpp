@@ -181,8 +181,6 @@ void LogSearcher::find(const QString& targetKeyword)
 
     watcher.disconnect();
     QObject::connect(&watcher, &QFutureWatcher<LogSearcher::LineNumber_Line_Pair>::finished, &watcher, [this, targetKeyword](){
-        emit findFinish(targetKeyword, m_findModel->rowCount(), m_elapsedTimer.elapsed());
-
         QVector<int> lineNumbers = {};
         QVector<QString> logs{};
 
@@ -205,6 +203,8 @@ void LogSearcher::find(const QString& targetKeyword)
 
         m_findModel->clearAll();
         m_findModel->appendLog(lineNumbers, logs);
+
+        emit findFinish(targetKeyword, m_findModel->rowCount(), m_elapsedTimer.elapsed());
     });
 
     // 启动并行搜索
