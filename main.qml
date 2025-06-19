@@ -35,7 +35,7 @@ ApplicationWindow {
                 }
             }
             handle: Rectangle { implicitWidth: 3; color: "#22000000"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeHorCursor; } }
-            LogPanel { id: findPanel; implicitWidth: parent.width * 0.5; logModel: $FindModel; }
+            LogPanel { id: findPanel; implicitWidth: parent.width * 0.5;/* logModel: $FindModel;*/ }
         }
     }
 

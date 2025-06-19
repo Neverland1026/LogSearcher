@@ -30,10 +30,24 @@ void LogModel::appendLog(const int lineNumber, const QString& log) {
     endInsertRows();
 }
 
+void LogModel::appendLog(const QVector<int>& lineNumbers, const QVector<QString>& logs)
+{
+    beginInsertRows(QModelIndex(), m_logs.size(), m_logs.size() + qMin(lineNumbers.size(), logs.size()));
+    for(int i = 0; i < lineNumbers.size() && i < logs.size(); ++i)
+    {
+        if(lineNumbers[i] >= 0)
+        {
+            m_lineNumber.append(lineNumbers[i]);
+        }
+        m_logs.append(logs[i]);
+    }
+    endInsertRows();
+}
+
 void LogModel::clearAll()
 {
     beginResetModel();
-    m_lineNumber.resize(0);
-    m_logs.resize(0);
+    m_lineNumber.clear();
+    m_logs.clear();
     endResetModel();
 }

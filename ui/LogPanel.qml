@@ -35,16 +35,16 @@ Rectangle {
         model: logModel
 
         cacheBuffer: 2000
-        boundsBehavior: Flickable.StopAtBounds
+        boundsBehavior: Flickable.DragOverBounds
         maximumFlickVelocity: 1200
-        //flickDeceleration: 5000
+        flickDeceleration: 10000
         clip: true
 
         property int findTargetPosition: -1
 
         delegate:  Item {
             width: listView.width
-            height: dynamicFontSize * 1.1
+            height: dynamicFontSize * 1.2
 
             Rectangle { id: backgroundRect; anchors.fill: parent }
 
@@ -105,12 +105,12 @@ Rectangle {
             }
         }
 
-        //ScrollBar.vertical: ScrollBar {
-        //    policy: ScrollBar.AsNeeded
-        //    background: Rectangle {
-        //        color: "transparent"
-        //    }
-        //}
+        ScrollBar.vertical: ScrollBar {
+            policy: ScrollBar.AsNeeded
+            background: Rectangle {
+                color: "transparent"
+            }
+        }
         //ScrollBar.horizontal: ScrollBar {
         //    policy: ScrollBar.AsNeeded
         //    background: Rectangle {

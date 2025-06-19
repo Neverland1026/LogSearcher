@@ -115,20 +115,20 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
                      &LogLoaderThread::lineNumWidth,
                      this,
                      [&](int width) {
-                         emit lineNumWidth(width);
-                     });
+        emit lineNumWidth(width);
+    });
     QObject::connect(m_logLoaderThread,
                      &LogLoaderThread::newLogAvailable,
                      this,
                      [&](const bool containKeyword,
-                         const int lineIndex,
-                         const QString log) {
-                         m_logModel->appendLog(-1, log);
-                         if(containKeyword)
-                         {
-                             m_resultModel->appendLog(lineIndex, log);
-                         }
-                     });
+                     const int lineIndex,
+                     const QString log) {
+        m_logModel->appendLog(-1, log);
+        if(containKeyword)
+        {
+            m_resultModel->appendLog(lineIndex, log);
+        }
+    });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(); });
     //QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);
     //QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
@@ -181,25 +181,38 @@ void LogSearcher::find(const QString& targetKeyword)
 
     watcher.disconnect();
     QObject::connect(&watcher, &QFutureWatcher<LogSearcher::LineNumber_Line_Pair>::finished, &watcher, [this, targetKeyword](){
-        m_findModel->clearAll();
-        for (const LogSearcher::LineNumber_Line_Pair& partialResult : watcher.future().results())
+        emit findFinish(targetKeyword, m_findModel->rowCount(), m_elapsedTimer.elapsed());
+
+        QVector<int> lineNumbers = {};
+        QVector<QString> logs{};
+
+        const auto& results = watcher.future().results();
+#pragma omp parallel for
+        for(int i = 0; i < results.size(); ++i)
         {
-            if(!partialResult.second.isEmpty())
+            if(!results[i].second.isEmpty())
             {
                 QString dstLine;
-                LogUtils::ConvertHTML(partialResult.second, dstLine, targetKeyword);
-                m_findModel->appendLog(partialResult.first, dstLine);
+                LogUtils::ConvertHTML(results[i].second, dstLine, targetKeyword);
+
+#pragma omp ordered
+                {
+                    lineNumbers.push_back(results[i].first);
+                    logs.push_back(dstLine);
+                }
             }
         }
-        emit findFinish(targetKeyword, m_findModel->rowCount(), m_elapsedTimer.elapsed());
+
+        m_findModel->clearAll();
+        m_findModel->appendLog(lineNumbers, logs);
     });
 
     // 启动并行搜索
     const QVector<QPair<int, QString>> lines = m_logLoaderThread->getAllLines();
     QFuture<LogSearcher::LineNumber_Line_Pair> future = QtConcurrent::mapped(
-        lines,
-        [targetKeyword, this](const LineNumber_Line_Pair& line) { return find__(line, targetKeyword); }
-        );
+                lines,
+                [targetKeyword, this](const LineNumber_Line_Pair& line) { return find__(line, targetKeyword); }
+    );
 
     watcher.setFuture(future);
 }

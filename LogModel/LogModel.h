@@ -15,6 +15,7 @@ public:
 
 public slots:
     void appendLog(const int lineNumber, const QString& log);
+    void appendLog(const QVector<int>& lineNumbers, const QVector<QString>& logs);
     void clearAll();
 
 private:
