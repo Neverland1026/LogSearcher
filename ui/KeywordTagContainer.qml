@@ -57,5 +57,19 @@ Rectangle {
                 }
             }
         }
+
+        Image {
+            width: 37
+            height: width
+            sourceSize.width: width * 2
+            sourceSize.height: height * 2
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/image/add.svg"
+            MouseArea {
+                anchors.fill: parent
+                onPressed: $LogSearcher.insertKeyword(-1, "", "");
+            }
+        }
+
     }
 }
