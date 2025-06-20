@@ -1,5 +1,5 @@
 ﻿#include "LogUtils.h"
-#include <random>
+#include <QRandomGenerator>
 
 QMap<int, QPair<QString, QString>> LogUtils::m_searchTarget = {};
 QMap<QString, QString> LogUtils::m_formatedSearchTarget = {};
@@ -68,18 +68,20 @@ bool LogUtils::ConvertHTML(const QString& normalLine, QString& htmlLine, const Q
 
 QColor LogUtils::GenerateRandomColorRGB_Safe()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, 255);
-    const int random_number_1 = dis(gen);
-    const int random_number_2 = dis(gen);
-    const int random_number_3 = dis(gen);
+    QRandomGenerator* random = QRandomGenerator::global();
 
-    QColor color;
-    do {
-        color = QColor(random_number_1 % 256, random_number_2 % 256, random_number_3 % 256);
-    } while (color.red() > 230 && color.green() > 230 && color.blue() > 230);
+    // 确保至少一个通道接近255，其他通道较低
+    int mainChannel = random->bounded(3);
+    int colors[3] = {0};
 
-    return color;
+    colors[mainChannel] = random->bounded(56) + 200;  // 200-255
+
+    // 其他两个通道在0-100之间
+    for(int i = 0; i < 3; i++) {
+        if(i != mainChannel) {
+            colors[i] = random->bounded(101);
+        }
+    }
+
+    return QColor(colors[0], colors[1], colors[2]);
 }
-
