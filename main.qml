@@ -25,18 +25,8 @@ ApplicationWindow {
         anchors { left: parent.left; right: parent.right; top: keywordTagContainer.bottom; bottom: parent.bottom; margins: 5}
         orientation: Qt.Vertical
         LogPanel { id: logPanel; implicitHeight: parent.height * 0.7; logModel: $LogModel; }
-        handle: Rectangle { implicitHeight: 3; color: "#22000000"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; } }
-        SplitView {
-            SplitView.fillHeight: true
-            orientation: Qt.Horizontal
-            LogPanel { id: resultPanel; SplitView.fillWidth: true; logModel: $ResultModel;
-                onSigDoubleClicked: {
-                    logPanel.positionViewAtIndex(lineNumber);
-                }
-            }
-            handle: Rectangle { implicitWidth: 3; color: "#22000000"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeHorCursor; } }
-            LogPanel { id: findPanel; implicitWidth: parent.width * 0.5;/* logModel: $FindModel;*/ }
-        }
+        handle: Rectangle { implicitHeight: 5; color: "#44000000"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; } }
+        LogPanel { id: resultPanel; SplitView.fillWidth: true; logModel: $ResultModel; onSigDoubleClicked: logPanel.positionViewAtIndex(lineNumber); }
     }
 
     // 拖拽
