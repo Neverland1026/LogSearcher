@@ -18,9 +18,25 @@ Rectangle {
 
     property string selectedText: ""
 
+    property int lastPosition: -1
+
     function positionViewAtIndex(lineNumber) {
         listView.positionViewAtIndex(lineNumber, ListView.Center);
-        listView.findTargetPosition = lineNumber;
+
+        if(lastPosition >= 0) {
+            var lastTargetItem = listView.itemAtIndex(lastPosition);
+            if (lastTargetItem) {
+                var firstBackgroundRect = lastTargetItem.backgroundRect;
+                firstBackgroundRect.color = "transparent";
+            }
+        }
+
+        lastPosition = lineNumber;
+        var targetItem = listView.itemAtIndex(lineNumber);
+        if (targetItem) {
+            var newBackgroundRect = targetItem.backgroundRect;
+            newBackgroundRect.color = "#1FFF0000";
+        }
     }
 
     signal sigDoubleClicked(var lineNumber);
@@ -39,11 +55,11 @@ Rectangle {
         flickDeceleration: 10000
         clip: true
 
-        property int findTargetPosition: -1
-
         delegate:  Item {
             width: listView.width
             height: dynamicFontSize * 1.2
+
+            property alias backgroundRect: backgroundRect
 
             Rectangle { id: backgroundRect; anchors.fill: parent }
 
@@ -97,9 +113,16 @@ Rectangle {
                 }
 
                 onActiveFocusChanged: {
-                    console.log("onActiveFocusChanged", lineNumber)
-                    backgroundRect.color = (activeFocus || lineNumber === listView.findTargetPosition) ? "#1FFF0000" : "transparent";
+                    backgroundRect.color = (activeFocus) ? "#1FFF0000" : "transparent";
                     lineNumText.font.bold = activeFocus;
+
+                    if(lastPosition >= 0) {
+                        var lastTargetItem = listView.itemAtIndex(lastPosition, listView.contentY);
+                        if (lastTargetItem) {
+                            var firstBackgroundRect = lastTargetItem.backgroundRect;
+                            firstBackgroundRect.color = "transparent";
+                        }
+                    }
                 }
             }
         }
@@ -168,7 +191,6 @@ Rectangle {
     }
 
     Keys.onPressed: (event) => {
-                        console.log("__KEY__", event.key);
                         if((event.modifiers & Qt.ControlModifier)) {
                             if (event.key === Qt.Key_End) {
                                 listView.positionViewAtEnd();
