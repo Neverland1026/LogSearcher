@@ -21,7 +21,6 @@ Rectangle {
     function positionViewAtIndex(lineNumber) {
         listView.positionViewAtIndex(lineNumber, ListView.Center);
         listView.findTargetPosition = lineNumber;
-        console.log("lineNumber = ", lineNumber)
     }
 
     signal sigDoubleClicked(var lineNumber);
@@ -78,7 +77,7 @@ Rectangle {
                 text: lineContent
                 textFormat: TextEdit.RichText
                 verticalAlignment: Text.AlignVCenter
-                //readOnly: true
+                readOnly: true
                 selectByMouse: true
                 selectionColor: "lightblue"
                 selectedTextColor: "navy"
@@ -169,20 +168,23 @@ Rectangle {
     }
 
     Keys.onPressed: (event) => {
-                        if ((event.key === Qt.Key_End) && (event.modifiers & Qt.ControlModifier)) {
-                            listView.positionViewAtEnd();
-                            event.accepted = true;
-                        } else if ((event.key === Qt.Key_Home) && (event.modifiers & Qt.ControlModifier)) {
-                            listView.positionViewAtBeginning();
-                            event.accepted = true;
-                        } else if ((event.key === Qt.Key_F) && (event.modifiers & Qt.ControlModifier)) {
-                            var component = Qt.createComponent("qrc:/ui/FindWindow.qml");
-                            if (component.status === Component.Ready) {
-                                var findResultWindow = component.createObject(window);
-                                findResultWindow.setFindText(root.selectedText);
-                                findResultWindow.show();
+                        console.log("__KEY__", event.key);
+                        if((event.modifiers & Qt.ControlModifier)) {
+                            if (event.key === Qt.Key_End) {
+                                listView.positionViewAtEnd();
+                                event.accepted = true;
+                            } else if (event.key === Qt.Key_Home) {
+                                listView.positionViewAtBeginning();
+                                event.accepted = true;
+                            } else if (event.key === Qt.Key_F) {
+                                var component = Qt.createComponent("qrc:/ui/FindWindow.qml");
+                                if (component.status === Component.Ready) {
+                                    var findResultWindow = component.createObject(window);
+                                    findResultWindow.setFindText(root.selectedText);
+                                    findResultWindow.show();
+                                }
+                                event.accepted = true;
                             }
-                            event.accepted = true;
                         }
                     }
 }
