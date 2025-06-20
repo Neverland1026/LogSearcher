@@ -101,5 +101,10 @@ int main(int argc, char *argv[])
         }
     }
 
+    if(argc > 1)
+    {
+        searcher->openLog(QDir::fromNativeSeparators(QString::fromLocal8Bit(argv[1])));
+    }
+
     return app.exec();
 }
