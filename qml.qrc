@@ -9,5 +9,6 @@
         <file>ui/KeywordTagContainer.qml</file>
         <file>ui/RightMenu.qml</file>
         <file>ui/FindResultWindow.qml</file>
+        <file>ui/FindWindow.qml</file>
     </qresource>
 </RCC>

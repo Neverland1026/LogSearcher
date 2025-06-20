@@ -175,6 +175,14 @@ Rectangle {
                         } else if ((event.key === Qt.Key_Home) && (event.modifiers & Qt.ControlModifier)) {
                             listView.positionViewAtBeginning();
                             event.accepted = true;
+                        } else if ((event.key === Qt.Key_F) && (event.modifiers & Qt.ControlModifier)) {
+                            var component = Qt.createComponent("qrc:/ui/FindWindow.qml");
+                            if (component.status === Component.Ready) {
+                                var findResultWindow = component.createObject(window);
+                                findResultWindow.setFindText(root.selectedText);
+                                findResultWindow.show();
+                            }
+                            event.accepted = true;
                         }
                     }
 }

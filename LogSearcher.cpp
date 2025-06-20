@@ -150,7 +150,7 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
 void LogSearcher::openLatestIndexLog(const int latestIndex)
 {
     const QString prefix = "ScanService";
-    QDir dir("C:/Users/Neverland_LY/Desktop/");
+    QDir dir("./log");
     if (!dir.exists())
     {
         return;
@@ -177,6 +177,9 @@ void LogSearcher::openLatestIndexLog(const int latestIndex)
 
 void LogSearcher::find(const QString& targetKeyword)
 {
+    if(targetKeyword.isEmpty())
+        return;
+
     m_elapsedTimer.start();
 
     watcher.disconnect();
