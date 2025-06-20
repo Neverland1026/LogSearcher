@@ -9,7 +9,7 @@ Window {
 
     function setFindText(text) {
         textEdit.text = text;
-        //textEdit.moveCursorToEnd();
+        textEdit.cursorPosition = textEdit.text.length;
     }
 
     // 背景
