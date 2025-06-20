@@ -77,8 +77,6 @@ void LogSearcher::insertKeyword(const int index, const QString& keyword, const Q
         LogUtils::Keywords()[index] = { keyword, finalColor };
     }
 
-    openLog("", true);
-
     refreshSettings__();
 }
 

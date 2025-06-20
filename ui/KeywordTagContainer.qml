@@ -53,9 +53,7 @@ Rectangle {
                 }
 
                 onSigAccepted: {
-                    if(index === tagList.count - 1) {
-                        $LogSearcher.insertKeyword(-1, "", "");
-                    }
+                    $LogSearcher.openLog("", true);
                 }
             }
         }
