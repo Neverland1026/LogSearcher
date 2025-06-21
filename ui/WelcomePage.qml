@@ -1,5 +1,6 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtQuick.Dialogs
 
 // WelcomePage
 Rectangle {
@@ -19,6 +20,11 @@ Rectangle {
         sourceSize.height: height * 2
         fillMode: Image.PreserveAspectFit
         source: "qrc:/image/logo.svg"
+
+        MouseArea {
+            anchors.fill: parent
+            onDoubleClicked: fileDialog.open()
+        }
     }
 
     Text {
@@ -32,5 +38,16 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         color: "#D81E06"
+    }
+
+    FileDialog {
+        id: fileDialog
+        title: qsTr("Select Log File")
+        fileMode: FileDialog.OpenFile
+        nameFilters: [ "Log File (*.LOG *.log *.TXT *.txt)" ]
+
+        onAccepted: {
+            $LogSearcher.openLog(fileDialog.selectedFile.toString());
+        }
     }
 }

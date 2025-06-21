@@ -90,6 +90,8 @@ void LogSearcher::removeKeyword(const int index)
 
 void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= false*/)
 {
+    qDebug() << "LogSearcher::openLog >>>" << filePath;
+
     // 非重载日志的话，更新聚焦的日志
     if(!repeatOpen)
     {
