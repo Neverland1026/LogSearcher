@@ -6,8 +6,8 @@ import "./ui"
 ApplicationWindow {
     id: window
     visible: true
-    width: Screen.width / 5 * 2
-    height: Screen.height / 5 * 2
+    width: Screen.width / 5 * 3
+    height: Screen.height / 5 * 3
     title: "LogSearcher"
 
     // 搜索窗口
