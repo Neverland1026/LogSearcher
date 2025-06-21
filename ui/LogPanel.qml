@@ -235,6 +235,24 @@ Rectangle {
                                 }
                                 event.accepted = true;
                             }
+                        } else {
+                            if (event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
+//                                console.log("__UP_DUWN__", lastPosition)
+//                                if (event.key === Qt.Key_Up) lastPosition--;
+//                                if (event.key === Qt.Key_Down) lastPosition++;
+//                                console.log("__UP_DUWN__", lastPosition)
+
+//                                var targetItem = listView.itemAtIndex(lastPosition - 1);
+//                                if (targetItem) {
+//                                    var newBackgroundRect = targetItem.backgroundRect;
+//                                    newBackgroundRect.color = "#1FFF0000";
+//                                }
+
+                                listView.currentIndex = lastPosition + 1;
+                                listView.positionViewAtIndex(lastPosition, ListView.SnapPosition);
+
+                                event.accepted = true;
+                            }
                         }
                     }
 }
