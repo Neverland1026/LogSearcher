@@ -134,7 +134,7 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
             m_resultModel->appendLog(lineIndex, log);
         }
     });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(); });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(m_focusedLog); });
     //QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);
     //QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
 
@@ -154,16 +154,15 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
 
 void LogSearcher::openLatestIndexLog(const int latestIndex)
 {
-    const QString prefix = "ScanService";
-    QDir dir("./log");
-    if (!dir.exists())
-    {
+    if(m_focusedLog.isEmpty())
         return;
-    }
 
+    QFileInfo fi(m_focusedLog);
+    QDir dir(fi.absoluteDir());
     dir.setFilter(QDir::Files);
     QFileInfoList fileInfoList = dir.entryInfoList();
 
+    const QString prefix = fi.baseName().left(5);
     QMap<QDateTime, QString> filePathMap;
     for (const QFileInfo &fileInfo : fileInfoList)
     {

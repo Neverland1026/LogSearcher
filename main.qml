@@ -37,7 +37,6 @@ ApplicationWindow {
                            //window.showMaximized();
                            var fullPath = drop.urls[0];
                            $LogSearcher.openLog(fullPath);
-                           window.title = "LogSearcher" + "  -  " + fullPath.toString().substring(8, fullPath.toString().length);
                        }
                    }
     }
@@ -69,8 +68,8 @@ ApplicationWindow {
 
         }
 
-        function onLoadFinish() {
-
+        function onLoadFinish(logPath) {
+            window.title = "LogSearcher" + "  -  " + logPath;
         }
 
         function onFindFinish(targetKeyword, findCount, findTimeCost) {
