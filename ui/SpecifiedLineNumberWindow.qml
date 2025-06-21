@@ -1,25 +1,22 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
 
-// FindWindow
+// SpecifiedLineNumberWindow
 Window {
     id: root
     width: Screen.width / 8 * 3
     height: Screen.height / 7
-    title: "Find"
+    title: "Jump to the specified line"
 
     modality: Qt.WindowModal
 
-    function setFindText(text) {
-        textEdit.text = text;
-        textEdit.cursorPosition = textEdit.text.length;
-    }
+    signal sigJumpToTheSpecifiedLine(var lineNumber);
 
     // 背景
     Rectangle { anchors.fill: parent; color: "white"; }
 
-    TextEdit {
-        id: textEdit
+    TextField {
+        id: textField
         anchors {
             left: parent.left
             right: parent.right
@@ -27,15 +24,17 @@ Window {
             bottom: button.top
         }
 
+        validator: IntValidator { bottom: 0; top: 99999999; }
+
         color: "black"
         text: ""
         font.family: "Consolas"
-        font.pixelSize: 25
+        font.pixelSize: 50
         font.bold: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
 
-        onAccepted: { $LogSearcher.find(textEdit.text); close(); }
+        onAccepted: { root.sigJumpToTheSpecifiedLine(textField.text); close(); }
     }
 
     Button {
@@ -45,11 +44,11 @@ Window {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 5
         height: 40
-        text: "Find"
+        text: "Jump"
         font.family: "Consolas"
         font.pixelSize: 20
-        onClicked: { $LogSearcher.find(textEdit.text); close(); }
+        onClicked: { root.sigJumpToTheSpecifiedLine(textField.text); close(); }
     }
 
-    Component.onCompleted: textEdit.forceActiveFocus()
+    Component.onCompleted: textField.forceActiveFocus()
 }

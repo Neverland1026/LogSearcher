@@ -125,6 +125,8 @@ Rectangle {
                             firstBackgroundRect.color = "transparent";
                         }
                     }
+
+                    lastPosition = index;
                 }
             }
         }
@@ -194,6 +196,14 @@ Rectangle {
         }
     }
 
+    Timer {
+        id: timer
+        running: false;
+        interval: 200;
+        property int lineNumber: -1
+        onTriggered: positionViewAtIndex(lineNumber);
+    }
+
     Keys.onPressed: (event) => {
                         if((event.modifiers & Qt.ControlModifier)) {
                             if (event.key === Qt.Key_End) {
@@ -203,11 +213,25 @@ Rectangle {
                                 listView.positionViewAtBeginning();
                                 event.accepted = true;
                             } else if (event.key === Qt.Key_F) {
-                                var component = Qt.createComponent("qrc:/ui/FindWindow.qml");
-                                if (component.status === Component.Ready) {
-                                    var findResultWindow = component.createObject(window);
+                                var component1 = Qt.createComponent("qrc:/ui/FindWindow.qml");
+                                if (component1.status === Component.Ready) {
+                                    var findResultWindow = component1.createObject(window);
                                     findResultWindow.setFindText(root.selectedText);
                                     findResultWindow.show();
+                                }
+                                event.accepted = true;
+                            } else if (event.key === Qt.Key_G) {
+                                var component2 = Qt.createComponent("qrc:/ui/SpecifiedLineNumberWindow.qml");
+                                if (component2.status === Component.Ready) {
+                                    var specifiedLineNumberWindow = component2.createObject(window);
+                                    specifiedLineNumberWindow.show();
+
+                                    specifiedLineNumberWindow.sigJumpToTheSpecifiedLine.connect(function cb(lineNumber) {
+                                        if(lineNumber > 0 && lineNumber < modelCount) {
+                                            timer.lineNumber = lineNumber - 1;
+                                            timer.restart();
+                                        }
+                                    });
                                 }
                                 event.accepted = true;
                             }

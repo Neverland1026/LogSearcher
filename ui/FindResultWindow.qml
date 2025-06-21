@@ -8,6 +8,8 @@ Window {
     height: Screen.height / 5 * 4
     title: "Find Result"
 
+    modality: Qt.WindowModal
+
     function setLineNumWidth(lineNumWidth) {
         logPanel.lineNumWidth = lineNumWidth;
     }
