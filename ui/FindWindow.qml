@@ -1,9 +1,10 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
 
+// FindWindow
 Window {
     id: root
-    width: Screen.width / 4
+    width: Screen.width / 8 * 3
     height: Screen.height / 7
     title: "Find"
 

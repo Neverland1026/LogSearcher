@@ -12,13 +12,15 @@ Rectangle {
 
     property var logModel
 
-    property real dynamicFontSize: 18  // 全局动态字体尺寸
+    property real dynamicFontSize: 14  // 全局动态字体尺寸
 
     property int lineNumWidth: 7
 
     property string selectedText: ""
 
     property int lastPosition: -1
+
+    property alias modelCount: listView.count
 
     function positionViewAtIndex(lineNumber) {
         listView.positionViewAtIndex(lineNumber, ListView.Center);
@@ -49,7 +51,7 @@ Rectangle {
 
         model: logModel
 
-        cacheBuffer: 2000
+        cacheBuffer: 5000
         boundsBehavior: Flickable.DragOverBounds
         maximumFlickVelocity: 1200
         flickDeceleration: 10000

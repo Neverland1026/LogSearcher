@@ -1,10 +1,11 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
 
+// FindResultWindow
 Window {
     id: root
     width: Screen.width / 6 * 5
-    height: Screen.height / 2
+    height: Screen.height / 5 * 4
     title: "Find Result"
 
     function setLineNumWidth(lineNumWidth) {

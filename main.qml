@@ -6,8 +6,8 @@ import "./ui"
 ApplicationWindow {
     id: window
     visible: true
-    width: Screen.width / 4 * 3
-    height: Screen.height / 4 * 3
+    width: Screen.width / 5 * 2
+    height: Screen.height / 5 * 2
     title: "LogSearcher"
 
     // 搜索窗口
@@ -34,12 +34,16 @@ ApplicationWindow {
         onDropped: (drop)=> {
                        window.requestActivate();
                        if (drop.hasUrls) {
+                           window.showMaximized();
                            var fullPath = drop.urls[0];
                            $LogSearcher.openLog(fullPath);
                            window.title = "LogSearcher" + "  -  " + fullPath.toString().substring(8, fullPath.toString().length);
                        }
                    }
     }
+
+    // 欢迎页面
+    WelcomePage { anchors.fill: parent; visible: logPanel.modelCount <= 0; z: 999999; }
 
     // C++ 消息响应
     Connections {

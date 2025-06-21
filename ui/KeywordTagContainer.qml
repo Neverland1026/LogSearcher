@@ -1,6 +1,7 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
 
+// KeywordTagContainer
 Rectangle {
     id: root
 
@@ -58,18 +59,24 @@ Rectangle {
             }
         }
 
-        Image {
-            width: 37
+        Rectangle {
+            width: 40
             height: width
-            sourceSize.width: width * 2
-            sourceSize.height: height * 2
-            fillMode: Image.PreserveAspectFit
-            source: "qrc:/image/add.svg"
-            MouseArea {
-                anchors.fill: parent
-                onPressed: $LogSearcher.insertKeyword(-1, "", "");
+            color: "transparent"
+
+            Image {
+                width: 25
+                height: width
+                anchors.centerIn: parent
+                sourceSize.width: width * 2
+                sourceSize.height: height * 2
+                fillMode: Image.PreserveAspectFit
+                source: "qrc:/image/add.svg"
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed: $LogSearcher.insertKeyword(-1, "", "");
+                }
             }
         }
-
     }
 }

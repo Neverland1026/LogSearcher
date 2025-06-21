@@ -3,6 +3,7 @@ import QtQuick.Window 2.1
 import QtQuick.Controls 2.0
 import QtQuick.Dialogs
 
+// RightMenu
 Popup {
     id: customMenu
     width: 250
