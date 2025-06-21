@@ -162,10 +162,12 @@ Rectangle {
                            } else if(mouse.button === Qt.MiddleButton) {
 
                            } else if(mouse.button === Qt.RightButton) {
-                               var pos = parent.mapToItem(root, mouseX, mouseY);
-                               rightMenu.x =  pos.x;
-                               rightMenu.y = pos.y;
-                               rightMenu.visible = true
+                               if(modelCount > 0) {
+                                   var pos = parent.mapToItem(root, mouseX, mouseY);
+                                   rightMenu.x =  pos.x;
+                                   rightMenu.y = pos.y;
+                                   rightMenu.visible = true
+                               }
                            }
                        }
         }
