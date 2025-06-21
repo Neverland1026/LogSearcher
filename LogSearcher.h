@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QVector>
 #include <QElapsedTimer>
+#include <QFileSystemWatcher>
 #include <thread>
 
 #include "LogModel/LogModel.h"
@@ -76,6 +77,9 @@ signals:
     // 查找结束
     void findFinish(const QString& targetKeyword, const int findCount, const int findTimeCost);
 
+    // 日志有变化
+    void logContentModified();
+
 private:
 
     // 窗口 WId
@@ -89,6 +93,9 @@ private:
     LogModel* m_resultModel = nullptr;
     LogModel* m_findModel = nullptr;
 
+    // 当前的目标日志
+    QString m_focusedLog = "";
+
     // 日志加载线程
     QThread* m_thread = nullptr;
     LogLoaderThread* m_logLoaderThread = nullptr;
@@ -96,6 +103,9 @@ private:
     // 在日志中查找关键字
     QElapsedTimer m_elapsedTimer;
     QFutureWatcher<LineNumber_Line_Pair> watcher;
+
+    // 文件监视器
+    QFileSystemWatcher m_fileSystemWatcher;
 
 };
 

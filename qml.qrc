@@ -11,5 +11,6 @@
         <file>ui/FindResultWindow.qml</file>
         <file>ui/FindWindow.qml</file>
         <file>ui/WelcomePage.qml</file>
+        <file>ui/LogContentModifiedRemind.qml</file>
     </qresource>
 </RCC>

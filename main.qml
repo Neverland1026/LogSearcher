@@ -34,7 +34,7 @@ ApplicationWindow {
         onDropped: (drop)=> {
                        window.requestActivate();
                        if (drop.hasUrls) {
-                           window.showMaximized();
+                           //window.showMaximized();
                            var fullPath = drop.urls[0];
                            $LogSearcher.openLog(fullPath);
                            window.title = "LogSearcher" + "  -  " + fullPath.toString().substring(8, fullPath.toString().length);
@@ -44,6 +44,9 @@ ApplicationWindow {
 
     // 欢迎页面
     WelcomePage { anchors.fill: parent; visible: logPanel.modelCount <= 0; z: 999999; }
+
+    // 文件有修改提示
+    LogContentModifiedRemind { id: logContentModifiedRemind; anchors.horizontalCenter: parent.horizontalCenter; anchors.top: keywordTagContainer.bottom; }
 
     // C++ 消息响应
     Connections {
@@ -93,6 +96,10 @@ ApplicationWindow {
             findResultWindow.findCount = findCount;
             findResultWindow.findTimeCost = findTimeCost;
             findResultWindow.title = "Find Result" + "  -  " + targetKeyword;
+        }
+
+        function onLogContentModified() {
+            logContentModifiedRemind.visible = true;
         }
     }
 

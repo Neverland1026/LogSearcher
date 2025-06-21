@@ -34,7 +34,6 @@ Rectangle {
             }
             return 0;
         }
-        onRowCountChanged: console.log("rowCount =", rowCount)
 
         Repeater {
             id: repeater

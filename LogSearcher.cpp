@@ -90,19 +90,26 @@ void LogSearcher::removeKeyword(const int index)
 
 void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= false*/)
 {
-    // 静态变量，以便用于二次加载
-    static QString s_convertedFilepath;
+    // 非重载日志的话，更新聚焦的日志
     if(!repeatOpen)
     {
-        s_convertedFilepath = filePath;
+        m_focusedLog = filePath;
 
         // remove "file:///"
         const QString prefix = "file:///";
-        if(s_convertedFilepath.contains(prefix))
+        if(m_focusedLog.contains(prefix))
         {
-            s_convertedFilepath = s_convertedFilepath.mid(prefix.size());
+            m_focusedLog = m_focusedLog.mid(prefix.size());
         }
     }
+
+    // 开始监视日志
+    m_fileSystemWatcher.disconnect();
+    m_fileSystemWatcher.removePaths(m_fileSystemWatcher.files());
+    m_fileSystemWatcher.addPath(m_focusedLog);
+    QObject::connect(&m_fileSystemWatcher, &QFileSystemWatcher::fileChanged, this, [this](const QString &path) {
+        emit logContentModified();
+    });
 
     // 创建并启动工作线程
     m_thread = new QThread(this);
@@ -132,7 +139,7 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
     //QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
 
     // 设置查询属性
-    m_logLoaderThread->setTargetLog(s_convertedFilepath);
+    m_logLoaderThread->setTargetLog(m_focusedLog);
     m_logLoaderThread->setTargetKeywordAndColor(LogUtils::FormatedKeywordMap());
 
     // 清空上一次结果
