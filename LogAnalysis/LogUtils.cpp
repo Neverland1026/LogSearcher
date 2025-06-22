@@ -23,7 +23,7 @@ QMap<QString, QString> LogUtils::FormatedKeywordMap()
     return m_formatedSearchTarget;
 }
 
-bool LogUtils::ConvertHTML(const QString& normalLine, QString& htmlLine, const QString findTarget /*= ""*/)
+bool LogUtils::ConvertHTML(const QString& normalLine, QString& htmlLine, const QString specifiedFindTarget /*= ""*/)
 {
     FormatedKeywordMap();
 
@@ -33,7 +33,7 @@ bool LogUtils::ConvertHTML(const QString& normalLine, QString& htmlLine, const Q
     QString color = "";
     int insertIndex = -1;
 
-    if(findTarget.isEmpty())
+    if(specifiedFindTarget.isEmpty())
     {
         for(auto iter = m_formatedSearchTarget.begin(); iter != m_formatedSearchTarget.end(); ++iter)
         {
@@ -42,14 +42,16 @@ bool LogUtils::ConvertHTML(const QString& normalLine, QString& htmlLine, const Q
             {
                 keyword = iter.key();
                 color = iter.value();
+
+                // 每行最多高亮一个关键字，多了会引起混乱
                 break;
             }
         }
     }
     else
     {
-        insertIndex = htmlLine.indexOf(findTarget);
-        keyword = findTarget;
+        insertIndex = htmlLine.indexOf(specifiedFindTarget);
+        keyword = specifiedFindTarget;
         color = "#FF0000";
     }
 
