@@ -27,10 +27,12 @@ Window {
             bottom: button.top
         }
 
+        background: Rectangle { color: "transparent"; border.width: 0; }
+
         color: "black"
         text: ""
         font.family: "Consolas"
-        font.pixelSize: 25
+        font.pixelSize: 30
         font.bold: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
@@ -40,11 +42,13 @@ Window {
 
     Button {
         id: button
-        width: parent.width * 0.9
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 5
         height: 40
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+            margins: 6
+        }
         text: "Find"
         font.family: "Consolas"
         font.pixelSize: 20

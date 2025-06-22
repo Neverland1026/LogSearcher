@@ -24,12 +24,14 @@ Window {
             bottom: button.top
         }
 
+        background: Rectangle { color: "transparent"; border.width: 0; }
+
         validator: IntValidator { bottom: 0; top: 99999999; }
 
         color: "black"
         text: ""
         font.family: "Consolas"
-        font.pixelSize: 50
+        font.pixelSize: 60
         font.bold: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
@@ -39,11 +41,13 @@ Window {
 
     Button {
         id: button
-        width: parent.width * 0.9
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 5
         height: 40
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+            margins: 6
+        }
         text: "Jump"
         font.family: "Consolas"
         font.pixelSize: 20
