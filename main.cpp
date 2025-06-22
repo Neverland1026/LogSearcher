@@ -71,13 +71,13 @@ int main(int argc, char *argv[])
     LogModel* logModel = new LogModel();
     engine.rootContext()->setContextProperty("$LogModel", logModel);
 
-    LogModel* resultModel = new LogModel();
-    engine.rootContext()->setContextProperty("$ResultModel", resultModel);
+    LogModel* summaryModel = new LogModel();
+    engine.rootContext()->setContextProperty("$SummaryModel", summaryModel);
 
     LogModel* findModel = new LogModel();
     engine.rootContext()->setContextProperty("$FindModel", findModel);
 
-    searcher->setSearchModel(logModel, resultModel, findModel);
+    searcher->setSearchModel(logModel, summaryModel, findModel);
 
     const QUrl url(u"qrc:/main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

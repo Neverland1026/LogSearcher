@@ -93,7 +93,7 @@ private:
 
     // 日志对象模型
     LogModel* m_logModel = nullptr;
-    LogModel* m_resultModel = nullptr;
+    LogModel* m_summaryModel = nullptr;
     LogModel* m_findModel = nullptr;
 
     // 当前的目标日志

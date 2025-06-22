@@ -26,7 +26,7 @@ void LogSearcher::setWId(WId winid)
 void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2, LogModel* model3)
 {
     m_logModel = model1;
-    m_resultModel = model2;
+    m_summaryModel = model2;
     m_findModel = model3;
 }
 
@@ -138,7 +138,7 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
                          m_logModel->appendLog(-1, log);
                          if(containKeyword)
                          {
-                             m_resultModel->appendLog(lineIndex, log);
+                             m_summaryModel->appendLog(lineIndex, log);
                          }
                      });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(m_focusedLog); });
@@ -148,7 +148,7 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
 
     // 清空上一次结果
     m_logModel->clearAll();
-    m_resultModel->clearAll();
+    m_summaryModel->clearAll();
     m_findModel->clearAll();
 
     // 开始查询
@@ -200,7 +200,7 @@ void LogSearcher::recolorfulKeyword(const int index)
                          const int summaryLineIndex,
                          const QString log) {
                          m_logModel->updateRow(lineIndex, log);
-                         m_resultModel->updateRow(summaryLineIndex, log);
+                         m_summaryModel->updateRow(summaryLineIndex, log);
                      });
 
     // 设置查询属性

@@ -26,7 +26,7 @@ ApplicationWindow {
         orientation: Qt.Vertical
         LogPanel { id: logPanel; implicitHeight: parent.height * 0.7; logModel: $LogModel; }
         handle: Rectangle { implicitHeight: 5; color: "#44000000"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; } }
-        LogPanel { id: resultPanel; SplitView.fillWidth: true; logModel: $ResultModel; onSigDoubleClicked: logPanel.positionViewAtIndex(lineNumber); }
+        LogPanel { id: summaryLogPanel; SplitView.fillWidth: true; logModel: $SummaryModel; onSigDoubleClicked: logPanel.positionViewAtIndex(lineNumber); }
     }
 
     // 拖拽
@@ -61,7 +61,7 @@ ApplicationWindow {
 
         function onLineNumWidth(width) {
             var minWidth = Math.max(width, 5);
-            logPanel.lineNumWidth = resultPanel.lineNumWidth = minWidth;
+            logPanel.lineNumWidth = summaryLogPanel.lineNumWidth = minWidth;
         }
 
         function onLoadStart() {
