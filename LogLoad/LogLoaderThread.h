@@ -35,7 +35,7 @@ signals:
 
     void loadFinish();
 
-    void updateSingleLineColor(const int lineIndex, const QString log);
+    void updateSingleLineColor(const int lineIndex, const int summaryLineIndex, const QString log);
 
 protected:
 

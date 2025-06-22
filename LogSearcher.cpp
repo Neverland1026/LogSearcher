@@ -188,10 +188,6 @@ void LogSearcher::recolorfulKeyword(const int index)
     if(index < 0 || LogUtils::Keywords().size() == 0 || index >= LogUtils::Keywords().size())
         return;
 
-    // m_resultModel 直接按序更新
-    static int s_result_model_index = 0;
-    s_result_model_index = 0;
-
     // 创建并启动工作线程
     m_thread = new QThread(this);
     m_logLoaderThread = new LogLoaderThread;
@@ -201,16 +197,14 @@ void LogSearcher::recolorfulKeyword(const int index)
                      &LogLoaderThread::updateSingleLineColor,
                      this,
                      [&](const int lineIndex,
+                         const int summaryLineIndex,
                          const QString log) {
                          m_logModel->updateRow(lineIndex, log);
-                         /*m_resultModel->updateRow(s_result_model_index++, log);*/
+                         m_resultModel->updateRow(summaryLineIndex, log);
                      });
 
     // 设置查询属性
     m_logLoaderThread->setRecolorfulKeywordIndex(index);
-
-    // 清空上一次结果
-    /*m_resultModel->clearAll();*/
 
     // 开始更新
     m_thread->start();

@@ -20,11 +20,12 @@ void LogLoaderThread::recolorful()
     if(m_recolorfulKeywordIndex < 0)
         return;
 
-    for(auto& lineInfo : LogUtils::KeyLineInfos())
+    for(int i  = 0; i < LogUtils::KeyLineInfos().size(); ++i)
     {
+        const auto& lineInfo = LogUtils::KeyLineInfos()[i];
         if(lineInfo.keywordIndex == m_recolorfulKeywordIndex)
         {
-            emit updateSingleLineColor(lineInfo.lineIndex, lineInfo.colorful());
+            emit updateSingleLineColor(lineInfo.lineIndex, i, lineInfo.colorful());
         }
     }
 }
