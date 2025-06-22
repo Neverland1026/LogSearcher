@@ -23,6 +23,9 @@ Rectangle {
     property alias modelCount: listView.count
 
     function positionViewAtIndex(lineNumber) {
+        if(lineNumber < 0 || lineNumber >= modelCount)
+            return;
+
         listView.positionViewAtIndex(lineNumber, ListView.Center);
 
         if(lastPosition >= 0) {

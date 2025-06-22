@@ -55,6 +55,10 @@ Rectangle {
                 onSigAccepted: {
                     $LogSearcher.openLog("", true);
                 }
+
+                onSigColorChanged: {
+                    $LogSearcher.recolorfulKeyword(index);
+                }
             }
         }
 

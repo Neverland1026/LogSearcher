@@ -2,52 +2,55 @@
 #include <QRandomGenerator>
 
 QMap<int, QPair<QString, QString>> LogUtils::m_searchTarget = {};
-QMap<QString, QString> LogUtils::m_formatedSearchTarget = {};
+QMap<QString, QPair<int, QString>> LogUtils::m_transformedSearchTarget = {};
+QVector<LogUtils::LineInfo> LogUtils::m_keyLineInfos = {};
 
 QMap<int, QPair<QString, QString>>& LogUtils::Keywords()
 {
     return m_searchTarget;
 }
 
-QMap<QString, QString> LogUtils::FormatedKeywordMap()
+void LogUtils::FormatedKeywordMap()
 {
-    m_formatedSearchTarget.clear();
+    m_transformedSearchTarget.clear();
     for(auto iter = m_searchTarget.begin(); iter != m_searchTarget.end(); ++iter)
     {
-        if(!iter.value().first.isEmpty())
-        {
-            m_formatedSearchTarget[iter.value().first] = iter.value().second;
-        }
+        m_transformedSearchTarget[iter.value().first] = { iter.key(), iter.value().second };
     }
+}
 
-    return m_formatedSearchTarget;
+QVector<LogUtils::LineInfo>& LogUtils::KeyLineInfos()
+{
+    return m_keyLineInfos;
 }
 
 bool LogUtils::ConvertHTML(const QString& normalLine,
+                           int& keywordIndex,
                            int& beginIndex,
                            int& endIndex,
-                           QString& color,
                            const QString& specifiedFindTarget /*= ""*/)
 {
-    QMap<QString, QString> formatedSearchTarget = m_formatedSearchTarget;
+    auto transformedSearchTarget = m_transformedSearchTarget;
     if(!specifiedFindTarget.isEmpty())
     {
-        formatedSearchTarget = { { specifiedFindTarget, "#FF0000" } };
+        transformedSearchTarget = { { specifiedFindTarget, { -1, "#FF0000" } } };
     }
 
-    for(auto iter = formatedSearchTarget.begin(); iter != formatedSearchTarget.end(); ++iter)
+    for(auto iter = transformedSearchTarget.begin(); iter != transformedSearchTarget.end(); ++iter)
     {
+        if(iter.key().isEmpty())
+            continue;
+
         beginIndex = normalLine.indexOf(iter.key());
         if(beginIndex >= 0)
         {
+            keywordIndex = iter.value().first;
             endIndex = beginIndex + iter.key().size();
-            color = iter.value();
             return true;
         }
     }
 
-    beginIndex = endIndex = -1;
-    color = "#000000";
+    beginIndex = endIndex = keywordIndex = -1;
 
     return false;
 }
@@ -58,10 +61,10 @@ bool LogUtils::ConvertHTML(const QString& normalLine,
 {
     htmlLine = normalLine;
 
+    int keywordIndex;
     int beginPos;
     int endPos;
-    QString color;
-    const bool&& containKeyword = LogUtils::ConvertHTML(htmlLine, beginPos, endPos, color, specifiedFindTarget);
+    const bool&& containKeyword = LogUtils::ConvertHTML(htmlLine, keywordIndex, beginPos, endPos, specifiedFindTarget);
 
     if(containKeyword)
     {

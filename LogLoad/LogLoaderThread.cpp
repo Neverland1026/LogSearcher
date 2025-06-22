@@ -9,10 +9,24 @@ void LogLoaderThread::analyze()
 {
     m_fileContent.resize(0);
     m_fileAllLines.resize(0);
-    m_keyLineInfos.resize(0);
+    LogUtils::KeyLineInfos().resize(0);
 
     mapFile__();
     process__();
+}
+
+void LogLoaderThread::recolorful()
+{
+    if(m_recolorfulKeywordIndex < 0)
+        return;
+
+    for(auto& lineInfo : LogUtils::KeyLineInfos())
+    {
+        if(lineInfo.keywordIndex == m_recolorfulKeywordIndex)
+        {
+            emit updateSingleLineColor(lineInfo.lineIndex, lineInfo.colorful());
+        }
+    }
 }
 
 void LogLoaderThread::mapFile__()
@@ -69,19 +83,23 @@ void LogLoaderThread::process__()
 #pragma omp parallel for
     for(int lineIndex = 0; lineIndex < m_fileAllLines.size(); ++lineIndex)
     {
-        LineInfo lineInfo;
+        LogUtils::LineInfo lineInfo;
         lineInfo.lineIndex = lineIndex;
         lineInfo.line = m_fileAllLines[lineIndex].second;
         const bool&& containKeyword = LogUtils::ConvertHTML(m_fileAllLines[lineIndex].second,
+                                                            lineInfo.keywordIndex,
                                                             lineInfo.beginPos,
-                                                            lineInfo.endPos,
-                                                            lineInfo.color);
+                                                            lineInfo.endPos);
 
 #pragma omp ordered
         {
             if(lineInfo.beginPos >= 0)
             {
-                m_keyLineInfos.emplace_back(lineInfo.lineIndex, lineInfo.line, lineInfo.beginPos, lineInfo.endPos, lineInfo.color);
+                LogUtils::KeyLineInfos().emplace_back(lineInfo.lineIndex,
+                                                      lineInfo.line,
+                                                      lineInfo.keywordIndex,
+                                                      lineInfo.beginPos,
+                                                      lineInfo.endPos);
             }
 
             emit newLogAvailable(containKeyword, lineIndex, lineInfo.colorful());

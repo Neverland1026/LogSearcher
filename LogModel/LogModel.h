@@ -17,7 +17,7 @@ public slots:
     void appendLog(const int lineNumber, const QString& log);
     void appendLog(const QVector<int>& lineNumbers, const QVector<QString>& logs);
     void clearAll();
-
+    bool updateRow(const int row, const QVariant& newValue, int role = Qt::DisplayRole);
 private:
     QList<int> m_lineNumber = {};
     QStringList m_logs = {};

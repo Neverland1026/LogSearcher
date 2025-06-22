@@ -15,6 +15,7 @@ Rectangle {
     property alias delBtnVisible: delBtnRect.visible
 
     signal sigUpdate(var keyword__, var color__);
+    signal sigColorChanged();
     signal sigRemove();
     signal sigAccepted();
 
@@ -107,6 +108,7 @@ Rectangle {
             //console.log("你选择了颜色: " + colorDialog.selectedColor);
             colorRect.color = colorDialog.selectedColor;
             root.sigUpdate(textInput.text, colorRect.color);
+            root.sigColorChanged();
         }
         onRejected: {}
     }

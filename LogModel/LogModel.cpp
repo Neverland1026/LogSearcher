@@ -51,3 +51,18 @@ void LogModel::clearAll()
     m_logs.clear();
     endResetModel();
 }
+
+bool LogModel::updateRow(const int row, const QVariant& newValue, int role /*= Qt::DisplayRole*/)
+{
+    if (row < 0 || row >= m_logs.size())
+        return false;
+
+    // 修改数据
+    m_logs[row] = newValue.toString();
+
+    // 通知视图特定行和角色发生了变化
+    QModelIndex modelIndex = index(row);
+    emit dataChanged(modelIndex, modelIndex, {role});
+
+    return true;
+}

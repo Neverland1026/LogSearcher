@@ -127,27 +127,24 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
                      &LogLoaderThread::lineNumWidth,
                      this,
                      [&](int width) {
-        emit lineNumWidth(width);
-    });
+                         emit lineNumWidth(width);
+                     });
     QObject::connect(m_logLoaderThread,
                      &LogLoaderThread::newLogAvailable,
                      this,
                      [&](const bool containKeyword,
-                     const int lineIndex,
-                     const QString log) {
-        m_logModel->appendLog(-1, log);
-        if(containKeyword)
-        {
-            m_resultModel->appendLog(lineIndex, log);
-        }
-    });
+                         const int lineIndex,
+                         const QString log) {
+                         m_logModel->appendLog(-1, log);
+                         if(containKeyword)
+                         {
+                             m_resultModel->appendLog(lineIndex, log);
+                         }
+                     });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(m_focusedLog); });
-    //QObject::connect(m_thread, &QThread::finished, m_logLoaderThread, &QObject::deleteLater);
-    //QObject::connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
 
     // 设置查询属性
     m_logLoaderThread->setTargetLog(m_focusedLog);
-    m_logLoaderThread->setTargetKeywordAndColor(LogUtils::FormatedKeywordMap());
 
     // 清空上一次结果
     m_logModel->clearAll();
@@ -184,6 +181,39 @@ void LogSearcher::openLatestIndexLog(const int latestIndex)
         const auto iter = std::next(filePathMap.begin(), filePathMap.size() - 1 - latestIndex);
         openLog(iter.value());
     }
+}
+
+void LogSearcher::recolorfulKeyword(const int index)
+{
+    if(index < 0 || LogUtils::Keywords().size() == 0 || index >= LogUtils::Keywords().size())
+        return;
+
+    // m_resultModel 直接按序更新
+    static int s_result_model_index = 0;
+    s_result_model_index = 0;
+
+    // 创建并启动工作线程
+    m_thread = new QThread(this);
+    m_logLoaderThread = new LogLoaderThread;
+    m_logLoaderThread->moveToThread(m_thread);
+    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, &LogLoaderThread::recolorful);
+    QObject::connect(m_logLoaderThread,
+                     &LogLoaderThread::updateSingleLineColor,
+                     this,
+                     [&](const int lineIndex,
+                         const QString log) {
+                         m_logModel->updateRow(lineIndex, log);
+                         /*m_resultModel->updateRow(s_result_model_index++, log);*/
+                     });
+
+    // 设置查询属性
+    m_logLoaderThread->setRecolorfulKeywordIndex(index);
+
+    // 清空上一次结果
+    /*m_resultModel->clearAll();*/
+
+    // 开始更新
+    m_thread->start();
 }
 
 void LogSearcher::find(const QString& targetKeyword)
@@ -224,9 +254,9 @@ void LogSearcher::find(const QString& targetKeyword)
     // 启动并行搜索
     const QVector<QPair<int, QString>> lines = m_logLoaderThread->getAllLines();
     QFuture<LogSearcher::LineNumber_Line_Pair> future = QtConcurrent::mapped(
-                lines,
-                [targetKeyword, this](const LineNumber_Line_Pair& line) { return find__(line, targetKeyword); }
-    );
+        lines,
+        [targetKeyword, this](const LineNumber_Line_Pair& line) { return find__(line, targetKeyword); }
+        );
 
     watcher.setFuture(future);
 }
