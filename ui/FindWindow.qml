@@ -11,15 +11,15 @@ Window {
     modality: Qt.WindowModal
 
     function setFindText(text) {
-        textEdit.text = text;
-        textEdit.cursorPosition = textEdit.text.length;
+        textField.text = text;
+        textField.cursorPosition = textField.text.length;
     }
 
     // 背景
     Rectangle { anchors.fill: parent; color: "white"; }
 
-    TextEdit {
-        id: textEdit
+    TextField {
+        id: textField
         anchors {
             left: parent.left
             right: parent.right
@@ -35,7 +35,7 @@ Window {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
 
-        onAccepted: { $LogSearcher.find(textEdit.text); close(); }
+        onAccepted: { $LogSearcher.find(textField.text); close(); }
     }
 
     Button {
@@ -48,8 +48,8 @@ Window {
         text: "Find"
         font.family: "Consolas"
         font.pixelSize: 20
-        onClicked: { $LogSearcher.find(textEdit.text); close(); }
+        onClicked: { $LogSearcher.find(textField.text); close(); }
     }
 
-    Component.onCompleted: textEdit.forceActiveFocus()
+    Component.onCompleted: textField.forceActiveFocus()
 }
