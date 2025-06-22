@@ -68,20 +68,24 @@ bool LogUtils::ConvertHTML(const QString& normalLine, QString& htmlLine, const Q
 
 QColor LogUtils::GenerateRandomColorRGB_Safe()
 {
-    QRandomGenerator* random = QRandomGenerator::global();
+    static QVector<QColor> colors = {};
+    if(colors.isEmpty())
+    {
+        const float goldenRatio = 0.618033988749895f; // 黄金比例
+        float hue = QRandomGenerator::global()->generateDouble(); // 随机起点
 
-    // 确保至少一个通道接近255，其他通道较低
-    int mainChannel = random->bounded(3);
-    int colors[3] = {0};
-
-    colors[mainChannel] = random->bounded(56) + 200;  // 200-255
-
-    // 其他两个通道在0-100之间
-    for(int i = 0; i < 3; i++) {
-        if(i != mainChannel) {
-            colors[i] = random->bounded(101);
+        for(int i = 0; i < 50; i++) {
+            hue += goldenRatio;
+            hue = std::fmod(hue, 1.0f);
+            colors.append(QColor::fromHsvF(
+                hue,                                                      // 色相
+                0.7f + QRandomGenerator::global()->generateDouble()*0.3f, // 饱和度70-100%
+                0.8f + QRandomGenerator::global()->generateDouble()*0.2f  // 亮度80-100%
+                ));
         }
     }
 
-    return QColor(colors[0], colors[1], colors[2]);
+    static int generateCount = 0;
+
+    return colors[generateCount++ % colors.size()];
 }
