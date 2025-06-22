@@ -34,7 +34,7 @@ Rectangle {
         text: "Let's search it!"
         //font.family: "Consolas"
         font.bold: true
-        font.pixelSize: root.width / 15
+        font.pixelSize: root.width / 20
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         color: "#D81E06"
