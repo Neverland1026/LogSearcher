@@ -23,49 +23,57 @@ QMap<QString, QString> LogUtils::FormatedKeywordMap()
     return m_formatedSearchTarget;
 }
 
-bool LogUtils::ConvertHTML(const QString& normalLine, QString& htmlLine, const QString specifiedFindTarget /*= ""*/)
+bool LogUtils::ConvertHTML(const QString& normalLine,
+                           int& beginIndex,
+                           int& endIndex,
+                           QColor& color,
+                           const QString& specifiedFindTarget /*= ""*/)
 {
-    FormatedKeywordMap();
+    QMap<QString, QString> formatedSearchTarget = m_formatedSearchTarget;
+    if(!specifiedFindTarget.isEmpty())
+    {
+        formatedSearchTarget = { { specifiedFindTarget, "#FF0000" } };
+    }
 
+    for(auto iter = formatedSearchTarget.begin(); iter != formatedSearchTarget.end(); ++iter)
+    {
+        beginIndex = normalLine.indexOf(iter.key());
+        if(beginIndex >= 0)
+        {
+            endIndex = beginIndex + iter.key().size();
+            color = iter.value();
+            return true;
+        }
+    }
+
+    beginIndex = endIndex = -1;
+
+    return false;
+}
+
+bool LogUtils::ConvertHTML(const QString& normalLine,
+                           const QString& specifiedFindTarget,
+                           QString& htmlLine)
+{
     htmlLine = normalLine;
 
-    QString keyword = "";
-    QString color = "";
-    int insertIndex = -1;
+    int beginPos;
+    int endPos;
+    QColor color;
+    const bool&& containKeyword = LogUtils::ConvertHTML(htmlLine, beginPos, endPos, color, specifiedFindTarget);
 
-    if(specifiedFindTarget.isEmpty())
+    if(containKeyword)
     {
-        for(auto iter = m_formatedSearchTarget.begin(); iter != m_formatedSearchTarget.end(); ++iter)
-        {
-            insertIndex = htmlLine.indexOf(iter.key());
-            if(insertIndex >= 0)
-            {
-                keyword = iter.key();
-                color = iter.value();
-
-                // 每行最多高亮一个关键字，多了会引起混乱
-                break;
-            }
-        }
+        htmlLine.insert(endPos, QString("%1").arg("</b></font>"));
+        htmlLine.insert(beginPos, QString("<font color='%1'><b>").arg("#FF0000"));
+        htmlLine = QString("<font color='#000000'>%1</font>").arg(htmlLine);
     }
     else
     {
-        insertIndex = htmlLine.indexOf(specifiedFindTarget);
-        keyword = specifiedFindTarget;
-        color = "#FF0000";
-    }
-
-    if(insertIndex < 0)
-    {
         htmlLine = QString("<font color='#000000'>%1</font>").arg(htmlLine);
-        return false;
     }
 
-    htmlLine.insert(insertIndex + keyword.size(), QString("%1").arg("</b></font>"));
-    htmlLine.insert(insertIndex, QString("<font color='%1'><b>").arg(color));
-    htmlLine = QString("<font color='#000000'>%1</font>").arg(htmlLine);
-
-    return true;
+    return containKeyword;
 }
 
 QColor LogUtils::GenerateRandomColorRGB_Safe()

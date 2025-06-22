@@ -77,12 +77,17 @@ void LogSearcher::insertKeyword(const int index, const QString& keyword, const Q
         LogUtils::Keywords()[index] = { keyword, finalColor };
     }
 
+    LogUtils::FormatedKeywordMap();
+
     refreshSettings__();
 }
 
 void LogSearcher::removeKeyword(const int index)
 {
     LogUtils::Keywords().erase(std::next(LogUtils::Keywords().begin(), index));
+
+    LogUtils::FormatedKeywordMap();
+
     refreshSettings__();
 
     emit removeKeywordFinish(index);
@@ -200,7 +205,7 @@ void LogSearcher::find(const QString& targetKeyword)
             if(!results[i].second.isEmpty())
             {
                 QString dstLine;
-                LogUtils::ConvertHTML(results[i].second, dstLine, targetKeyword);
+                LogUtils::ConvertHTML(results[i].second, targetKeyword, dstLine);
 
 #pragma omp ordered
                 {

@@ -7,6 +7,10 @@
 
 void LogLoaderThread::analyze()
 {
+    m_fileContent.resize(0);
+    m_fileAllLines.resize(0);
+    m_lineInfos.resize(0);
+
     mapFile__();
     process__();
 }
@@ -47,9 +51,9 @@ void LogLoaderThread::process__()
 
     // 按照换行符分隔
     const QStringList&& qstrlist = m_fileContent.split("\r\n");
-    for(int i = 0; i < qstrlist.size(); ++i)
+    for(int lineIndex = 0; lineIndex < qstrlist.size(); ++lineIndex)
     {
-        m_fileAllLines.emplace_back(i, qstrlist[i]);
+        m_fileAllLines.emplace_back(lineIndex, qstrlist[lineIndex]);
     }
 
     // 推测行号宽度
@@ -63,14 +67,25 @@ void LogLoaderThread::process__()
 
 // 日志解析
 #pragma omp parallel for
-    for(int i = 0; i < m_fileAllLines.size(); ++i)
+    for(int lineIndex = 0; lineIndex < m_fileAllLines.size(); ++lineIndex)
     {
-        QString dstLine;
-        const bool&& containKeyword = LogUtils::ConvertHTML(m_fileAllLines[i].second, dstLine);
+        int beginPos;
+        int endPos;
+        QColor color;
+        const bool&& containKeyword = LogUtils::ConvertHTML(m_fileAllLines[lineIndex].second, beginPos, endPos, color);
 
 #pragma omp ordered
         {
-            emit newLogAvailable(containKeyword, i, dstLine);
+            QString dstLine = m_fileAllLines[lineIndex].second;
+            if(containKeyword)
+            {
+                m_lineInfos.emplace_back(lineIndex, m_fileAllLines[lineIndex].second, beginPos, endPos, color);
+                dstLine.insert(endPos, QString("%1").arg("</b></font>"));
+                dstLine.insert(beginPos, QString("<font color='%1'><b>").arg(color.name()));
+                dstLine = QString("<font color='#000000'>%1</font>").arg(dstLine);
+            }
+
+            emit newLogAvailable(containKeyword, lineIndex, dstLine);
         }
     }
 

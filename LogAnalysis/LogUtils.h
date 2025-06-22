@@ -15,7 +15,14 @@ public:
     static QMap<QString, QString> FormatedKeywordMap();
 
     // 将普通字符串转转化为HTML字符串
-    static bool ConvertHTML(const QString& normalLine, QString& htmlLine, const QString findTarget = "");
+    static bool ConvertHTML(const QString& normalLine,
+                            int& beginIndex,
+                            int& endIndex,
+                            QColor& color,
+                            const QString& specifiedFindTarget = "");
+    static bool ConvertHTML(const QString& normalLine,
+                            const QString& specifiedFindTarget,
+                            QString& htmlLine);
 
     // 生成随机色
     static QColor GenerateRandomColorRGB_Safe();

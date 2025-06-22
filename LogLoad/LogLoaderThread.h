@@ -5,6 +5,7 @@
 #include <QString>
 #include <QMap>
 #include <QVector>
+#include <QColor>
 
 class LogLoaderThread : public QObject
 {
@@ -53,6 +54,34 @@ private:
 
     // 分割后的文本內容
     QVector<QPair<int, QString>> m_fileAllLines = {};
+
+    // 检索到关键字的行信息
+    struct LineInfo
+    {
+        int lineIndex = -1;
+        QString line = "";
+        int beginPos = -1;
+        int endPos = -1;
+        QColor color = "#FFFFFF";
+
+        LineInfo()
+        {
+            this->lineIndex = -1;
+            this->line = "";
+            this->beginPos = -1;
+            this->endPos = -1;
+            this->color = "#FFFFFF";
+        }
+        LineInfo(const int lineIndex, const QString& line, const int beginPos, const int endPos, const QColor& color)
+        {
+            this->lineIndex = lineIndex;
+            this->line = line;
+            this->beginPos = beginPos;
+            this->endPos = endPos;
+            this->color = color;
+        }
+    };
+    QVector<LineInfo> m_lineInfos = {};
 
 };
 
