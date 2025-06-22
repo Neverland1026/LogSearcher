@@ -14,5 +14,6 @@
         <file>ui/LogContentModifiedRemind.qml</file>
         <file>ui/SpecifiedLineNumberWindow.qml</file>
         <file>image/logo.svg</file>
+        <file>image/log.svg</file>
     </qresource>
 </RCC>

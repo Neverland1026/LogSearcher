@@ -1,6 +1,7 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Dialogs
+import Qt5Compat.GraphicalEffects
 
 // WelcomePage
 Rectangle {
@@ -19,7 +20,7 @@ Rectangle {
         sourceSize.width: width * 2
         sourceSize.height: height * 2
         fillMode: Image.PreserveAspectFit
-        source: "qrc:/image/logo.svg"
+        source: "qrc:/image/log.svg"
 
         MouseArea {
             anchors.fill: parent
@@ -31,13 +32,68 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: (parent.height - image.height) / 2 / 2
-        text: "Let's search it!"
+        text: ""//"Let's search it!"
         //font.family: "Consolas"
         font.bold: true
         font.pixelSize: root.width / 20
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         color: "#D81E06"
+    }
+
+    Item {
+        id: item
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: (parent.height - image.height) / 2 / 2
+
+        property string fullText: "Let's search it!"
+        property string displayText: ""
+        property bool showCursor: true
+
+        Row {
+            anchors.centerIn: parent
+            spacing: 2
+
+            Text {
+                text: item.displayText
+                //font.family: "Consolas"
+                color: "#D81E06"
+                font.bold: true
+                font.pixelSize: root.width / 20
+            }
+
+            Rectangle {
+                width: 2
+                height: 30
+                color: "black"
+                visible: item.showCursor && item.displayText.length < item.fullText.length
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        Timer {
+            id: typeTimer
+            interval: 10
+            repeat: true
+            running: true
+            onTriggered: {
+                if (item.displayText.length < item.fullText.length) {
+                    item.displayText = item.fullText.substring(0, item.displayText.length + 1);
+                } else {
+                    stop();
+                }
+            }
+        }
+
+        Timer {
+            id: cursorTimer
+            interval: 50
+            repeat: true
+            running: true
+            onTriggered: item.showCursor = !item.showCursor
+        }
     }
 
     FileDialog {
@@ -50,4 +106,5 @@ Rectangle {
             $LogSearcher.openLog(fileDialog.selectedFile.toString());
         }
     }
+
 }
