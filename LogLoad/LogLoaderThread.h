@@ -62,7 +62,7 @@ private:
         QString line = "";
         int beginPos = -1;
         int endPos = -1;
-        QColor color = "#FFFFFF";
+        QString color = "#FFFFFF";
 
         LineInfo()
         {
@@ -70,9 +70,9 @@ private:
             this->line = "";
             this->beginPos = -1;
             this->endPos = -1;
-            this->color = "#FFFFFF";
+            this->color = "#000000";
         }
-        LineInfo(const int lineIndex, const QString& line, const int beginPos, const int endPos, const QColor& color)
+        LineInfo(const int lineIndex, const QString& line, const int beginPos, const int endPos, const QString& color)
         {
             this->lineIndex = lineIndex;
             this->line = line;
@@ -80,8 +80,20 @@ private:
             this->endPos = endPos;
             this->color = color;
         }
+        QString colorful()
+        {
+            if(beginPos < 0)
+                return QString("<font color='#000000'>%1</font>").arg(this->line);
+
+            QString dstLine = this->line;
+            dstLine.insert(endPos, QString("%1").arg("</b></font>"));
+            dstLine.insert(beginPos, QString("<font color='%1'><b>").arg(color));
+            dstLine = QString("<font color='#000000'>%1</font>").arg(dstLine);
+
+            return dstLine;
+        }
     };
-    QVector<LineInfo> m_lineInfos = {};
+    QVector<LineInfo> m_keyLineInfos = {};
 
 };
 

@@ -26,7 +26,7 @@ QMap<QString, QString> LogUtils::FormatedKeywordMap()
 bool LogUtils::ConvertHTML(const QString& normalLine,
                            int& beginIndex,
                            int& endIndex,
-                           QColor& color,
+                           QString& color,
                            const QString& specifiedFindTarget /*= ""*/)
 {
     QMap<QString, QString> formatedSearchTarget = m_formatedSearchTarget;
@@ -47,6 +47,7 @@ bool LogUtils::ConvertHTML(const QString& normalLine,
     }
 
     beginIndex = endIndex = -1;
+    color = "#000000";
 
     return false;
 }
@@ -59,7 +60,7 @@ bool LogUtils::ConvertHTML(const QString& normalLine,
 
     int beginPos;
     int endPos;
-    QColor color;
+    QString color;
     const bool&& containKeyword = LogUtils::ConvertHTML(htmlLine, beginPos, endPos, color, specifiedFindTarget);
 
     if(containKeyword)

@@ -9,7 +9,7 @@ void LogLoaderThread::analyze()
 {
     m_fileContent.resize(0);
     m_fileAllLines.resize(0);
-    m_lineInfos.resize(0);
+    m_keyLineInfos.resize(0);
 
     mapFile__();
     process__();
@@ -69,23 +69,22 @@ void LogLoaderThread::process__()
 #pragma omp parallel for
     for(int lineIndex = 0; lineIndex < m_fileAllLines.size(); ++lineIndex)
     {
-        int beginPos;
-        int endPos;
-        QColor color;
-        const bool&& containKeyword = LogUtils::ConvertHTML(m_fileAllLines[lineIndex].second, beginPos, endPos, color);
+        LineInfo lineInfo;
+        lineInfo.lineIndex = lineIndex;
+        lineInfo.line = m_fileAllLines[lineIndex].second;
+        const bool&& containKeyword = LogUtils::ConvertHTML(m_fileAllLines[lineIndex].second,
+                                                            lineInfo.beginPos,
+                                                            lineInfo.endPos,
+                                                            lineInfo.color);
 
 #pragma omp ordered
         {
-            QString dstLine = m_fileAllLines[lineIndex].second;
-            if(containKeyword)
+            if(lineInfo.beginPos >= 0)
             {
-                m_lineInfos.emplace_back(lineIndex, m_fileAllLines[lineIndex].second, beginPos, endPos, color);
-                dstLine.insert(endPos, QString("%1").arg("</b></font>"));
-                dstLine.insert(beginPos, QString("<font color='%1'><b>").arg(color.name()));
-                dstLine = QString("<font color='#000000'>%1</font>").arg(dstLine);
+                m_keyLineInfos.emplace_back(lineInfo.lineIndex, lineInfo.line, lineInfo.beginPos, lineInfo.endPos, lineInfo.color);
             }
 
-            emit newLogAvailable(containKeyword, lineIndex, dstLine);
+            emit newLogAvailable(containKeyword, lineIndex, lineInfo.colorful());
         }
     }
 

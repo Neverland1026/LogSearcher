@@ -18,7 +18,7 @@ public:
     static bool ConvertHTML(const QString& normalLine,
                             int& beginIndex,
                             int& endIndex,
-                            QColor& color,
+                            QString& color,
                             const QString& specifiedFindTarget = "");
     static bool ConvertHTML(const QString& normalLine,
                             const QString& specifiedFindTarget,
