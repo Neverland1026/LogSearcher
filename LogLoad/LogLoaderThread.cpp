@@ -49,6 +49,7 @@ void LogLoaderThread::mapFile__()
             if(data)
             {
                 m_fileContent = QString(data);
+                m_fileContent.replace('\0', ' ');
             }
 
             file.unmap(memory);
