@@ -110,6 +110,21 @@ Rectangle {
                     rightMenu.existToBeFindKeyword = (selectedText !== "");
                 }
 
+                function find_and_select() {
+                    if(root.selectedText !== "") {
+                        var beginPos = lineContent.indexOf(root.selectedText);
+                        if(beginPos >= 0) {
+                            //textEdit.select(beginPos, beginPos + root.selectedText.length);
+                            textEdit.select(1, 5);
+                        }
+                    } else {
+                        textEdit.deselect();
+                    }
+                }
+
+                property string rootSelectedText: root.selectedText
+                //onRootSelectedTextChanged: find_and_select()
+
                 TapHandler {
                     cursorShape: Qt.BusyCursor
                     onDoubleTapped: {
@@ -199,6 +214,7 @@ Rectangle {
         }
     }
 
+    // 延时高亮跳转到的行，不延时会有问题
     Timer {
         id: timer
         running: false;
