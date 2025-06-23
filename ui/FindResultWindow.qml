@@ -57,9 +57,10 @@ Window {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         color: "black"
-        text: ("匹配到 %1 项，耗时 %2ms").arg(findCount).arg(findTimeCost)
+        text: ("<font color='#000000'>匹配到 <b>%1</b> 项，耗时 <b>%2ms</b></font>").arg(findCount).arg(findTimeCost)
         font.family: "Consolas"
         font.pixelSize: 18
+        textFormat: TextEdit.RichText
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
     }
