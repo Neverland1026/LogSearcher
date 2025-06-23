@@ -18,6 +18,8 @@ Rectangle {
 
     property string selectedText: ""
 
+    property bool selectedTextIsKeyword: false
+
     property int lastPosition: -1
 
     property alias modelCount: listView.count
@@ -107,15 +109,22 @@ Rectangle {
 
                 onSelectedTextChanged: {
                     root.selectedText = selectedText;
+                    root.selectedTextIsKeyword = $LogSearcher.isKeyword(root.selectedText);
                     rightMenu.existToBeFindKeyword = (selectedText !== "");
                 }
 
                 function find_and_select() {
                     if(root.selectedText !== "") {
                         var beginPos = lineContent.indexOf(root.selectedText);
+                        var beginBias = root.selectedTextIsKeyword ? (22 + 22 + 4) : 22;
+                        var endPos = beginPos + root.selectedText.length;
+                        var endBias = 0;
                         if(beginPos >= 0) {
-                            //textEdit.select(beginPos, beginPos + root.selectedText.length);
-                            textEdit.select(1, 5);
+                            //textEdit.select(beginPos - beginBias, beginPos - beginBias + root.selectedText.length);
+                            //textEdit.select(12, 15);
+                            //if(index === 0) {
+                            //    console.log("beginPos =", beginPos, "beginBias =", beginBias, "length =", root.selectedText.length);
+                            //}
                         }
                     } else {
                         textEdit.deselect();
@@ -123,7 +132,7 @@ Rectangle {
                 }
 
                 property string rootSelectedText: root.selectedText
-                //onRootSelectedTextChanged: find_and_select()
+                onRootSelectedTextChanged: find_and_select()
 
                 TapHandler {
                     cursorShape: Qt.BusyCursor

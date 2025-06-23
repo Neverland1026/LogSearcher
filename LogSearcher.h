@@ -51,6 +51,9 @@ public:
     // 查找指定关键字
     Q_INVOKABLE void find(const QString& targetKeyword);
 
+    // 某字段是否为关键字
+    Q_INVOKABLE bool isKeyword(const QString& word);
+
     // 置顶切换
     Q_INVOKABLE void toggleTOPMOST();
 

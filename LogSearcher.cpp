@@ -255,6 +255,16 @@ void LogSearcher::find(const QString& targetKeyword)
     watcher.setFuture(future);
 }
 
+bool LogSearcher::isKeyword(const QString& word)
+{
+    for(auto iter = LogUtils::Keywords().begin(); iter != LogUtils::Keywords().end(); ++iter)
+    {
+        if(word == iter.value().first)
+            return true;
+    }
+    return false;
+}
+
 void LogSearcher::toggleTOPMOST()
 {
     static bool TOPMOST__ = false;
