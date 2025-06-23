@@ -76,7 +76,7 @@ ApplicationWindow {
             if(!findResultWindowAlreadyCreated) {
                 var component = Qt.createComponent("qrc:/ui/FindResultWindow.qml");
                 if (component.status === Component.Ready) {
-                    findResultWindow = component.createObject(window);
+                    findResultWindow = component.createObject(/*window*/);
                     findResultWindow.show();
 
                     findResultWindowAlreadyCreated = true;
