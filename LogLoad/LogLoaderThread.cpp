@@ -7,7 +7,6 @@
 
 void LogLoaderThread::analyze()
 {
-    m_fileContent.resize(0);
     LogUtils::SplitFileAllLines().resize(0);
     LogUtils::KeyLineInfos().resize(0);
 
@@ -48,8 +47,16 @@ void LogLoaderThread::mapFile__()
             const char *data = reinterpret_cast<const char*>(memory);
             if(data)
             {
-                m_fileContent = QString(data);
-                /*m_fileContent.replace('\0', ' ');*/
+                // 直接赋值会导致 '\0' 截断
+                /*m_fileContent = QString(data);*/
+
+                // 直接赋值给 QString 会导致 '\0' 截断，QByteArray::split() 会正确处理内部的 '\0'
+                QByteArray byteArray(data, fileSize);  // 明确指定长度，避免 \0 截断
+                const QList<QByteArray> splitByteArray = byteArray.split('\n');
+                for(int lineIndex = 0; lineIndex < splitByteArray.size(); ++lineIndex)
+                {
+                    LogUtils::SplitFileAllLines().emplace_back(lineIndex, splitByteArray[lineIndex]);
+                }
             }
 
             file.unmap(memory);
@@ -62,15 +69,8 @@ void LogLoaderThread::mapFile__()
 
 void LogLoaderThread::process__()
 {
-    if(m_fileContent.isEmpty())
+    if(LogUtils::SplitFileAllLines().isEmpty())
         return;
-
-    // 按照换行符分隔
-    const QStringList&& qstrlist = m_fileContent.split("\n");
-    for(int lineIndex = 0; lineIndex < qstrlist.size(); ++lineIndex)
-    {
-        LogUtils::SplitFileAllLines().emplace_back(lineIndex, qstrlist[lineIndex]);
-    }
 
     // 推测行号宽度
     int count = 0;
@@ -81,7 +81,7 @@ void LogLoaderThread::process__()
     }
     emit lineNumWidth(count);
 
-// 日志解析
+    // 日志解析
 #pragma omp parallel for
     for(int lineIndex = 0; lineIndex < LogUtils::SplitFileAllLines().size(); ++lineIndex)
     {

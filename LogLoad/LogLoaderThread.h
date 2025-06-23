@@ -50,9 +50,6 @@ private:
     // 重新着色的关键字索引
     int m_recolorfulKeywordIndex = -1;
 
-    // 文本内容
-    QString m_fileContent = {};
-
 };
 
 #endif // LOGLOADERTHREAD_H
