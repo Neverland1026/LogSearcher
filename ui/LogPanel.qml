@@ -20,6 +20,8 @@ Rectangle {
 
     property bool selectedTextIsKeyword: false
 
+    property int curActiveLineIndex: -1
+
     property int lastPosition: -1
 
     property alias modelCount: listView.count
@@ -108,6 +110,7 @@ Rectangle {
                 font.pixelSize: dynamicFontSize
 
                 onSelectedTextChanged: {
+                    root.curActiveLineIndex = lineNumber;
                     root.selectedText = selectedText;
                     root.selectedTextIsKeyword = $LogSearcher.isKeyword(root.selectedText);
                     rightMenu.existToBeFindKeyword = (selectedText !== "");
@@ -115,7 +118,7 @@ Rectangle {
 
                 function find_and_select() {
                     var retVal = $LogSearcher.getKeywordPos(lineNumber, root.selectedText);
-                    if(retVal[0] >= 0) {
+                    if(retVal[0] >= 0 && lineNumber !== root.curActiveLineIndex) {
                         textEdit.select(retVal[0], retVal[1]);
                     } else {
                         textEdit.deselect();
@@ -123,7 +126,7 @@ Rectangle {
                 }
 
                 property string rootSelectedText: root.selectedText
-                onRootSelectedTextChanged: find_and_select()
+                //onRootSelectedTextChanged: find_and_select()
 
                 TapHandler {
                     cursorShape: Qt.BusyCursor
