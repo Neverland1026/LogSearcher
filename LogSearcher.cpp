@@ -127,20 +127,20 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
                      &LogLoaderThread::lineNumWidth,
                      this,
                      [&](int width) {
-                         emit lineNumWidth(width);
-                     });
+        emit lineNumWidth(width);
+    });
     QObject::connect(m_logLoaderThread,
                      &LogLoaderThread::newLogAvailable,
                      this,
                      [&](const bool containKeyword,
-                         const int lineIndex,
-                         const QString log) {
-                         m_logModel->appendLog(-1, log);
-                         if(containKeyword)
-                         {
-                             m_summaryModel->appendLog(lineIndex, log);
-                         }
-                     });
+                     const int lineIndex,
+                     const QString log) {
+        m_logModel->appendLog(-1, log);
+        if(containKeyword)
+        {
+            m_summaryModel->appendLog(lineIndex, log);
+        }
+    });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(m_focusedLog); });
 
     // 设置查询属性
@@ -197,11 +197,11 @@ void LogSearcher::recolorfulKeyword(const int index)
                      &LogLoaderThread::updateSingleLineColor,
                      this,
                      [&](const int lineIndex,
-                         const int summaryLineIndex,
-                         const QString log) {
-                         m_logModel->updateRow(lineIndex, log);
-                         m_summaryModel->updateRow(summaryLineIndex, log);
-                     });
+                     const int summaryLineIndex,
+                     const QString log) {
+        m_logModel->updateRow(lineIndex, log);
+        m_summaryModel->updateRow(summaryLineIndex, log);
+    });
 
     // 设置查询属性
     m_logLoaderThread->setRecolorfulKeywordIndex(index);
@@ -248,11 +248,30 @@ void LogSearcher::find(const QString& targetKeyword)
     // 启动并行搜索
     const QVector<QPair<int, QString>> lines = m_logLoaderThread->getAllLines();
     QFuture<LogSearcher::LineNumber_Line_Pair> future = QtConcurrent::mapped(
-        lines,
-        [targetKeyword, this](const LineNumber_Line_Pair& line) { return find__(line, targetKeyword); }
-        );
+                lines,
+                [targetKeyword, this](const LineNumber_Line_Pair& line) { return find__(line, targetKeyword); }
+    );
 
     watcher.setFuture(future);
+}
+
+void LogSearcher::toggleTOPMOST()
+{
+    static bool TOPMOST__ = false;
+
+    TOPMOST__ = !TOPMOST__;
+    if(TOPMOST__)
+    {
+        ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
+                       HWND_TOPMOST, 0, 0, 0, 0,
+                       SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+    }
+    else
+    {
+        ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
+                       HWND_NOTOPMOST, 0, 0, 0, 0,
+                       SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+    }
 }
 
 LogSearcher::LineNumber_Line_Pair LogSearcher::find__(const LineNumber_Line_Pair& line, const QString &keyword)

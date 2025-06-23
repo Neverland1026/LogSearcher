@@ -43,6 +43,20 @@ Popup {
                 text: "打开次新服务端日志"
                 func: function() { customMenu.sigOpenNextLatestLog(); }
             }
+            ListElement {
+                text: "置顶/取消置顶"
+                func: function() { $LogSearcher.toggleTOPMOST(); }
+            }
+            ListElement {
+                text: "全屏/取消全屏"
+                func: function() {
+                    if (window.visibility === Window.Maximized) {
+                        window.visibility = Window.Windowed;
+                    } else {
+                        window.visibility = Window.Maximized;
+                    }
+                }
+            }
         }
 
         delegate: Rectangle {

@@ -51,6 +51,9 @@ public:
     // 查找指定关键字
     Q_INVOKABLE void find(const QString& targetKeyword);
 
+    // 置顶切换
+    Q_INVOKABLE void toggleTOPMOST();
+
 protected:
 
     // 查找
