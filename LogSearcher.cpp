@@ -264,6 +264,20 @@ bool LogSearcher::isKeyword(const QString& word)
     return false;
 }
 
+QList<int> LogSearcher::getKeywordPos(const int lineIndex, const QString& word)
+{
+    if(lineIndex < 0 || lineIndex >= LogUtils::SplitFileAllLines().size() || word.isEmpty())
+        return { -1, -1 };
+
+    int beginPos = LogUtils::SplitFileAllLines()[lineIndex].second.indexOf(word);
+    if(beginPos >= 0)
+    {
+        const int endPos = beginPos + word.length();
+        return { beginPos, endPos };
+    }
+    return { -1, -1 };
+}
+
 void LogSearcher::toggleTOPMOST()
 {
     static bool TOPMOST__ = false;

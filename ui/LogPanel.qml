@@ -114,18 +114,9 @@ Rectangle {
                 }
 
                 function find_and_select() {
-                    if(root.selectedText !== "") {
-                        var beginPos = lineContent.indexOf(root.selectedText);
-                        var beginBias = root.selectedTextIsKeyword ? (22 + 22 + 4) : 22;
-                        var endPos = beginPos + root.selectedText.length;
-                        var endBias = 0;
-                        if(beginPos >= 0) {
-                            //textEdit.select(beginPos - beginBias, beginPos - beginBias + root.selectedText.length);
-                            //textEdit.select(12, 15);
-                            //if(index === 0) {
-                            //    console.log("beginPos =", beginPos, "beginBias =", beginBias, "length =", root.selectedText.length);
-                            //}
-                        }
+                    var retVal = $LogSearcher.getKeywordPos(lineNumber, root.selectedText);
+                    if(retVal[0] >= 0) {
+                        textEdit.select(retVal[0], retVal[1]);
                     } else {
                         textEdit.deselect();
                     }

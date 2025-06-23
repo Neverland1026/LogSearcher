@@ -54,6 +54,9 @@ public:
     // 某字段是否为关键字
     Q_INVOKABLE bool isKeyword(const QString& word);
 
+    // 查询某个关键字在指定行的索引
+    Q_INVOKABLE QList<int> getKeywordPos(const int lineIndex, const QString& word);
+
     // 置顶切换
     Q_INVOKABLE void toggleTOPMOST();
 
