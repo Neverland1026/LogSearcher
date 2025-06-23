@@ -61,6 +61,9 @@ public:
                             const QString& specifiedFindTarget,
                             QString& htmlLine);
 
+    // 分割后的文本內容
+    static QVector<QPair<int, QString>>& SplitFileAllLines();
+
     // 获取检索到关键字的行信息
     static QVector<LogUtils::LineInfo>& KeyLineInfos();
 
@@ -74,6 +77,9 @@ private:
 
     // 格式转换
     static QMap<QString, QPair<int, QString>> m_transformedSearchTarget;
+
+    // 分割后的文本內容
+    static QVector<QPair<int, QString>> m_splitFileAllLines;
 
     // 检索到关键字的行信息
     static QVector<LineInfo> m_keyLineInfos;

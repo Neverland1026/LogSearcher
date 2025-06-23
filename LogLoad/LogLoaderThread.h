@@ -24,9 +24,6 @@ public slots:
     // 关键字重着色
     void recolorful();
 
-    // 返回日志引用
-    inline const QVector<QPair<int, QString>>& getAllLines() const { return m_fileAllLines; }
-
 signals:
 
     void lineNumWidth(int width);
@@ -55,9 +52,6 @@ private:
 
     // 文本内容
     QString m_fileContent = {};
-
-    // 分割后的文本內容
-    QVector<QPair<int, QString>> m_fileAllLines = {};
 
 };
 

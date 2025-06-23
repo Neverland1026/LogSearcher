@@ -8,7 +8,7 @@
 void LogLoaderThread::analyze()
 {
     m_fileContent.resize(0);
-    m_fileAllLines.resize(0);
+    LogUtils::SplitFileAllLines().resize(0);
     LogUtils::KeyLineInfos().resize(0);
 
     mapFile__();
@@ -49,7 +49,7 @@ void LogLoaderThread::mapFile__()
             if(data)
             {
                 m_fileContent = QString(data);
-                m_fileContent.replace('\0', ' ');
+                /*m_fileContent.replace('\0', ' ');*/
             }
 
             file.unmap(memory);
@@ -69,12 +69,12 @@ void LogLoaderThread::process__()
     const QStringList&& qstrlist = m_fileContent.split("\n");
     for(int lineIndex = 0; lineIndex < qstrlist.size(); ++lineIndex)
     {
-        m_fileAllLines.emplace_back(lineIndex, qstrlist[lineIndex]);
+        LogUtils::SplitFileAllLines().emplace_back(lineIndex, qstrlist[lineIndex]);
     }
 
     // 推测行号宽度
     int count = 0;
-    int totalCount = m_fileAllLines.size();
+    int totalCount = LogUtils::SplitFileAllLines().size();
     while (totalCount != 0) {
         count++;
         totalCount /= 10;
@@ -83,12 +83,12 @@ void LogLoaderThread::process__()
 
 // 日志解析
 #pragma omp parallel for
-    for(int lineIndex = 0; lineIndex < m_fileAllLines.size(); ++lineIndex)
+    for(int lineIndex = 0; lineIndex < LogUtils::SplitFileAllLines().size(); ++lineIndex)
     {
         LogUtils::LineInfo lineInfo;
         lineInfo.lineIndex = lineIndex;
-        lineInfo.line = m_fileAllLines[lineIndex].second;
-        const bool&& containKeyword = LogUtils::ConvertHTML(m_fileAllLines[lineIndex].second,
+        lineInfo.line = LogUtils::SplitFileAllLines()[lineIndex].second;
+        const bool&& containKeyword = LogUtils::ConvertHTML(LogUtils::SplitFileAllLines()[lineIndex].second,
                                                             lineInfo.keywordIndex,
                                                             lineInfo.beginPos,
                                                             lineInfo.endPos);

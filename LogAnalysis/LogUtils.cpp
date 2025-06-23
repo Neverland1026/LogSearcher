@@ -3,6 +3,7 @@
 
 QMap<int, QPair<QString, QString>> LogUtils::m_searchTarget = {};
 QMap<QString, QPair<int, QString>> LogUtils::m_transformedSearchTarget = {};
+QVector<QPair<int, QString>> LogUtils::m_splitFileAllLines = {};
 QVector<LogUtils::LineInfo> LogUtils::m_keyLineInfos = {};
 
 QMap<int, QPair<QString, QString>>& LogUtils::Keywords()
@@ -17,6 +18,11 @@ void LogUtils::FormatedKeywordMap()
     {
         m_transformedSearchTarget[iter.value().first] = { iter.key(), iter.value().second };
     }
+}
+
+QVector<QPair<int, QString>>& LogUtils::SplitFileAllLines()
+{
+    return m_splitFileAllLines;
 }
 
 QVector<LogUtils::LineInfo>& LogUtils::KeyLineInfos()
@@ -92,10 +98,10 @@ QColor LogUtils::GenerateRandomColorRGB_Safe()
             hue += goldenRatio;
             hue = std::fmod(hue, 1.0f);
             colors.append(QColor::fromHsvF(
-                hue,                                                      // 色相
-                0.7f + QRandomGenerator::global()->generateDouble()*0.3f, // 饱和度70-100%
-                0.8f + QRandomGenerator::global()->generateDouble()*0.2f  // 亮度80-100%
-                ));
+                              hue,                                                      // 色相
+                              0.7f + QRandomGenerator::global()->generateDouble()*0.3f, // 饱和度70-100%
+                              0.8f + QRandomGenerator::global()->generateDouble()*0.2f  // 亮度80-100%
+                              ));
         }
     }
 

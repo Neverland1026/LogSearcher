@@ -246,9 +246,8 @@ void LogSearcher::find(const QString& targetKeyword)
     });
 
     // 启动并行搜索
-    const QVector<QPair<int, QString>> lines = m_logLoaderThread->getAllLines();
     QFuture<LogSearcher::LineNumber_Line_Pair> future = QtConcurrent::mapped(
-                lines,
+                LogUtils::SplitFileAllLines(),
                 [targetKeyword, this](const LineNumber_Line_Pair& line) { return find__(line, targetKeyword); }
     );
 
