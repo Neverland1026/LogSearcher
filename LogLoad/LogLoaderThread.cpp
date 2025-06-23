@@ -65,7 +65,7 @@ void LogLoaderThread::process__()
         return;
 
     // 按照换行符分隔
-    const QStringList&& qstrlist = m_fileContent.split("\r\n");
+    const QStringList&& qstrlist = m_fileContent.split("\n");
     for(int lineIndex = 0; lineIndex < qstrlist.size(); ++lineIndex)
     {
         m_fileAllLines.emplace_back(lineIndex, qstrlist[lineIndex]);
