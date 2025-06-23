@@ -31,7 +31,7 @@ Window {
 
         color: "black"
         text: ""
-        font.family: "Consolas"
+        //font.family: "Consolas"
         font.pixelSize: 30
         font.bold: true
         horizontalAlignment: Text.AlignHCenter

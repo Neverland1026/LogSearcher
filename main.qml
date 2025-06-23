@@ -24,7 +24,7 @@ ApplicationWindow {
     SplitView {
         anchors { left: parent.left; right: parent.right; top: keywordTagContainer.bottom; bottom: parent.bottom; margins: 5}
         orientation: Qt.Vertical
-        LogPanel { id: logPanel; implicitHeight: parent.height * 0.7; logModel: $LogModel; }
+        LogPanel { id: logPanel; implicitHeight: parent.height * 0.5; logModel: $LogModel; }
         handle: Rectangle { implicitHeight: 5; color: "#44000000"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; } }
         LogPanel { id: summaryLogPanel; SplitView.fillWidth: true; logModel: $SummaryModel; onSigDoubleClicked: logPanel.positionViewAtIndex(lineNumber); }
     }
