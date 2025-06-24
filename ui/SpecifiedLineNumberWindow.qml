@@ -49,7 +49,7 @@ Window {
             margins: 6
         }
         text: "Jump"
-        font.family: "Consolas"
+        //font.family: "Consolas"
         font.pixelSize: 20
         onClicked: { root.sigJumpToTheSpecifiedLine(textField.text); close(); }
     }

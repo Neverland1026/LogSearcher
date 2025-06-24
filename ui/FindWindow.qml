@@ -5,7 +5,7 @@ import QtQuick.Controls 2.15
 Window {
     id: root
     width: Screen.width / 8 * 3
-    height: Screen.height / 7
+    height: Screen.height / 6
     title: "Find"
 
     modality: Qt.WindowModal
@@ -24,7 +24,7 @@ Window {
             left: parent.left
             right: parent.right
             top: parent.top
-            bottom: button.top
+            bottom: checkBoxRow.top
         }
 
         background: Rectangle { color: "transparent"; border.width: 0; }
@@ -40,6 +40,22 @@ Window {
         onAccepted: { $LogSearcher.find(textField.text); close(); }
     }
 
+    Row {
+        id: checkBoxRow
+        width: parent.width
+        height: 30
+        anchors {
+            left: parent.left
+            leftMargin: 10
+            right: parent.right
+            bottom: button.top
+        }
+        spacing: 10
+
+        CheckBox { id: checkBox1; checked: true; anchors.verticalCenter: parent.verticalCenter; text: "Case Sensitive" }
+        CheckBox { id: checkBox2; checked: true; anchors.verticalCenter: parent.verticalCenter; text: "Whole Word Wrapper" }
+    }
+
     Button {
         id: button
         height: 40
@@ -50,7 +66,7 @@ Window {
             margins: 6
         }
         text: "Find"
-        font.family: "Consolas"
+        //font.family: "Consolas"
         font.pixelSize: 20
         onClicked: { $LogSearcher.find(textField.text); close(); }
     }
