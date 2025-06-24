@@ -48,6 +48,30 @@ Rectangle {
         }
     }
 
+    function openFindWindow(findText) {
+        var component1 = Qt.createComponent("qrc:/ui/FindWindow.qml");
+        if (component1.status === Component.Ready) {
+            var findResultWindow = component1.createObject(window);
+            findResultWindow.setFindText(findText);
+            findResultWindow.show();
+        }
+    }
+
+    function openSpecifiedLineNumberWindow() {
+        var component2 = Qt.createComponent("qrc:/ui/SpecifiedLineNumberWindow.qml");
+        if (component2.status === Component.Ready) {
+            var specifiedLineNumberWindow = component2.createObject(window);
+            specifiedLineNumberWindow.show();
+
+            specifiedLineNumberWindow.sigJumpToTheSpecifiedLine.connect(function cb(lineNumber) {
+                if(lineNumber > 0 && lineNumber < modelCount) {
+                    timer.lineNumber = lineNumber - 1;
+                    timer.restart();
+                }
+            });
+        }
+    }
+
     signal sigDoubleClicked(var lineNumber);
 
     ListView {
@@ -201,7 +225,8 @@ Rectangle {
         id: rightMenu
 
         onSigFindTargetKeyword: {
-            $LogSearcher.find(root.selectedText);
+            /*root.openFindWindow(root.selectedText);*/
+            $LogSearcher.find(root.selectedText, true, false);
         }
 
         onSigAddKeyword: {
@@ -235,40 +260,24 @@ Rectangle {
                                 listView.positionViewAtBeginning();
                                 event.accepted = true;
                             } else if (event.key === Qt.Key_F) {
-                                var component1 = Qt.createComponent("qrc:/ui/FindWindow.qml");
-                                if (component1.status === Component.Ready) {
-                                    var findResultWindow = component1.createObject(window);
-                                    findResultWindow.setFindText(root.selectedText);
-                                    findResultWindow.show();
-                                }
+                                root.openFindWindow(root.selectedText);
                                 event.accepted = true;
                             } else if (event.key === Qt.Key_G) {
-                                var component2 = Qt.createComponent("qrc:/ui/SpecifiedLineNumberWindow.qml");
-                                if (component2.status === Component.Ready) {
-                                    var specifiedLineNumberWindow = component2.createObject(window);
-                                    specifiedLineNumberWindow.show();
-
-                                    specifiedLineNumberWindow.sigJumpToTheSpecifiedLine.connect(function cb(lineNumber) {
-                                        if(lineNumber > 0 && lineNumber < modelCount) {
-                                            timer.lineNumber = lineNumber - 1;
-                                            timer.restart();
-                                        }
-                                    });
-                                }
+                                root.openSpecifiedLineNumberWindow();
                                 event.accepted = true;
                             }
                         } else {
                             if (event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
-//                                console.log("__UP_DUWN__", lastPosition)
-//                                if (event.key === Qt.Key_Up) lastPosition--;
-//                                if (event.key === Qt.Key_Down) lastPosition++;
-//                                console.log("__UP_DUWN__", lastPosition)
+                                //                                console.log("__UP_DUWN__", lastPosition)
+                                //                                if (event.key === Qt.Key_Up) lastPosition--;
+                                //                                if (event.key === Qt.Key_Down) lastPosition++;
+                                //                                console.log("__UP_DUWN__", lastPosition)
 
-//                                var targetItem = listView.itemAtIndex(lastPosition - 1);
-//                                if (targetItem) {
-//                                    var newBackgroundRect = targetItem.backgroundRect;
-//                                    newBackgroundRect.color = "#1FFF0000";
-//                                }
+                                //                                var targetItem = listView.itemAtIndex(lastPosition - 1);
+                                //                                if (targetItem) {
+                                //                                    var newBackgroundRect = targetItem.backgroundRect;
+                                //                                    newBackgroundRect.color = "#1FFF0000";
+                                //                                }
 
                                 listView.currentIndex = lastPosition + 1;
                                 listView.positionViewAtIndex(lastPosition, ListView.SnapPosition);

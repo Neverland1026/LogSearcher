@@ -49,7 +49,9 @@ public:
     Q_INVOKABLE void recolorfulKeyword(const int index);
 
     // 查找指定关键字
-    Q_INVOKABLE void find(const QString& targetKeyword);
+    Q_INVOKABLE void find(const QString& targetKeyword,
+                          const bool caseSensitivity = true,
+                          const bool wholeWordWrap = true);
 
     // 某字段是否为关键字
     Q_INVOKABLE bool isKeyword(const QString& word);
@@ -64,7 +66,6 @@ protected:
 
     // 查找
     using LineNumber_Line_Pair = QPair<int, QString>;
-    LineNumber_Line_Pair find__(const LineNumber_Line_Pair& line, const QString &keyword);
 
     // 更新配置文件
     void refreshSettings__();

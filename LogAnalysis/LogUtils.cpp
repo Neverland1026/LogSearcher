@@ -1,5 +1,6 @@
 ﻿#include "LogUtils.h"
 #include <QRandomGenerator>
+#include <QRegularExpression>
 
 QMap<int, QPair<QString, QString>> LogUtils::m_searchTarget = {};
 QMap<QString, QPair<int, QString>> LogUtils::m_transformedSearchTarget = {};
@@ -18,6 +19,29 @@ void LogUtils::FormatedKeywordMap()
     {
         m_transformedSearchTarget[iter.value().first] = { iter.key(), iter.value().second };
     }
+}
+
+int LogUtils::Find(const QString& line,
+                   const QString& keyword,
+                   const bool caseSensitivity /*= true*/,
+                   const bool wholeWordWrap /*= true*/)
+{
+    if(false == wholeWordWrap)
+    {
+        return line.indexOf(keyword, caseSensitivity ? Qt::CaseSensitive : Qt::CaseInsensitive);
+    }
+
+    // 创建正则表达式，使用 \b 表示单词边界
+    QRegularExpression regex((wholeWordWrap ? "\\b" : "") + QRegularExpression::escape(keyword) + (wholeWordWrap ? "\\b" : ""));
+    regex.setPatternOptions(caseSensitivity ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
+
+    QRegularExpressionMatchIterator it = regex.globalMatch(line);
+    while (it.hasNext())
+    {
+        return it.next().capturedStart();
+    }
+
+    return -1;
 }
 
 QVector<QPair<int, QString>>& LogUtils::SplitFileAllLines()

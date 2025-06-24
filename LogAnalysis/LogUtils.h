@@ -51,6 +51,12 @@ public:
     // 格式化关键字对象
     static void FormatedKeywordMap();
 
+    // 查找
+    static int Find(const QString& line,
+                    const QString& keyword,
+                    const bool caseSensitivity = true,
+                    const bool wholeWordWrap = true);
+
     // 将普通字符串转转化为HTML字符串
     static bool ConvertHTML(const QString& normalLine,
                             int& keywordIndex,

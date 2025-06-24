@@ -210,7 +210,9 @@ void LogSearcher::recolorfulKeyword(const int index)
     m_thread->start();
 }
 
-void LogSearcher::find(const QString& targetKeyword)
+void LogSearcher::find(const QString& targetKeyword,
+                       const bool caseSensitivity /*= true*/,
+                       const bool wholeWordWrap /*= true*/)
 {
     if(targetKeyword.isEmpty())
         return;
@@ -248,7 +250,10 @@ void LogSearcher::find(const QString& targetKeyword)
     // 启动并行搜索
     QFuture<LogSearcher::LineNumber_Line_Pair> future = QtConcurrent::mapped(
                 LogUtils::SplitFileAllLines(),
-                [targetKeyword, this](const LineNumber_Line_Pair& line) { return find__(line, targetKeyword); }
+                [targetKeyword, wholeWordWrap, caseSensitivity, this](const LineNumber_Line_Pair& line)
+    {
+        return LogUtils::Find(line.second, targetKeyword, caseSensitivity, wholeWordWrap) >= 0 ? line : LineNumber_Line_Pair{};
+    }
     );
 
     watcher.setFuture(future);
@@ -295,16 +300,6 @@ void LogSearcher::toggleTOPMOST()
                        HWND_NOTOPMOST, 0, 0, 0, 0,
                        SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
     }
-}
-
-LogSearcher::LineNumber_Line_Pair LogSearcher::find__(const LineNumber_Line_Pair& line, const QString &keyword)
-{
-    if (line.second.contains(keyword))
-    {
-        return line;
-    }
-
-    return LineNumber_Line_Pair{};
 }
 
 void LogSearcher::refreshSettings__()

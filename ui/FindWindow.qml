@@ -37,7 +37,7 @@ Window {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
 
-        onAccepted: { $LogSearcher.find(textField.text); close(); }
+        onAccepted: { $LogSearcher.find(textField.text, checkBox1.checked, checkBox2.checked); close(); }
     }
 
     Row {
@@ -52,8 +52,8 @@ Window {
         }
         spacing: 10
 
-        CheckBox { id: checkBox1; checked: true; anchors.verticalCenter: parent.verticalCenter; text: "Case Sensitive" }
-        CheckBox { id: checkBox2; checked: true; anchors.verticalCenter: parent.verticalCenter; text: "Whole Word Wrapper" }
+        CheckBox { id: checkBox1; checked: true; anchors.verticalCenter: parent.verticalCenter; text: "Case sensitive" }
+        CheckBox { id: checkBox2; checked: true; anchors.verticalCenter: parent.verticalCenter; text: "Whole words only" }
     }
 
     Button {
@@ -68,7 +68,7 @@ Window {
         text: "Find"
         //font.family: "Consolas"
         font.pixelSize: 20
-        onClicked: { $LogSearcher.find(textField.text); close(); }
+        onClicked: { $LogSearcher.find(textField.text, checkBox1.checked, checkBox2.checked); close(); }
     }
 
     Component.onCompleted: textField.forceActiveFocus()
