@@ -31,14 +31,22 @@ int LogUtils::Find(const QString& line,
         return line.indexOf(keyword, caseSensitivity ? Qt::CaseSensitive : Qt::CaseInsensitive);
     }
 
-    // 创建正则表达式，使用 \b 表示单词边界
-    QRegularExpression regex((wholeWordWrap ? "\\b" : "") + QRegularExpression::escape(keyword) + (wholeWordWrap ? "\\b" : ""));
-    regex.setPatternOptions(caseSensitivity ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
+    int index = 0;
+    const int textLen = line.length();
+    const int wordLen = keyword.length();
 
-    QRegularExpressionMatchIterator it = regex.globalMatch(line);
-    while (it.hasNext())
+    while ((index = line.indexOf(keyword, index)) != -1)
     {
-        return it.next().capturedStart();
+        // 检查前一个字符是否是单词边界
+        bool leftBoundary = (index == 0) || (!line.at(index-1).isLetterOrNumber());
+
+        // 检查后一个字符是否是单词边界
+        bool rightBoundary = (index + wordLen == textLen) || (!line.at(index + wordLen).isLetterOrNumber());
+
+        if (leftBoundary && rightBoundary) {
+            return true;
+        }
+        index += wordLen; // 跳过当前匹配位置
     }
 
     return -1;
