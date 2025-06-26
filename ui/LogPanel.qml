@@ -51,7 +51,6 @@ Rectangle {
             if (lastItem1) {
                 var rect1 = lastItem1.backgroundRect;
                 rect1.color = (lastItem1.highlightLine ? root.highlightBackgroundColor : "transparent");
-                console.log("positionRecorder.first");
             }
         }
         if(positionRecorder.second >= 0) {
@@ -59,7 +58,6 @@ Rectangle {
             if (lastItem2) {
                 var rect2 = lastItem2.backgroundRect;
                 rect2.color = (lastItem2.highlightLine ? root.highlightBackgroundColor : "transparent");
-                console.log("positionRecorder.second");
             }
         }
 
@@ -133,6 +131,9 @@ Rectangle {
             flickDeceleration: 10000
             clip: true
 
+            // 不转发给任何子元素
+            Keys.forwardTo: []
+
             delegate:  Item {
                 id: item
 
@@ -157,7 +158,6 @@ Rectangle {
                     width: lineNumWidth * 10
                     text: index + 1
                     font.family: "Consolas"
-                    font.bold: parent.activeFocus
                     font.pixelSize: dynamicFontSize
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -253,6 +253,9 @@ Rectangle {
 
                             // 处理当前行
                             backgroundRect.color = root.focusBackgroundColor;
+
+                            // 重定位
+                            listView.currentIndex = index;
                         }
                     }
                 }
@@ -354,19 +357,10 @@ Rectangle {
                                 event.accepted = true;
                             }
                         } else {
+                            console.log("event.key =", event.key);
                             if (event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
-                                //                                console.log("__UP_DUWN__", lastPosition)
-                                //                                if (event.key === Qt.Key_Up) lastPosition--;
-                                //                                if (event.key === Qt.Key_Down) lastPosition++;
-                                //                                console.log("__UP_DUWN__", lastPosition)
-
-                                //                                var targetItem = listView.itemAtIndex(lastPosition - 1);
-                                //                                if (targetItem) {
-                                //                                    var newBackgroundRect = targetItem.backgroundRect;
-                                //                                    newBackgroundRect.color = "#1FFF0000";
-                                //                                }
-
                                 // 更新记录
+                                console.log("event.key === Qt.Key_Up || event.key === Qt.Key_Down")
                                 if (event.key === Qt.Key_Up) {
                                     positionRecorder.second--;
                                     positionRecorder.first--;
@@ -375,10 +369,11 @@ Rectangle {
                                     positionRecorder.first++;
                                 }
 
-                                listView.positionViewAtIndex(positionRecorder.first, ListView.SnapPosition);
+                                positionViewAtIndex(positionRecorder.first);
 
                                 event.accepted = true;
                             }
                         }
                     }
+
 }

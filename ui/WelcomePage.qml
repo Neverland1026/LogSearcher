@@ -24,7 +24,7 @@ Rectangle {
             sourceSize.height: height * 2
             fillMode: Image.PreserveAspectFit
             source: "qrc:/image/logo.svg"
-            opacity: 0.0
+            opacity: 1.0//0.0
 
             MouseArea {
                 anchors.fill: parent
@@ -46,7 +46,7 @@ Rectangle {
 
             Text {
                 id: animatedText
-                y: -500
+                y: 0//-500
                 text: "Let's search it!"
                 //font.family: "Consolas"
                 font.bold: true
@@ -73,7 +73,7 @@ Rectangle {
                     onStopped: image.opacity = 1.0
                 }
 
-                Component.onCompleted: textAnimation.start()
+                //Component.onCompleted: textAnimation.start()
             }
         }
     }
