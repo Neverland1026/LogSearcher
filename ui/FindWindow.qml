@@ -53,7 +53,7 @@ Window {
         spacing: 10
 
         CheckBox { id: checkBox1; checked: true; anchors.verticalCenter: parent.verticalCenter; text: "Case sensitive" }
-        CheckBox { id: checkBox2; checked: true; anchors.verticalCenter: parent.verticalCenter; text: "Whole words only" }
+        CheckBox { id: checkBox2; checked: false; anchors.verticalCenter: parent.verticalCenter; text: "Whole words only" }
     }
 
     Button {
