@@ -22,32 +22,43 @@ Rectangle {
 
     property int curActiveLineIndex: -1
 
-    property int lastPosition: -1
-
     property alias modelCount: listView.count
 
+    // 行索引记录
+    property var positionRecorder: QtObject {
+        property int first: -1   // 当前行索引
+        property int second: -1  // 上一行索引
+    }
+
+    // 跳转到指定行
     function positionViewAtIndex(lineNumber) {
         if(lineNumber < 0 || lineNumber >= modelCount)
             return;
 
         listView.positionViewAtIndex(lineNumber, ListView.Center);
 
-        if(lastPosition >= 0) {
-            var lastTargetItem = listView.itemAtIndex(lastPosition);
+        // 处理上一次选中的行
+        if(positionRecorder.second >= 0) {
+            var lastTargetItem = listView.itemAtIndex(positionRecorder.second);
             if (lastTargetItem) {
                 var firstBackgroundRect = lastTargetItem.backgroundRect;
                 firstBackgroundRect.color = "transparent";
             }
         }
 
-        lastPosition = lineNumber;
-        var targetItem = listView.itemAtIndex(lineNumber);
-        if (targetItem) {
-            var newBackgroundRect = targetItem.backgroundRect;
+        // 更新记录
+        positionRecorder.second = positionRecorder.first;
+        positionRecorder.first = lineNumber;
+
+        // 处理当前行
+        var curItem = listView.itemAtIndex(positionRecorder.first);
+        if (curItem) {
+            var newBackgroundRect = curItem.backgroundRect;
             newBackgroundRect.color = "#1FFF0000";
         }
     }
 
+    // 打开搜索框
     function openFindWindow(findText) {
         var component1 = Qt.createComponent("qrc:/ui/FindWindow.qml");
         if (component1.status === Component.Ready) {
@@ -57,6 +68,7 @@ Rectangle {
         }
     }
 
+    // 打开行数跳转框
     function openSpecifiedLineNumberWindow() {
         var component2 = Qt.createComponent("qrc:/ui/SpecifiedLineNumberWindow.qml");
         if (component2.status === Component.Ready) {
@@ -74,149 +86,172 @@ Rectangle {
 
     signal sigDoubleClicked(var lineNumber);
 
-    ListView {
-        id: listView
-
+    ScrollView {
         anchors.fill: parent
-        anchors.margins: 10
 
-        model: logModel
-
-        cacheBuffer: 5000
-        boundsBehavior: Flickable.DragOverBounds
-        maximumFlickVelocity: 1200
-        flickDeceleration: 10000
         clip: true
 
-        delegate:  Item {
-            width: listView.width
-            height: dynamicFontSize * 1.2
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-            property alias backgroundRect: backgroundRect
+        ListView {
+            id: listView
 
-            Rectangle { id: backgroundRect; anchors.fill: parent }
+            width: parent.width
+            height: parent.height
 
-            Text {
-                id: lineNumText
-                anchors {
-                    left: parent.left
-                    //right: parent.right
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-                width: lineNumWidth * 12
-                text: lineNumber + 1
-                font.family: "Consolas"
-                font.bold: parent.activeFocus
-                font.pixelSize: dynamicFontSize
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: "black"
-            }
+            anchors.centerIn: parent
+            anchors.margins: 10
 
-            TextEdit {
-                id: textEdit
-                anchors {
-                    left: lineNumText.right
-                    leftMargin: 5
-                    right: parent.right
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-                text: lineContent
-                textFormat: TextEdit.RichText
-                verticalAlignment: Text.AlignVCenter
-                readOnly: true
-                selectByMouse: true
-                selectionColor: "lightblue"
-                selectedTextColor: "navy"
-                font.family: "Consolas"
-                font.pixelSize: dynamicFontSize
+            model: logModel
 
-                onSelectedTextChanged: {
-                    root.curActiveLineIndex = lineNumber;
-                    root.selectedText = selectedText;
-                    root.selectedTextIsKeyword = $LogSearcher.isKeyword(root.selectedText);
-                    rightMenu.existToBeFindKeyword = (selectedText !== "");
-                }
+            cacheBuffer: 5000
+            boundsBehavior: Flickable.DragOverBounds
+            maximumFlickVelocity: 1200
+            flickDeceleration: 10000
+            clip: true
 
-                function find_and_select() {
-                    var retVal = $LogSearcher.getKeywordPos(lineNumber, root.selectedText);
-                    if(retVal[0] >= 0 && lineNumber !== root.curActiveLineIndex) {
-                        textEdit.select(retVal[0], retVal[1]);
-                    } else {
-                        textEdit.deselect();
+            delegate:  Item {
+                id: item
+
+                width: listView.width * 2
+                height: dynamicFontSize * 1.2
+
+                property alias backgroundRect: backgroundRect
+
+                // 是否高亮当前行
+                property bool highlightLine: false
+
+                Rectangle { id: backgroundRect; anchors.fill: parent }
+
+                // 行号
+                Text {
+                    id: lineNumText
+                    anchors {
+                        left: parent.left
+                        top: parent.top
+                        bottom: parent.bottom
+                    }
+                    width: lineNumWidth * 12
+                    text: lineNumber //+ 1
+                    font.family: "Consolas"
+                    font.bold: parent.activeFocus
+                    font.pixelSize: dynamicFontSize
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "black"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            item.highlightLine = !item.highlightLine;
+                            backgroundRect.color = (item.highlightLine) ? "#FFFF00" : "transparent";
+                        }
                     }
                 }
 
-                property string rootSelectedText: root.selectedText
-                //onRootSelectedTextChanged: find_and_select()
-
-                TapHandler {
-                    cursorShape: Qt.BusyCursor
-                    onDoubleTapped: {
-                        sigDoubleClicked(lineNumber);
+                // 内容
+                TextEdit {
+                    id: textEdit
+                    anchors {
+                        left: lineNumText.right
+                        leftMargin: 5
+                        right: parent.right
+                        top: parent.top
+                        bottom: parent.bottom
                     }
-                }
+                    text: lineContent
+                    textFormat: TextEdit.RichText
+                    verticalAlignment: Text.AlignVCenter
+                    readOnly: true
+                    selectByMouse: true
+                    selectionColor: "lightblue"
+                    selectedTextColor: "navy"
+                    font.family: "Consolas"
+                    font.pixelSize: dynamicFontSize
 
-                onActiveFocusChanged: {
-                    backgroundRect.color = (activeFocus) ? "#1FFF0000" : "transparent";
-                    lineNumText.font.bold = activeFocus;
+                    onSelectedTextChanged: {
+                        root.curActiveLineIndex = lineNumber;
+                        root.selectedText = selectedText;
+                        root.selectedTextIsKeyword = $LogSearcher.isKeyword(root.selectedText);
+                        rightMenu.existToBeFindKeyword = (selectedText !== "");
+                    }
 
-                    if(lastPosition >= 0) {
-                        var lastTargetItem = listView.itemAtIndex(lastPosition, listView.contentY);
-                        if (lastTargetItem) {
-                            var firstBackgroundRect = lastTargetItem.backgroundRect;
-                            firstBackgroundRect.color = "transparent";
+                    function find_and_select() {
+                        var retVal = $LogSearcher.getKeywordPos(lineNumber, root.selectedText);
+                        if(retVal[0] >= 0 && lineNumber !== root.curActiveLineIndex) {
+                            textEdit.select(retVal[0], retVal[1]);
+                        } else {
+                            textEdit.deselect();
                         }
                     }
 
-                    lastPosition = index;
+                    property string rootSelectedText: root.selectedText
+                    //onRootSelectedTextChanged: find_and_select()
+
+                    TapHandler {
+                        cursorShape: Qt.BusyCursor
+                        onDoubleTapped: {
+                            sigDoubleClicked(lineNumber);
+                        }
+                    }
+
+                    onActiveFocusChanged: {
+                        // 只考虑获取焦点的情况，此时一并处理失焦的行
+                        if(activeFocus) {
+                            // 更新记录
+                            positionRecorder.second = positionRecorder.first;
+                            positionRecorder.first = index;
+
+                            // 处理上一次选中的行
+                            if(positionRecorder.second >= 0) {
+                                var lastTargetItem = listView.itemAtIndex(positionRecorder.second);
+                                if (lastTargetItem) {
+                                    console.log("cancel ->", positionRecorder.second);
+                                    var firstBackgroundRect = lastTargetItem.backgroundRect;
+                                    firstBackgroundRect.color = (lastTargetItem.highlightLine ? "#FFFF00" : "transparent");
+                                }
+                            }
+
+                            // 处理当前行
+                            console.log("apply ->", index);
+                            backgroundRect.color = "#1FFF0000";//(highlightLine ? "#FFFF00" : "#1FFF0000");
+
+                            console.log("[", positionRecorder.first, ",", positionRecorder.second, "] ---------------------------------");
+                        }
+                    }
                 }
             }
-        }
 
-        ScrollBar.vertical: ScrollBar {
-            policy: ScrollBar.AsNeeded
-            background: Rectangle {
-                color: "transparent"
-            }
-        }
-        //ScrollBar.horizontal: ScrollBar {
-        //    policy: ScrollBar.AsNeeded
-        //    background: Rectangle {
-        //        color: "transparent"
-        //    }
-        //}
-
-        // 拦截滚轮事件
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.NoButton | Qt.RightButton
-            onWheel: (wheel) => {
-                         if (wheel.modifiers & Qt.ControlModifier) {
-                             dynamicFontSize += (wheel.angleDelta.y > 0) ? 1 : -1;
-                             dynamicFontSize = Math.min(24, Math.max(8, dynamicFontSize));
-                             wheel.accepted = true;
-                         } else {
-                             wheel.accepted = false;
+            // 拦截滚轮事件
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.NoButton | Qt.RightButton
+                onWheel: (wheel) => {
+                             if (wheel.modifiers & Qt.ControlModifier) {
+                                 dynamicFontSize += (wheel.angleDelta.y > 0) ? 1 : -1;
+                                 dynamicFontSize = Math.min(24, Math.max(8, dynamicFontSize));
+                                 wheel.accepted = true;
+                             } else {
+                                 wheel.accepted = false;
+                             }
                          }
-                     }
 
-            onPressed: (mouse) => {
-                           if(mouse.button === Qt.LeftButton) {
+                onPressed: (mouse) => {
+                               if(mouse.button === Qt.LeftButton) {
 
-                           } else if(mouse.button === Qt.MiddleButton) {
+                               } else if(mouse.button === Qt.MiddleButton) {
 
-                           } else if(mouse.button === Qt.RightButton) {
-                               if(modelCount > 0) {
-                                   var pos = parent.mapToItem(root, mouseX, mouseY);
-                                   rightMenu.x =  pos.x;
-                                   rightMenu.y = pos.y;
-                                   rightMenu.visible = true
+                               } else if(mouse.button === Qt.RightButton) {
+                                   if(modelCount > 0) {
+                                       var pos = parent.mapToItem(root, mouseX, mouseY);
+                                       rightMenu.x =  pos.x;
+                                       rightMenu.y = pos.y;
+                                       rightMenu.visible = true
+                                   }
                                }
                            }
-                       }
+            }
         }
     }
 
@@ -279,8 +314,16 @@ Rectangle {
                                 //                                    newBackgroundRect.color = "#1FFF0000";
                                 //                                }
 
-                                listView.currentIndex = lastPosition + 1;
-                                listView.positionViewAtIndex(lastPosition, ListView.SnapPosition);
+                                // 更新记录
+                                if (event.key === Qt.Key_Up) {
+                                    positionRecorder.second--;
+                                    positionRecorder.first--;
+                                } else if (event.key === Qt.Key_Down) {
+                                    positionRecorder.second++;
+                                    positionRecorder.first++;
+                                }
+
+                                listView.positionViewAtIndex(positionRecorder.first, ListView.SnapPosition);
 
                                 event.accepted = true;
                             }
