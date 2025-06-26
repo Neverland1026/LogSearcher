@@ -207,17 +207,13 @@ Rectangle {
                             if(positionRecorder.second >= 0) {
                                 var lastTargetItem = listView.itemAtIndex(positionRecorder.second);
                                 if (lastTargetItem) {
-                                    console.log("cancel ->", positionRecorder.second);
                                     var firstBackgroundRect = lastTargetItem.backgroundRect;
                                     firstBackgroundRect.color = (lastTargetItem.highlightLine ? "#FFFF00" : "transparent");
                                 }
                             }
 
                             // 处理当前行
-                            console.log("apply ->", index);
                             backgroundRect.color = "#1FFF0000";//(highlightLine ? "#FFFF00" : "#1FFF0000");
-
-                            console.log("[", positionRecorder.first, ",", positionRecorder.second, "] ---------------------------------");
                         }
                     }
                 }
