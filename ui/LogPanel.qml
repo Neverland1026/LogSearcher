@@ -244,13 +244,19 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.NoButton | Qt.RightButton
+
                 onWheel: (wheel) => {
                              if (wheel.modifiers & Qt.ControlModifier) {
                                  dynamicFontSize += (wheel.angleDelta.y > 0) ? 1 : -1;
                                  dynamicFontSize = Math.min(24, Math.max(8, dynamicFontSize));
                                  wheel.accepted = true;
                              } else {
-                                 wheel.accepted = false;
+                                 var delta = wheel.angleDelta.y > 0 || wheel.pixelDelta.y > 0;
+                                 var newIndex = listView.currentIndex + (delta > 0 ? -5 : 5);
+                                 newIndex = Math.max(0, Math.min(newIndex, modelCount - 1));
+                                 listView.positionViewAtIndex(newIndex, ListView.Center);
+                                 listView.currentIndex = newIndex;
+                                 wheel.accepted = true;
                              }
                          }
 
