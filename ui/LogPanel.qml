@@ -25,6 +25,12 @@ Rectangle {
     // 实时选中的内容
     property string selectedText: ""
 
+    // 当前行获取焦点颜色
+    readonly property string focusBackgroundColor: "#1FFF0000"
+
+    // 当前行高亮颜色
+    readonly property string highlightBackgroundColor: "#1FFF0000"
+
     // 行索引记录
     property var positionRecorder: QtObject {
         property int first: -1   // 当前行索引
@@ -39,26 +45,38 @@ Rectangle {
         if(lineNumber < 0 || lineNumber >= modelCount)
             return;
 
-        listView.positionViewAtIndex(lineNumber, ListView.Center);
-
-        // 处理上一次选中的行
+        // 处理既有行
+        if(positionRecorder.first >= 0) {
+            var lastItem1 = listView.itemAtIndex(positionRecorder.first);
+            if (lastItem1) {
+                var rect1 = lastItem1.backgroundRect;
+                rect1.color = (lastItem1.highlightLine ? root.highlightBackgroundColor : "transparent");
+                console.log("positionRecorder.first");
+            }
+        }
         if(positionRecorder.second >= 0) {
-            var lastTargetItem = listView.itemAtIndex(positionRecorder.second);
-            if (lastTargetItem) {
-                var rect = lastTargetItem.backgroundRect;
-                rect.color = "transparent";
+            var lastItem2 = listView.itemAtIndex(positionRecorder.second);
+            if (lastItem2) {
+                var rect2 = lastItem2.backgroundRect;
+                rect2.color = (lastItem2.highlightLine ? root.highlightBackgroundColor : "transparent");
+                console.log("positionRecorder.second");
             }
         }
 
         // 更新记录
-        positionRecorder.second = positionRecorder.first;
-        positionRecorder.first = lineNumber;
+        positionRecorder.second = positionRecorder.first = lineNumber;
+
+        // 设置当前行
+        listView.currentIndex = lineNumber;
+
+        // 跳转到当前行
+        listView.positionViewAtIndex(lineNumber, ListView.Center);
 
         // 处理当前行
         var curItem = listView.itemAtIndex(positionRecorder.first);
         if (curItem) {
-            var newBackgroundRect = curItem.backgroundRect;
-            newBackgroundRect.color = "#1FFF0000";
+            var rect = curItem.backgroundRect;
+            rect.color = (curItem.highlightLine ? root.highlightBackgroundColor : root.focusBackgroundColor);
         }
     }
 
@@ -149,7 +167,7 @@ Rectangle {
                         anchors.fill: parent
                         onClicked: {
                             item.highlightLine = !item.highlightLine;
-                            backgroundRect.color = (item.highlightLine) ? "#FFFF00" : "transparent";
+                            backgroundRect.color = (item.highlightLine) ? root.highlightBackgroundColor : "transparent";
                         }
                     }
                 }
@@ -229,12 +247,12 @@ Rectangle {
                                 var lastTargetItem = listView.itemAtIndex(positionRecorder.second);
                                 if (lastTargetItem) {
                                     var rect = lastTargetItem.backgroundRect;
-                                    rect.color = (lastTargetItem.highlightLine ? "#FFFF00" : "transparent");
+                                    rect.color = (lastTargetItem.highlightLine ? root.highlightBackgroundColor : "transparent");
                                 }
                             }
 
                             // 处理当前行
-                            backgroundRect.color = "#1FFF0000";//(highlightLine ? "#FFFF00" : "#1FFF0000");
+                            backgroundRect.color = root.focusBackgroundColor;
                         }
                     }
                 }
@@ -297,7 +315,7 @@ Rectangle {
                 if (curItem) {
                     var rect = curItem.backgroundRect;
                     curItem.highlightLine = true;
-                    rect.color = (curItem.highlightLine ? "#FFFF00" : "transparent");
+                    rect.color = (curItem.highlightLine ? root.highlightBackgroundColor : "transparent");
                 }
             }
         }
