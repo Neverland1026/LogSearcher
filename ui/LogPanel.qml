@@ -41,8 +41,8 @@ Rectangle {
         if(positionRecorder.second >= 0) {
             var lastTargetItem = listView.itemAtIndex(positionRecorder.second);
             if (lastTargetItem) {
-                var firstBackgroundRect = lastTargetItem.backgroundRect;
-                firstBackgroundRect.color = "transparent";
+                var rect = lastTargetItem.backgroundRect;
+                rect.color = "transparent";
             }
         }
 
@@ -207,8 +207,8 @@ Rectangle {
                             if(positionRecorder.second >= 0) {
                                 var lastTargetItem = listView.itemAtIndex(positionRecorder.second);
                                 if (lastTargetItem) {
-                                    var firstBackgroundRect = lastTargetItem.backgroundRect;
-                                    firstBackgroundRect.color = (lastTargetItem.highlightLine ? "#FFFF00" : "transparent");
+                                    var rect = lastTargetItem.backgroundRect;
+                                    rect.color = (lastTargetItem.highlightLine ? "#FFFF00" : "transparent");
                                 }
                             }
 
@@ -262,6 +262,17 @@ Rectangle {
 
         onSigAddKeyword: {
             $LogSearcher.insertKeyword(-1, root.selectedText, "");
+        }
+
+        onSigHighlight: {
+            if(positionRecorder.first >= 0) {
+                var curItem = listView.itemAtIndex(positionRecorder.first);
+                if (curItem) {
+                    var rect = curItem.backgroundRect;
+                    curItem.highlightLine = true;
+                    rect.color = (curItem.highlightLine ? "#FFFF00" : "transparent");
+                }
+            }
         }
 
         onSigOpenLatestLog: {

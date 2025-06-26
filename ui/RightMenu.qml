@@ -15,6 +15,8 @@ Popup {
 
     signal sigAddKeyword();
 
+    signal sigHighlight();
+
     signal sigOpenLatestLog();
 
     signal sigOpenNextLatestLog();
@@ -36,12 +38,28 @@ Popup {
                 func: function() { customMenu.sigAddKeyword(); }
             }
             ListElement {
+                text: ""
+                func: function() { }
+            }
+            ListElement {
+                text: "高亮当前行"
+                func: function() { customMenu.sigHighlight(); }
+            }
+            ListElement {
+                text: ""
+                func: function() { }
+            }
+            ListElement {
                 text: "打开最新服务端日志"
                 func: function() { customMenu.sigOpenLatestLog(); }
             }
             ListElement {
                 text: "打开次新服务端日志"
                 func: function() { customMenu.sigOpenNextLatestLog(); }
+            }
+            ListElement {
+                text: ""
+                func: function() { }
             }
             ListElement {
                 text: "置顶/取消置顶"
@@ -61,10 +79,10 @@ Popup {
 
         delegate: Rectangle {
             width: parent.width
-            height: 40
+            height: model.text === "" ? 2 : 40
             radius: 3
-            color: mouseArea.containsMouse ? "#E0E0E0" : "#F5F5F5"
-            enabled: (index === 0 || index === 1) ? existToBeFindKeyword : true
+            color: model.text === "" ? "#D2D2D2" : (mouseArea.containsMouse ? "#E0E0E0" : "#F5F5F5")
+            enabled: model.text === "" ? false : ((index === 0 || index === 1) ? existToBeFindKeyword : true)
             Row {
                 anchors.fill: parent
 
@@ -75,7 +93,7 @@ Popup {
                     height: parent.height
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: enabled ? "black" : "#4F000000"
+                    color: model.text === "" ? "transparent" : (enabled ? "black" : "#4F000000")
                     font { pointSize: 13; bold: true; family: "Consola"; }
                     text: model.text
                 }
