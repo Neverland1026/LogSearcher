@@ -68,8 +68,8 @@ ApplicationWindow {
 
         }
 
-        function onLoadFinish(logPath) {
-            window.title = "LogSearcher" + "  -  " + logPath;
+        function onLoadFinish(logPath, exist) {
+            window.title = "LogSearcher" + (exist ? ("  -  " + logPath) : "");
         }
 
         function onFindFinish(targetKeyword, findCount, findTimeCost) {

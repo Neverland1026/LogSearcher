@@ -85,7 +85,7 @@ signals:
     void loadStart();
 
     // 结束加载
-    void loadFinish(const QString& logPath);
+    void loadFinish(const QString& logPath, const bool exist);
 
     // 查找结束
     void findFinish(const QString& targetKeyword, const int findCount, const int findTimeCost);

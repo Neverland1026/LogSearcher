@@ -5,7 +5,6 @@
 LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
     : QObject{parent}
 {
-
     // 设置合适的线程数
     QThreadPool::globalInstance()->setMaxThreadCount(QThread::idealThreadCount());
 }
@@ -141,7 +140,9 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
             m_summaryModel->appendLog(lineIndex, log);
         }
     });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){ emit loadFinish(m_focusedLog); });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){
+        emit loadFinish(m_focusedLog, QFileInfo::exists(m_focusedLog));
+    });
 
     // 设置查询属性
     m_logLoaderThread->setTargetLog(m_focusedLog);
