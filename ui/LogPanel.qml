@@ -10,25 +10,29 @@ Rectangle {
     //border.color: "cyan"; border.width: 1
     clip: true
 
+    // 数据模型
     property var logModel
 
-    property real dynamicFontSize: 14  // 全局动态字体尺寸
+    // 模型项数
+    readonly property alias modelCount: listView.count
 
+    // 全局动态字体尺寸
+    property real dynamicFontSize: 14
+
+    // 文件行号宽度
     property int lineNumWidth: 7
 
+    // 实时选中的内容
     property string selectedText: ""
-
-    property bool selectedTextIsKeyword: false
-
-    property int curActiveLineIndex: -1
-
-    property alias modelCount: listView.count
 
     // 行索引记录
     property var positionRecorder: QtObject {
         property int first: -1   // 当前行索引
         property int second: -1  // 上一行索引
     }
+
+    // 是否是搜索内容汇总模式
+    property bool summaryMode: false
 
     // 跳转到指定行
     function positionViewAtIndex(lineNumber) {
@@ -132,8 +136,8 @@ Rectangle {
                         top: parent.top
                         bottom: parent.bottom
                     }
-                    width: lineNumWidth * 12
-                    text: lineNumber //+ 1
+                    width: lineNumWidth * 10
+                    text: index + 1
                     font.family: "Consolas"
                     font.bold: parent.activeFocus
                     font.pixelSize: dynamicFontSize
@@ -150,11 +154,30 @@ Rectangle {
                     }
                 }
 
+                // 搜索汇总面板专用 - 对应真实文件中的行号
+                Text {
+                    id: realLineNumText
+                    visible: root.summaryMode
+                    anchors {
+                        left: lineNumText.right
+                        leftMargin: 5
+                        top: parent.top
+                        bottom: parent.bottom
+                    }
+                    width: visible ? lineNumText.width : 0
+                    text: lineNumber + 1
+                    font.family: "Consolas"
+                    font.pixelSize: dynamicFontSize
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "black"
+                }
+
                 // 内容
                 TextEdit {
                     id: textEdit
                     anchors {
-                        left: lineNumText.right
+                        left: realLineNumText.right
                         leftMargin: 5
                         right: parent.right
                         top: parent.top
@@ -171,15 +194,13 @@ Rectangle {
                     font.pixelSize: dynamicFontSize
 
                     onSelectedTextChanged: {
-                        root.curActiveLineIndex = lineNumber;
                         root.selectedText = selectedText;
-                        root.selectedTextIsKeyword = $LogSearcher.isKeyword(root.selectedText);
                         rightMenu.existToBeFindKeyword = (selectedText !== "");
                     }
 
                     function find_and_select() {
                         var retVal = $LogSearcher.getKeywordPos(lineNumber, root.selectedText);
-                        if(retVal[0] >= 0 && lineNumber !== root.curActiveLineIndex) {
+                        if(retVal[0] >= 0 && lineNumber !== positionRecorder.first) {
                             textEdit.select(retVal[0], retVal[1]);
                         } else {
                             textEdit.deselect();
