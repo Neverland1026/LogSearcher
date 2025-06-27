@@ -27,29 +27,32 @@ void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2, LogModel* m
 
 void LogSearcher::init()
 {
-    QString config = {};
-    if(!QFileInfo::exists(m_settingsPath))
-    {
-        const QString keyword = "__Default__";
-        QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
-        settings.setValue("Global/Keywords", keyword);
-        settings.sync();
+    static std::once_flag s_flag;
+    std::call_once(s_flag, [&]() {
+        QString config = {};
+        if(!QFileInfo::exists(m_settingsPath))
+        {
+            const QString keyword = "__Default__";
+            QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
+            settings.setValue("Global/Keywords", keyword);
+            settings.sync();
 
-        config.push_back(keyword + ";");
-    }
-    else
-    {
-        QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
-        config = settings.value("Global/Keywords").toString();
-    }
+            config.push_back(keyword + ";");
+        }
+        else
+        {
+            QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
+            config = settings.value("Global/Keywords").toString();
+        }
 
-    QStringList keywords = config.split(";");
-    keywords.removeAll("");
+        QStringList keywords = config.split(";");
+        keywords.removeAll("");
 
-    for(int i = 0; i < keywords.size(); ++i)
-    {
-        insertKeyword(-1, keywords[i], LogUtils::GenerateRandomColorRGB_Safe().name());
-    }
+        for(int i = 0; i < keywords.size(); ++i)
+        {
+            insertKeyword(-1, keywords[i], LogUtils::GenerateRandomColorRGB_Safe().name());
+        }
+    });
 }
 
 void LogSearcher::insertKeyword(const int index, const QString& keyword, const QString& color)
