@@ -347,9 +347,11 @@ Rectangle {
                         if((event.modifiers & Qt.ControlModifier)) {
                             if (event.key === Qt.Key_End) {
                                 listView.positionViewAtEnd();
+                                listView.currentIndex = root.modelCount - 1;
                                 event.accepted = true;
                             } else if (event.key === Qt.Key_Home) {
                                 listView.positionViewAtBeginning();
+                                listView.currentIndex = 0;
                                 event.accepted = true;
                             } else if (event.key === Qt.Key_F) {
                                 root.openFindWindow(root.selectedText);
