@@ -16,10 +16,6 @@ LogSearcher::~LogSearcher()
 void LogSearcher::setWId(WId winid)
 {
     m_winId = winid;
-
-    //    ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
-    //                   HWND_TOPMOST, 0, 0, 0, 0,
-    //                   SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
 
 void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2, LogModel* model3)
