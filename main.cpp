@@ -46,7 +46,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &context, const Q
 
     text = QString("Info: %1").arg(msg);
 
-    QFile outFile("log.txt");
+    QFile outFile("C:/Users/Neverland_LY/Desktop/log.txt");
     outFile.open(QIODevice::Append | QIODevice::Text);
     QTextStream ts(&outFile);
     ts << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz") << " - " << text << "\n";
@@ -104,7 +104,9 @@ int main(int argc, char *argv[])
     if(argc > 1)
     {
         searcher->init();
-        searcher->openLog(QDir::fromNativeSeparators(QString::fromLocal8Bit(argv[1])));
+        QTimer::singleShot(100, [&](){
+            searcher->openLog(QDir::fromNativeSeparators(QString::fromLocal8Bit(argv[1])));
+        });
     }
 
     return app.exec();

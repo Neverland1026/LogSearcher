@@ -5,6 +5,8 @@
 LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
     : QObject{parent}
 {
+    m_rootPath = QCoreApplication::applicationDirPath();
+
     // 设置合适的线程数
     QThreadPool::globalInstance()->setMaxThreadCount(QThread::idealThreadCount());
 }
@@ -30,10 +32,10 @@ void LogSearcher::init()
     static std::once_flag s_flag;
     std::call_once(s_flag, [&]() {
         QString config = {};
-        if(!QFileInfo::exists(m_settingsPath))
+        if(!QFileInfo::exists(getSettingsAbsolutePath__()))
         {
             const QString keyword = "__Default__";
-            QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
+            QSettings settings(getSettingsAbsolutePath__(), QSettings::Format::IniFormat);
             settings.setValue("Global/Keywords", keyword);
             settings.sync();
 
@@ -41,7 +43,7 @@ void LogSearcher::init()
         }
         else
         {
-            QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
+            QSettings settings(getSettingsAbsolutePath__(), QSettings::Format::IniFormat);
             config = settings.value("Global/Keywords").toString();
         }
 
@@ -125,20 +127,20 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
                      &LogLoaderThread::lineNumWidth,
                      this,
                      [&](int width) {
-        emit lineNumWidth(width);
-    });
+                         emit lineNumWidth(width);
+                     });
     QObject::connect(m_logLoaderThread,
                      &LogLoaderThread::newLogAvailable,
                      this,
                      [&](const bool containKeyword,
-                     const int lineIndex,
-                     const QString log) {
-        m_logModel->appendLog(lineIndex, log);
-        if(containKeyword)
-        {
-            m_summaryModel->appendLog(lineIndex, log);
-        }
-    });
+                         const int lineIndex,
+                         const QString log) {
+                         m_logModel->appendLog(lineIndex, log);
+                         if(containKeyword)
+                         {
+                             m_summaryModel->appendLog(lineIndex, log);
+                         }
+                     });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){
         emit loadFinish(m_focusedLog, QFileInfo::exists(m_focusedLog));
     });
@@ -197,20 +199,20 @@ void LogSearcher::recolorfulKeyword(const int index, const bool ignoreKeyword)
                      &LogLoaderThread::updateSingleLineColor,
                      this,
                      [&](const int lineIndex,
-                     const int summaryLineIndex,
-                     const QString log,
-                     const bool ignoreKeyword) {
-        m_logModel->updateRow(lineIndex, log);
-        if(ignoreKeyword)
-        {
-            m_summaryModel->hideRow(summaryLineIndex);
-        }
-        else
-        {
-            m_summaryModel->showRow(summaryLineIndex);
-            m_summaryModel->updateRow(summaryLineIndex, log);
-        }
-    });
+                         const int summaryLineIndex,
+                         const QString log,
+                         const bool ignoreKeyword) {
+                         m_logModel->updateRow(lineIndex, log);
+                         if(ignoreKeyword)
+                         {
+                             m_summaryModel->hideRow(summaryLineIndex);
+                         }
+                         else
+                         {
+                             m_summaryModel->showRow(summaryLineIndex);
+                             m_summaryModel->updateRow(summaryLineIndex, log);
+                         }
+                     });
 
     // 设置查询属性
     m_logLoaderThread->setRecolorfulInfo(index, ignoreKeyword);
@@ -258,12 +260,12 @@ void LogSearcher::find(const QString& targetKeyword,
 
     // 启动并行搜索
     QFuture<LogSearcher::LineNumber_Line_Pair> future = QtConcurrent::mapped(
-                LogUtils::SplitFileAllLines(),
-                [targetKeyword, wholeWordWrap, caseSensitivity, this](const LineNumber_Line_Pair& line)
-    {
-        return LogUtils::Find(line.second, targetKeyword, caseSensitivity, wholeWordWrap) >= 0 ? line : LineNumber_Line_Pair{};
-    }
-    );
+        LogUtils::SplitFileAllLines(),
+        [targetKeyword, wholeWordWrap, caseSensitivity, this](const LineNumber_Line_Pair& line)
+        {
+            return LogUtils::Find(line.second, targetKeyword, caseSensitivity, wholeWordWrap) >= 0 ? line : LineNumber_Line_Pair{};
+        }
+        );
 
     watcher.setFuture(future);
 }
@@ -324,7 +326,7 @@ void LogSearcher::refreshSettings__()
             }
         }
 
-        QSettings settings(m_settingsPath, QSettings::Format::IniFormat);
+        QSettings settings(getSettingsAbsolutePath__(), QSettings::Format::IniFormat);
         settings.setValue("Global/Keywords", keywords);
         settings.sync();
     });

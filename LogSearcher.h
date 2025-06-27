@@ -67,6 +67,9 @@ protected:
     // 查找
     using LineNumber_Line_Pair = QPair<int, QString>;
 
+    // 配置文件绝对路径
+    inline QString getSettingsAbsolutePath__() const { return m_rootPath + "/" + m_settingsName; }
+
     // 更新配置文件
     void refreshSettings__();
 
@@ -98,8 +101,11 @@ private:
     // 窗口 WId
     WId m_winId;
 
+    // exe 运行目录
+    QString m_rootPath = "";
+
     // 配置文件路径
-    const QString m_settingsPath = "./settings.ini";
+    const QString m_settingsName = "settings.ini";
 
     // 日志对象模型
     LogModel* m_logModel = nullptr;
