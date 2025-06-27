@@ -46,7 +46,7 @@ public:
     Q_INVOKABLE void openLatestIndexLog(const int latestIndex);
 
     // 关键字重着色
-    Q_INVOKABLE void recolorfulKeyword(const int index);
+    Q_INVOKABLE void recolorfulKeyword(const int index, const bool ignoreKeyword);
 
     // 查找指定关键字
     Q_INVOKABLE void find(const QString& targetKeyword,

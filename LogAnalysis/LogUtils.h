@@ -31,9 +31,9 @@ public:
             this->beginPos = beginPos;
             this->endPos = endPos;
         }
-        QString colorful() const
+        QString colorful(const bool ignoreKeyword = false) const
         {
-            if(beginPos < 0)
+            if(beginPos < 0 || ignoreKeyword)
                 return QString("<font color='#000000'>%1</font>").arg(this->line);
 
             QString dstLine = this->line;

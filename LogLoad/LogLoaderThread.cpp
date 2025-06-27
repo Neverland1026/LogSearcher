@@ -16,15 +16,15 @@ void LogLoaderThread::analyze()
 
 void LogLoaderThread::recolorful()
 {
-    if(m_recolorfulKeywordIndex < 0)
+    if(m_recolorfulInfo.first < 0)
         return;
 
     for(int i  = 0; i < LogUtils::KeyLineInfos().size(); ++i)
     {
         const auto& lineInfo = LogUtils::KeyLineInfos()[i];
-        if(lineInfo.keywordIndex == m_recolorfulKeywordIndex)
+        if(lineInfo.keywordIndex == m_recolorfulInfo.first)
         {
-            emit updateSingleLineColor(lineInfo.lineIndex, i, lineInfo.colorful());
+            emit updateSingleLineColor(lineInfo.lineIndex, i, lineInfo.colorful(m_recolorfulInfo.second), m_recolorfulInfo.second);
         }
     }
 }

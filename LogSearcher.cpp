@@ -134,7 +134,7 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
                      [&](const bool containKeyword,
                      const int lineIndex,
                      const QString log) {
-        m_logModel->appendLog(-1, log);
+        m_logModel->appendLog(lineIndex, log);
         if(containKeyword)
         {
             m_summaryModel->appendLog(lineIndex, log);
@@ -184,7 +184,7 @@ void LogSearcher::openLatestIndexLog(const int latestIndex)
     }
 }
 
-void LogSearcher::recolorfulKeyword(const int index)
+void LogSearcher::recolorfulKeyword(const int index, const bool ignoreKeyword)
 {
     if(index < 0 || LogUtils::Keywords().size() == 0 || index >= LogUtils::Keywords().size())
         return;
@@ -199,13 +199,22 @@ void LogSearcher::recolorfulKeyword(const int index)
                      this,
                      [&](const int lineIndex,
                      const int summaryLineIndex,
-                     const QString log) {
+                     const QString log,
+                     const bool ignoreKeyword) {
         m_logModel->updateRow(lineIndex, log);
-        m_summaryModel->updateRow(summaryLineIndex, log);
+        if(ignoreKeyword)
+        {
+            m_summaryModel->hideRow(summaryLineIndex);
+        }
+        else
+        {
+            m_summaryModel->showRow(summaryLineIndex);
+            m_summaryModel->updateRow(summaryLineIndex, log);
+        }
     });
 
     // 设置查询属性
-    m_logLoaderThread->setRecolorfulKeywordIndex(index);
+    m_logLoaderThread->setRecolorfulInfo(index, ignoreKeyword);
 
     // 开始更新
     m_thread->start();

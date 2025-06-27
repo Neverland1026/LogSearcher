@@ -17,10 +17,9 @@ Rectangle {
     property bool ignoreKeyword: false
 
     signal sigUpdate(var keyword__, var color__);
-    signal sigColorChanged();
+    signal sigRecolorful();
     signal sigRemove();
     signal sigAccepted();
-    signal sigIgnoreKeyword(var ignore);
 
     // 内容区域
     Rectangle {
@@ -78,7 +77,7 @@ Rectangle {
 
                     MouseArea {
                         anchors.fill: parent
-                        onPressed: { root.ignoreKeyword = !root.ignoreKeyword; root.sigIgnoreKeyword(root.ignoreKeyword); }
+                        onPressed: { root.ignoreKeyword = !root.ignoreKeyword; root.sigRecolorful(); }
                     }
                 }
             }
@@ -141,7 +140,7 @@ Rectangle {
             //console.log("你选择了颜色: " + colorDialog.selectedColor);
             colorRect.color = colorDialog.selectedColor;
             root.sigUpdate(textInput.text, colorRect.color);
-            root.sigColorChanged();
+            root.sigRecolorful();
         }
         onRejected: {}
     }

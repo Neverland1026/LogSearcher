@@ -16,7 +16,7 @@ public slots:
     inline void setTargetLog(const QString& filePath) { m_logPath = filePath; };
 
     // 设置重新着色的关键字索引
-    inline void setRecolorfulKeywordIndex(const int index) { m_recolorfulKeywordIndex = index; };
+    inline void setRecolorfulInfo(const int index, const bool ignoreKeyword) { m_recolorfulInfo = { index, ignoreKeyword }; };
 
     // 解析日志
     void analyze();
@@ -32,7 +32,7 @@ signals:
 
     void loadFinish();
 
-    void updateSingleLineColor(const int lineIndex, const int summaryLineIndex, const QString log);
+    void updateSingleLineColor(const int lineIndex, const int summaryLineIndex, const QString log, const bool ignoreKeyword);
 
 protected:
 
@@ -48,7 +48,7 @@ private:
     QString m_logPath;
 
     // 重新着色的关键字索引
-    int m_recolorfulKeywordIndex = -1;
+    QPair<int, bool> m_recolorfulInfo = { -1, false };
 
 };
 

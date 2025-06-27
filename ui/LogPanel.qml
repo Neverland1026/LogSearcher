@@ -138,7 +138,9 @@ Rectangle {
                 id: item
 
                 width: listView.width * 2
-                height: dynamicFontSize * 1.2
+                height: visible ? (dynamicFontSize * 1.2) : 0
+
+                visible: root.summaryMode ? isVisible : true
 
                 property alias backgroundRect: backgroundRect
 
