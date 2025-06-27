@@ -14,40 +14,73 @@ Rectangle {
     property alias keywordColor: colorRect.color
     property alias delBtnVisible: delBtnRect.visible
 
+    property bool ignoreKeyword: false
+
     signal sigUpdate(var keyword__, var color__);
     signal sigColorChanged();
     signal sigRemove();
     signal sigAccepted();
-
-    QtObject {
-        id: privateObject
-    }
+    signal sigIgnoreKeyword(var ignore);
 
     // 内容区域
     Rectangle {
         id: contentRect
-        width: colorRect.width + 20 + textInput.width + 20
+        width: colorMangerRect.width + 20 + textInput.width + 20
         height: parent.height - 10
         anchors.centerIn: parent
-        color: "white"
         radius: 5
+        color: root.ignoreKeyword ? "#CFCFCF" : "white"
         //border.color: "black"; border.width: 0.5;
 
-        // 选择颜色
+        // 控制窗口
         Rectangle {
-            id: colorRect
-            width: parent.height * 0.5
-            height: width
+            id: colorMangerRect
+            width: parent.height * 0.35
+            height: parent.height
             radius: width
-            color: "yellow"
+            color: "transparent"
             anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            //border.color: "#000000"; border.width: 1;
+            anchors.leftMargin: 7
+            //border.color: "red"; border.width: 1;
 
-            MouseArea {
-                anchors.fill: parent
-                onPressed: colorDialog.open()
+            Column {
+                id: column
+                width: parent.width
+                height: parent.height
+                anchors.centerIn: parent
+                topPadding: (parent.height - (colorRect.height + enabledKeywordRect.height + spacing)) / 2
+                spacing: 2
+
+                // 关键字颜色选择
+                Rectangle {
+                    id: colorRect
+                    width: parent.width
+                    height: width
+                    radius: width
+                    color: "yellow"
+                    enabled: !root.ignoreKeyword
+                    //border.color: "#000000"; border.width: 1;
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onPressed: colorDialog.open()
+                    }
+                }
+
+                // 是否搜索当前关键字
+                Rectangle {
+                    id: enabledKeywordRect
+                    width: colorRect.width
+                    height: colorRect.height
+                    radius: width
+                    color: "#4F4F4F"
+                    border.color: "#4F4F4F"; border.width: 1;
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onPressed: { root.ignoreKeyword = !root.ignoreKeyword; root.sigIgnoreKeyword(root.ignoreKeyword); }
+                    }
+                }
             }
         }
 
@@ -55,14 +88,14 @@ Rectangle {
         TextInput {
             id: textInput
             height: contentRect.height
-            anchors.left: colorRect.right
+            anchors.left: colorMangerRect.right
             anchors.leftMargin: 10
-            anchors.verticalCenter: colorRect.verticalCenter
+            anchors.verticalCenter: colorMangerRect.verticalCenter
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             font.family: "Consolas"
             font.pointSize: 14
-            color: "black"
+            color: root.ignoreKeyword ? "#4F000000" : "#000000"
             selectByMouse: true
             selectionColor: "lightblue"
             selectedTextColor: "black"

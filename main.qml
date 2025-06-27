@@ -42,7 +42,7 @@ ApplicationWindow {
     }
 
     // 欢迎页面
-    WelcomePage { anchors.fill: parent; visible: logPanel.modelCount <= 0; z: 999999; }
+    WelcomePage { anchors.fill: parent; visible: /*logPanel.modelCount <= 0*/false; z: 999999; }
 
     // 文件有修改提示
     LogContentModifiedRemind { id: logContentModifiedRemind; anchors.horizontalCenter: parent.horizontalCenter; anchors.top: keywordTagContainer.bottom; }
