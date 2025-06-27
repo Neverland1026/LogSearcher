@@ -18,11 +18,17 @@ public slots:
     // 设置重新着色的关键字索引
     inline void setRecolorfulInfo(const int index, const bool ignoreKeyword) { m_recolorfulInfo = { index, ignoreKeyword }; };
 
+    // 要被删除的关键字索引
+    inline void setRemoveKeywordIndex(const int index) { m_toBeRemovedIndex = index; }
+
     // 解析日志
     void analyze();
 
     // 关键字重着色
     void recolorful();
+
+    // 删除关键字
+    void remove();
 
 signals:
 
@@ -32,7 +38,9 @@ signals:
 
     void loadFinish();
 
-    void updateSingleLineColor(const int lineIndex, const int summaryLineIndex, const QString log, const bool ignoreKeyword);
+    void updateSingleLine(const int lineIndex, const int summaryLineIndex, const QString log, const bool ignoreKeyword);
+
+    void removeSingleLine(const int lineIndex, const int summaryLineIndex, const QString log);
 
 protected:
 
@@ -47,8 +55,11 @@ private:
     // 日志路径
     QString m_logPath;
 
-    // 重新着色的关键字索引
+    // 将要重新着色的关键字索引
     QPair<int, bool> m_recolorfulInfo = { -1, false };
+
+    // 将要删除的关键字索引
+    int m_toBeRemovedIndex = -1;
 
 };
 

@@ -32,6 +32,7 @@ void LogSearcher::init()
     static std::once_flag s_flag;
     std::call_once(s_flag, [&]() {
         QString config = {};
+        qDebug() << "getSettingsAbsolutePath__() =" << getSettingsAbsolutePath__();
         if(!QFileInfo::exists(getSettingsAbsolutePath__()))
         {
             const QString keyword = "__Default__";
@@ -87,6 +88,33 @@ void LogSearcher::removeKeyword(const int index)
     LogUtils::Keywords().erase(std::next(LogUtils::Keywords().begin(), index));
 
     LogUtils::FormatedKeywordMap();
+
+
+
+
+
+
+
+    // 创建并启动工作线程
+    m_thread = new QThread(this);
+    m_logLoaderThread = new LogLoaderThread;
+    m_logLoaderThread->moveToThread(m_thread);
+    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, &LogLoaderThread::remove);
+    QObject::connect(m_logLoaderThread,
+                     &LogLoaderThread::removeSingleLine,
+                     this,
+                     [&](const int lineIndex,
+                         const int summaryLineIndex,
+                         const QString log) {
+                         m_logModel->updateRow(lineIndex, log);
+                         m_summaryModel->removeRow(summaryLineIndex);
+                     });
+
+    // 设置要删除的索引
+    m_logLoaderThread->setRemoveKeywordIndex(index);
+
+    // 开始更新
+    m_thread->start();
 
     refreshSettings__();
 
@@ -196,7 +224,7 @@ void LogSearcher::recolorfulKeyword(const int index, const bool ignoreKeyword)
     m_logLoaderThread->moveToThread(m_thread);
     QObject::connect(m_thread, &QThread::started, m_logLoaderThread, &LogLoaderThread::recolorful);
     QObject::connect(m_logLoaderThread,
-                     &LogLoaderThread::updateSingleLineColor,
+                     &LogLoaderThread::updateSingleLine,
                      this,
                      [&](const int lineIndex,
                          const int summaryLineIndex,

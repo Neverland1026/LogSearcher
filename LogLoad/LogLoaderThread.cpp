@@ -16,17 +16,40 @@ void LogLoaderThread::analyze()
 
 void LogLoaderThread::recolorful()
 {
-    if(m_recolorfulInfo.first < 0)
+    if(m_recolorfulInfo.first < 0 || LogUtils::KeyLineInfos().empty())
         return;
 
-    for(int i  = 0; i < LogUtils::KeyLineInfos().size(); ++i)
+#pragma omp parallel for
+    for(int i = 0; i < LogUtils::KeyLineInfos().size(); ++i)
     {
         const auto& lineInfo = LogUtils::KeyLineInfos()[i];
         if(lineInfo.keywordIndex == m_recolorfulInfo.first)
         {
-            emit updateSingleLineColor(lineInfo.lineIndex, i, lineInfo.colorful(m_recolorfulInfo.second), m_recolorfulInfo.second);
+            emit updateSingleLine(lineInfo.lineIndex, i, lineInfo.colorful(m_recolorfulInfo.second), m_recolorfulInfo.second);
         }
     }
+
+    m_recolorfulInfo = { -1, false };
+}
+
+void LogLoaderThread::remove()
+{
+    if(m_toBeRemovedIndex < 0  || LogUtils::KeyLineInfos().empty())
+        return;
+
+    //#pragma omp parallel for
+    for(int i = LogUtils::KeyLineInfos().size() - 1; i >= 0; --i)
+    {
+        /*const*/ auto& lineInfo = LogUtils::KeyLineInfos()[i];
+        if(lineInfo.keywordIndex == m_toBeRemovedIndex)
+        {
+            lineInfo.keywordIndex = lineInfo.beginPos = lineInfo.endPos = -1;
+            emit removeSingleLine(lineInfo.lineIndex, i, lineInfo.colorful());
+            LogUtils::KeyLineInfos().removeAt(i);
+        }
+    }
+
+    m_toBeRemovedIndex = -1;
 }
 
 void LogLoaderThread::mapFile__()
@@ -81,7 +104,7 @@ void LogLoaderThread::process__()
     }
     emit lineNumWidth(count);
 
-    // 日志解析
+// 日志解析
 #pragma omp parallel for
     for(int lineIndex = 0; lineIndex < LogUtils::SplitFileAllLines().size(); ++lineIndex)
     {
