@@ -79,44 +79,27 @@ void LogSearcher::insertKeyword(const int index, const QString& keyword, const Q
     }
 
     LogUtils::FormatedKeywordMap();
-
     refreshSettings__();
 }
 
 void LogSearcher::removeKeyword(const int index)
 {
     LogUtils::Keywords().erase(std::next(LogUtils::Keywords().begin(), index));
-
     LogUtils::FormatedKeywordMap();
-
-
-
-
-
-
+    refreshSettings__();
 
     // 创建并启动工作线程
     m_thread = new QThread(this);
     m_logLoaderThread = new LogLoaderThread;
     m_logLoaderThread->moveToThread(m_thread);
-    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, &LogLoaderThread::remove);
-    QObject::connect(m_logLoaderThread,
-                     &LogLoaderThread::removeSingleLine,
-                     this,
-                     [&](const int lineIndex,
-                         const int summaryLineIndex,
-                         const QString log) {
-                         m_logModel->updateRow(lineIndex, log);
-                         m_summaryModel->removeRow(summaryLineIndex);
-                     });
-
-    // 设置要删除的索引
-    m_logLoaderThread->setRemoveKeywordIndex(index);
+    QObject::connect(m_thread, &QThread::started, this, [this, index]() { m_logLoaderThread->remove(index); });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::removeSingleLine, this, [&](const int lineIndex, const int summaryLineIndex, const QString log) {
+        m_logModel->updateRow(lineIndex, log);
+        m_summaryModel->removeRow(summaryLineIndex);
+    });
 
     // 开始更新
     m_thread->start();
-
-    refreshSettings__();
 
     emit removeKeywordFinish(index);
 }
@@ -124,6 +107,8 @@ void LogSearcher::removeKeyword(const int index)
 void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= false*/)
 {
     qDebug() << "LogSearcher::openLog >>>" << filePath;
+
+    emit loadStart();
 
     // 非重载日志的话，更新聚焦的日志
     if(!repeatOpen)
@@ -138,6 +123,11 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
         }
     }
 
+    // 清空上一次结果
+    m_logModel->clearAll();
+    m_summaryModel->clearAll();
+    m_findModel->clearAll();
+
     // 开始监视日志
     m_fileSystemWatcher.disconnect();
     m_fileSystemWatcher.removePaths(m_fileSystemWatcher.files());
@@ -150,39 +140,18 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
     m_thread = new QThread(this);
     m_logLoaderThread = new LogLoaderThread;
     m_logLoaderThread->moveToThread(m_thread);
-    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, &LogLoaderThread::analyze);
-    QObject::connect(m_logLoaderThread,
-                     &LogLoaderThread::lineNumWidth,
-                     this,
-                     [&](int width) {
-                         emit lineNumWidth(width);
-                     });
-    QObject::connect(m_logLoaderThread,
-                     &LogLoaderThread::newLogAvailable,
-                     this,
-                     [&](const bool containKeyword,
-                         const int lineIndex,
-                         const QString log) {
-                         m_logModel->appendLog(lineIndex, log);
-                         if(containKeyword)
-                         {
-                             m_summaryModel->appendLog(lineIndex, log);
-                         }
-                     });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [&](){
-        emit loadFinish(m_focusedLog, QFileInfo::exists(m_focusedLog));
+    QObject::connect(m_thread, &QThread::started, this, [this]() { m_logLoaderThread->analyze(m_focusedLog); });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::lineNumWidth, this, [this](int width) { emit lineNumWidth(width); });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [this](const bool containKeyword, const int lineIndex, const QString log) {
+        m_logModel->appendLog(lineIndex, log);
+        if(containKeyword)
+        {
+            m_summaryModel->appendLog(lineIndex, log);
+        }
     });
-
-    // 设置查询属性
-    m_logLoaderThread->setTargetLog(m_focusedLog);
-
-    // 清空上一次结果
-    m_logModel->clearAll();
-    m_summaryModel->clearAll();
-    m_findModel->clearAll();
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [this](){ emit loadFinish(m_focusedLog, QFileInfo::exists(m_focusedLog)); });
 
     // 开始查询
-    emit loadStart();
     m_thread->start();
 }
 
@@ -222,28 +191,19 @@ void LogSearcher::recolorfulKeyword(const int index, const bool ignoreKeyword)
     m_thread = new QThread(this);
     m_logLoaderThread = new LogLoaderThread;
     m_logLoaderThread->moveToThread(m_thread);
-    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, &LogLoaderThread::recolorful);
-    QObject::connect(m_logLoaderThread,
-                     &LogLoaderThread::updateSingleLine,
-                     this,
-                     [&](const int lineIndex,
-                         const int summaryLineIndex,
-                         const QString log,
-                         const bool ignoreKeyword) {
-                         m_logModel->updateRow(lineIndex, log);
-                         if(ignoreKeyword)
-                         {
-                             m_summaryModel->hideRow(summaryLineIndex);
-                         }
-                         else
-                         {
-                             m_summaryModel->showRow(summaryLineIndex);
-                             m_summaryModel->updateRow(summaryLineIndex, log);
-                         }
-                     });
-
-    // 设置查询属性
-    m_logLoaderThread->setRecolorfulInfo(index, ignoreKeyword);
+    QObject::connect(m_thread, &QThread::started, this, [this, index, ignoreKeyword]() { m_logLoaderThread->recolorful(index, ignoreKeyword); });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::updateSingleLine, this, [&](const int lineIndex, const int summaryLineIndex, const QString log, const bool ignoreKeyword) {
+        m_logModel->updateRow(lineIndex, log);
+        if(ignoreKeyword)
+        {
+            m_summaryModel->hideRow(summaryLineIndex);
+        }
+        else
+        {
+            m_summaryModel->showRow(summaryLineIndex);
+            m_summaryModel->updateRow(summaryLineIndex, log);
+        }
+    });
 
     // 开始更新
     m_thread->start();

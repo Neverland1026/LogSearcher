@@ -5,89 +5,81 @@
 #include <QFile>
 #include "LogAnalysis/LogUtils.h"
 
-void LogLoaderThread::analyze()
+void LogLoaderThread::analyze(const QString& filePath)
 {
     LogUtils::SplitFileAllLines().resize(0);
     LogUtils::KeyLineInfos().resize(0);
 
-    mapFile__();
+    mapFile__(filePath);
     process__();
 }
 
-void LogLoaderThread::recolorful()
+void LogLoaderThread::recolorful(const int toBeRecolorfulIndex, const bool ignoreKeyword)
 {
-    if(m_recolorfulInfo.first < 0 || LogUtils::KeyLineInfos().empty())
+    if(toBeRecolorfulIndex < 0 || LogUtils::KeyLineInfos().empty())
         return;
 
 #pragma omp parallel for
     for(int i = 0; i < LogUtils::KeyLineInfos().size(); ++i)
     {
         const auto& lineInfo = LogUtils::KeyLineInfos()[i];
-        if(lineInfo.keywordIndex == m_recolorfulInfo.first)
+        if(lineInfo.keywordIndex == toBeRecolorfulIndex)
         {
-            emit updateSingleLine(lineInfo.lineIndex, i, lineInfo.colorful(m_recolorfulInfo.second), m_recolorfulInfo.second);
+            emit updateSingleLine(lineInfo.lineIndex, i, lineInfo.colorful(ignoreKeyword), ignoreKeyword);
         }
     }
-
-    m_recolorfulInfo = { -1, false };
 }
 
-void LogLoaderThread::remove()
+void LogLoaderThread::remove(const int toBeRemovedIndex)
 {
-    if(m_toBeRemovedIndex < 0  || LogUtils::KeyLineInfos().empty())
+    if(toBeRemovedIndex < 0  || LogUtils::KeyLineInfos().empty())
         return;
 
     //#pragma omp parallel for
     for(int i = LogUtils::KeyLineInfos().size() - 1; i >= 0; --i)
     {
         /*const*/ auto& lineInfo = LogUtils::KeyLineInfos()[i];
-        if(lineInfo.keywordIndex == m_toBeRemovedIndex)
+        if(lineInfo.keywordIndex == toBeRemovedIndex)
         {
             lineInfo.keywordIndex = lineInfo.beginPos = lineInfo.endPos = -1;
             emit removeSingleLine(lineInfo.lineIndex, i, lineInfo.colorful());
             LogUtils::KeyLineInfos().removeAt(i);
         }
     }
-
-    m_toBeRemovedIndex = -1;
 }
 
-void LogLoaderThread::mapFile__()
+void LogLoaderThread::mapFile__(const QString& filePath)
 {
-    auto read_method2__ = [this](const QString& filePath)
+
+    do
     {
-        do
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly))
+            break;
+
+        const qint64 fileSize = file.size();
+        uchar *memory = file.map(0, fileSize);
+        if (!memory)
+            break;
+
+        const char *data = reinterpret_cast<const char*>(memory);
+        if(data)
         {
-            QFile file(filePath);
-            if (!file.open(QIODevice::ReadOnly))
-                break;
+            // 直接赋值会导致 '\0' 截断
+            /*Qstirng fileContent = QString(data);*/
 
-            const qint64 fileSize = file.size();
-            uchar *memory = file.map(0, fileSize);
-            if (!memory)
-                break;
-
-            const char *data = reinterpret_cast<const char*>(memory);
-            if(data)
+            // 直接赋值给 QString 会导致 '\0' 截断，QByteArray::split() 会正确处理内部的 '\0'
+            QByteArray byteArray(data, fileSize);  // 明确指定长度，避免 \0 截断
+            const QList<QByteArray> splitByteArray = byteArray.split('\n');
+            for(int lineIndex = 0; lineIndex < splitByteArray.size(); ++lineIndex)
             {
-                // 直接赋值会导致 '\0' 截断
-                /*m_fileContent = QString(data);*/
-
-                // 直接赋值给 QString 会导致 '\0' 截断，QByteArray::split() 会正确处理内部的 '\0'
-                QByteArray byteArray(data, fileSize);  // 明确指定长度，避免 \0 截断
-                const QList<QByteArray> splitByteArray = byteArray.split('\n');
-                for(int lineIndex = 0; lineIndex < splitByteArray.size(); ++lineIndex)
-                {
-                    LogUtils::SplitFileAllLines().emplace_back(lineIndex, splitByteArray[lineIndex]);
-                }
+                LogUtils::SplitFileAllLines().emplace_back(lineIndex, splitByteArray[lineIndex]);
             }
+        }
 
-            file.unmap(memory);
-            file.close();
-        } while(0);
-    };
-
-    read_method2__(m_logPath);
+        file.unmap(memory);
+        file.close();
+    } while(0);
 }
 
 void LogLoaderThread::process__()
