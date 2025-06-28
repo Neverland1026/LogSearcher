@@ -2,6 +2,15 @@
 #include "LogAnalysis/LogUtils.h"
 #include <windows.h>
 
+#define OPERATE_BEGIN m_thread = new QThread(this);  \
+m_logLoaderThread = new LogLoaderThread;             \
+    m_logLoaderThread->moveToThread(m_thread);
+
+#define OPERATE_END m_thread->start();
+
+#define OPERATE_DELETE { m_thread->quit(); m_thread->deleteLater(); m_logLoaderThread->deleteLater(); };
+
+
 LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
     : QObject{parent}
 {
@@ -88,20 +97,14 @@ void LogSearcher::removeKeyword(const int index)
     LogUtils::FormatedKeywordMap();
     refreshSettings__();
 
-    // 创建并启动工作线程
-    m_thread = new QThread(this);
-    m_logLoaderThread = new LogLoaderThread;
-    m_logLoaderThread->moveToThread(m_thread);
+    OPERATE_BEGIN;
     QObject::connect(m_thread, &QThread::started, this, [this, index]() { m_logLoaderThread->remove(index); });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::removeSingleLine, this, [&](const int lineIndex, const int summaryLineIndex, const QString log) {
         m_logModel->updateRow(lineIndex, log);
         m_summaryModel->removeRow(summaryLineIndex);
     });
-
-    // 开始更新
-    m_thread->start();
-
-    emit removeKeywordFinish(index);
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::operateFinish, this, [this, index]() { emit removeKeywordFinish(index); OPERATE_DELETE; });
+    OPERATE_END;
 }
 
 void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= false*/)
@@ -136,10 +139,7 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
         emit logContentModified();
     });
 
-    // 创建并启动工作线程
-    m_thread = new QThread(this);
-    m_logLoaderThread = new LogLoaderThread;
-    m_logLoaderThread->moveToThread(m_thread);
+    OPERATE_BEGIN;
     QObject::connect(m_thread, &QThread::started, this, [this]() { m_logLoaderThread->analyze(m_focusedLog); });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::lineNumWidth, this, [this](int width) { emit lineNumWidth(width); });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [this](const bool containKeyword, const int lineIndex, const QString log) {
@@ -149,10 +149,8 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
             m_summaryModel->appendLog(lineIndex, log);
         }
     });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::loadFinish, this, [this](){ emit loadFinish(m_focusedLog, QFileInfo::exists(m_focusedLog)); });
-
-    // 开始查询
-    m_thread->start();
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::operateFinish, this, [this]() { emit loadFinish(m_focusedLog, QFileInfo::exists(m_focusedLog)); OPERATE_DELETE; });
+    OPERATE_END;
 }
 
 void LogSearcher::openLatestIndexLog(const int latestIndex)
@@ -187,10 +185,7 @@ void LogSearcher::recolorfulKeyword(const int index, const bool ignoreKeyword)
     if(index < 0 || LogUtils::Keywords().size() == 0 || index >= LogUtils::Keywords().size())
         return;
 
-    // 创建并启动工作线程
-    m_thread = new QThread(this);
-    m_logLoaderThread = new LogLoaderThread;
-    m_logLoaderThread->moveToThread(m_thread);
+    OPERATE_BEGIN;
     QObject::connect(m_thread, &QThread::started, this, [this, index, ignoreKeyword]() { m_logLoaderThread->recolorful(index, ignoreKeyword); });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::updateSingleLine, this, [&](const int lineIndex, const int summaryLineIndex, const QString log, const bool ignoreKeyword) {
         m_logModel->updateRow(lineIndex, log);
@@ -204,9 +199,8 @@ void LogSearcher::recolorfulKeyword(const int index, const bool ignoreKeyword)
             m_summaryModel->updateRow(summaryLineIndex, log);
         }
     });
-
-    // 开始更新
-    m_thread->start();
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::operateFinish, this, [this]() { /* */ OPERATE_DELETE; });
+    OPERATE_END;
 }
 
 void LogSearcher::find(const QString& targetKeyword,

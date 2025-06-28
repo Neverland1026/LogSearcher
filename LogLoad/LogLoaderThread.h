@@ -27,11 +27,11 @@ signals:
 
     void newLogAvailable(const bool containKeyword, const int lineIndex, const QString log);
 
-    void loadFinish();
-
     void updateSingleLine(const int lineIndex, const int summaryLineIndex, const QString log, const bool ignoreKeyword);
 
     void removeSingleLine(const int lineIndex, const int summaryLineIndex, const QString log);
+
+    void operateFinish();
 
 protected:
 

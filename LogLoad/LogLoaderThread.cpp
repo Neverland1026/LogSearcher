@@ -12,6 +12,8 @@ void LogLoaderThread::analyze(const QString& filePath)
 
     mapFile__(filePath);
     process__();
+
+    emit operateFinish();
 }
 
 void LogLoaderThread::recolorful(const int toBeRecolorfulIndex, const bool ignoreKeyword)
@@ -28,6 +30,8 @@ void LogLoaderThread::recolorful(const int toBeRecolorfulIndex, const bool ignor
             emit updateSingleLine(lineInfo.lineIndex, i, lineInfo.colorful(ignoreKeyword), ignoreKeyword);
         }
     }
+
+    emit operateFinish();
 }
 
 void LogLoaderThread::remove(const int toBeRemovedIndex)
@@ -46,6 +50,8 @@ void LogLoaderThread::remove(const int toBeRemovedIndex)
             LogUtils::KeyLineInfos().removeAt(i);
         }
     }
+
+    emit operateFinish();
 }
 
 void LogLoaderThread::mapFile__(const QString& filePath)
@@ -122,7 +128,4 @@ void LogLoaderThread::process__()
             emit newLogAvailable(containKeyword, lineIndex, lineInfo.colorful());
         }
     }
-
-    // 解析结束
-    emit loadFinish();
 }
