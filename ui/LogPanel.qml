@@ -285,7 +285,8 @@ Rectangle {
                                  wheel.accepted = true;
                              } else {
                                  var delta = wheel.angleDelta.y > 0 || wheel.pixelDelta.y > 0;
-                                 var newIndex = listView.currentIndex + (delta > 0 ? -5 : 5);
+                                 var step = root.modelCount > 1000 ? 5 : 3;
+                                 var newIndex = listView.currentIndex + (delta > 0 ? -1 : 1) * step;
                                  newIndex = Math.max(0, Math.min(newIndex, modelCount - 1));
                                  listView.positionViewAtIndex(newIndex, ListView.Center);
                                  listView.currentIndex = newIndex;
@@ -371,10 +372,10 @@ Rectangle {
                                 event.accepted = true;
                             }
                         } else {
-                            console.log("event.key =", event.key);
+                            //console.log("event.key =", event.key);
                             if (event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
                                 // 更新记录
-                                console.log("event.key === Qt.Key_Up || event.key === Qt.Key_Down")
+                                //console.log("event.key === Qt.Key_Up || event.key === Qt.Key_Down")
                                 if (event.key === Qt.Key_Up) {
                                     positionRecorder.second--;
                                     positionRecorder.first--;
