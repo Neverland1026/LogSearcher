@@ -40,6 +40,13 @@ Rectangle {
     // 是否是搜索内容汇总模式
     property bool summaryMode: false
 
+    // 重置索引到第一行
+    function resetCurrentIndex() {
+        if(modelCount >= 0) {
+            listView.currentIndex = 0;
+        }
+    }
+
     // 跳转到指定行
     function positionViewAtIndex(lineNumber) {
         if(lineNumber < 0 || lineNumber >= modelCount)
