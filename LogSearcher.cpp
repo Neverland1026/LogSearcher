@@ -98,7 +98,7 @@ void LogSearcher::removeKeyword(const int index)
     refreshSettings__();
 
     OPERATE_BEGIN;
-    QObject::connect(m_thread, &QThread::started, this, [this, index]() { m_logLoaderThread->remove(index); });
+    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, [this, index]() { m_logLoaderThread->remove(index); });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::removeSingleLine, this, [&](const int lineIndex, const int summaryLineIndex, const QString log) {
         m_logModel->updateRow(lineIndex, log);
         m_summaryModel->removeRow(summaryLineIndex);
@@ -140,7 +140,7 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
     });
 
     OPERATE_BEGIN;
-    QObject::connect(m_thread, &QThread::started, this, [this]() { m_logLoaderThread->analyze(m_focusedLog); });
+    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, [this]() { m_logLoaderThread->analyze(m_focusedLog); });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::lineNumWidth, this, [this](int width) { emit lineNumWidth(width); });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [this](const bool containKeyword, const int lineIndex, const QString log) {
         m_logModel->appendLog(lineIndex, log);
@@ -185,7 +185,7 @@ void LogSearcher::refilterSearchResult()
     m_summaryModel->clearAll();
 
     OPERATE_BEGIN;
-    QObject::connect(m_thread, &QThread::started, this, [this]() { m_logLoaderThread->refilterSearchResult(); });
+    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, [this]() { m_logLoaderThread->refilterSearchResult(); });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [this](const bool containKeyword, const int lineIndex, const QString log) {
         m_logModel->updateRow(lineIndex, log);
         if(containKeyword)
@@ -203,7 +203,7 @@ void LogSearcher::recolorfulKeyword(const int index, const bool ignoreKeyword)
         return;
 
     OPERATE_BEGIN;
-    QObject::connect(m_thread, &QThread::started, this, [this, index, ignoreKeyword]() { m_logLoaderThread->recolorful(index, ignoreKeyword); });
+    QObject::connect(m_thread, &QThread::started, m_logLoaderThread, [this, index, ignoreKeyword]() { m_logLoaderThread->recolorful(index, ignoreKeyword); });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::updateSingleLine, this, [&](const int lineIndex, const int summaryLineIndex, const QString log, const bool ignoreKeyword) {
         m_logModel->updateRow(lineIndex, log);
         if(ignoreKeyword)
