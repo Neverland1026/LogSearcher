@@ -274,6 +274,9 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.NoButton | Qt.RightButton
+                hoverEnabled: true
+
+                onEntered: listView.currentIndex = index
 
                 onWheel: (wheel) => {
                              if (wheel.modifiers & Qt.ControlModifier) {
