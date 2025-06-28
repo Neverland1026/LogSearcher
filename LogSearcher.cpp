@@ -132,12 +132,15 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
     m_findModel->clearAll();
 
     // 开始监视日志
-    m_fileSystemWatcher.disconnect();
-    m_fileSystemWatcher.removePaths(m_fileSystemWatcher.files());
-    m_fileSystemWatcher.addPath(m_focusedLog);
-    QObject::connect(&m_fileSystemWatcher, &QFileSystemWatcher::fileChanged, this, [this](const QString &path) {
-        emit logContentModified();
-    });
+    if(QFileInfo(m_focusedLog).suffix().toLower() != "zst")
+    {
+        m_fileSystemWatcher.disconnect();
+        m_fileSystemWatcher.removePaths(m_fileSystemWatcher.files());
+        m_fileSystemWatcher.addPath(m_focusedLog);
+        QObject::connect(&m_fileSystemWatcher, &QFileSystemWatcher::fileChanged, this, [this](const QString &path) {
+            emit logContentModified();
+        });
+    }
 
     OPERATE_BEGIN;
     QObject::connect(m_thread, &QThread::started, m_logLoaderThread, [this]() { m_logLoaderThread->analyze(m_focusedLog); });
@@ -149,6 +152,7 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
             m_summaryModel->appendLog(lineIndex, log);
         }
     });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::openFileFailed, this, [this]() {  });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::operateFinish, this, [this]() { emit loadFinish(m_focusedLog, QFileInfo::exists(m_focusedLog)); OPERATE_DELETE; });
     OPERATE_END;
 }

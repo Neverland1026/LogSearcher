@@ -82,7 +82,7 @@ Rectangle {
         id: fileDialog
         title: qsTr("Select Log File")
         fileMode: FileDialog.OpenFile
-        nameFilters: [ "Log File (*.LOG *.log *.TXT *.txt)" ]
+        nameFilters: [ "Log File (*.LOG *.log *.TXT *.txt *.ZST *.zst)" ]
 
         onAccepted: {
             $LogSearcher.openLog(fileDialog.selectedFile.toString());

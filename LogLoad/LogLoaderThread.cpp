@@ -1,8 +1,12 @@
 ﻿#include "LogLoaderThread.h"
 #include <windows.h>
+#include <QCoreApplication>
 #include <QThread>
 #include <QDebug>
 #include <QFile>
+#include <QFileInfo>
+#include <QProcess>
+#include <QDir>
 #include "LogAnalysis/LogUtils.h"
 
 void LogLoaderThread::analyze(const QString& filePath)
@@ -94,36 +98,84 @@ void LogLoaderThread::remove(const int toBeRemovedIndex)
 
 void LogLoaderThread::mapFile__(const QString& filePath)
 {
-
-    do
+    auto fail__ = [&]()
     {
-        QFile file(filePath);
-        if (!file.open(QIODevice::ReadOnly))
-            break;
+        emit openFileFailed();
+        return;
+    };
 
-        const qint64 fileSize = file.size();
-        uchar *memory = file.map(0, fileSize);
-        if (!memory)
-            break;
+    QString transformedPath = filePath;
+    const bool is_ZST = (QFileInfo(transformedPath).suffix().toLower() == FILE_SUUIFX_ZST);
+    if(is_ZST)
+    {
+        // ./7z.exe x FileName.log.zst -oNewFolder
+        const QString TimeStamp = QDateTime::currentDateTime().toString("yyyyMMddHHmmss");
 
-        const char *data = reinterpret_cast<const char*>(memory);
-        if(data)
+        QProcess process;
+        QString program = QCoreApplication::applicationDirPath()  + "/7z.exe";
+        QStringList arguments;
+        arguments << "x"
+                  << transformedPath
+                  << "-o" + TimeStamp;
+        qDebug() << "QProcess start -> " << program << arguments.join(" ");
+        process.start(program, arguments);
+
+        if (!process.waitForFinished(20000))
         {
-            // 直接赋值会导致 '\0' 截断
-            /*Qstirng fileContent = QString(data);*/
-
-            // 直接赋值给 QString 会导致 '\0' 截断，QByteArray::split() 会正确处理内部的 '\0'
-            QByteArray byteArray(data, fileSize);  // 明确指定长度，避免 \0 截断
-            const QList<QByteArray> splitByteArray = byteArray.split('\n');
-            for(int lineIndex = 0; lineIndex < splitByteArray.size(); ++lineIndex)
-            {
-                LogUtils::SplitFileAllLines().emplace_back(lineIndex, splitByteArray[lineIndex]);
-            }
+            qDebug() << "QProcess -> waitForFinished timeout";
+            process.kill();
+            return fail__();
         }
+        else
+        {
+            const QString output = process.readAllStandardOutput();
+            if(!output.contains("Everything is Ok"))
+            {
+                return fail__();
+            }
 
-        file.unmap(memory);
-        file.close();
-    } while(0);
+            const QString fileName = QFileInfo(filePath).fileName();
+            transformedPath = QCoreApplication::applicationDirPath() + "/" + TimeStamp + "/" + fileName.left(fileName.length() - 4);
+            qDebug() << "QProcess success ->" << transformedPath;
+        }
+    }
+
+    QFile file(transformedPath);
+    if (!file.open(QIODevice::ReadOnly))
+        return fail__();
+
+    const qint64 fileSize = file.size();
+    uchar *memory = file.map(0, fileSize);
+    if (!memory)
+        return fail__();
+
+    const char *data = reinterpret_cast<const char*>(memory);
+    if(data)
+    {
+        // 直接赋值会导致 '\0' 截断
+        /*Qstirng fileContent = QString(data);*/
+
+        // 直接赋值给 QString 会导致 '\0' 截断，QByteArray::split() 会正确处理内部的 '\0'
+        QByteArray byteArray(data, fileSize);  // 明确指定长度，避免 \0 截断
+        const QList<QByteArray> splitByteArray = byteArray.split('\n');
+        for(int lineIndex = 0; lineIndex < splitByteArray.size(); ++lineIndex)
+        {
+            LogUtils::SplitFileAllLines().emplace_back(lineIndex, splitByteArray[lineIndex]);
+        }
+    }
+
+    file.unmap(memory);
+    file.close();
+
+    if(is_ZST)
+    {
+        QDir dir(QFileInfo(transformedPath).absoluteDir());
+        qDebug() << "QProcess removeRecursively ->" << QFileInfo(transformedPath).absoluteDir();
+        dir.removeRecursively();
+    }
+
+    if(!data)
+        return fail__();
 }
 
 void LogLoaderThread::process__()

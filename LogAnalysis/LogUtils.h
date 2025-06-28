@@ -4,6 +4,9 @@
 #include <QMap>
 #include <QColor>
 
+// 文件后缀
+const QString FILE_SUUIFX_ZST = QString("zst");
+
 class LogUtils
 {
 public:

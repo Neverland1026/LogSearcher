@@ -34,6 +34,8 @@ signals:
 
     void removeSingleLine(const int lineIndex, const int summaryLineIndex, const QString log);
 
+    void openFileFailed();
+
     void operateFinish();
 
 protected:
