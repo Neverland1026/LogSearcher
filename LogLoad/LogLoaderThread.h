@@ -15,6 +15,9 @@ public slots:
     // 解析日志
     void analyze(const QString& filePath);
 
+    // 重新过滤关键字
+    void refilterSearchResult();
+
     // 关键字重着色
     void recolorful(const int toBeRecolorfulIndex, const bool ignoreKeyword);
 

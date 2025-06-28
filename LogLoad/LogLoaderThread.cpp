@@ -16,6 +16,43 @@ void LogLoaderThread::analyze(const QString& filePath)
     emit operateFinish();
 }
 
+void LogLoaderThread::refilterSearchResult()
+{
+    if(LogUtils::SplitFileAllLines().isEmpty())
+        return;
+
+    LogUtils::KeyLineInfos().resize(0);
+
+// 日志解析
+#pragma omp parallel for
+    for(int lineIndex = 0; lineIndex < LogUtils::SplitFileAllLines().size(); ++lineIndex)
+    {
+        LogUtils::LineInfo lineInfo;
+        lineInfo.lineIndex = lineIndex;
+        lineInfo.line = LogUtils::SplitFileAllLines()[lineIndex].second;
+        const bool&& containKeyword = LogUtils::ConvertHTML(LogUtils::SplitFileAllLines()[lineIndex].second,
+                                                            lineInfo.keywordIndex,
+                                                            lineInfo.beginPos,
+                                                            lineInfo.endPos);
+
+#pragma omp ordered
+        {
+            if(lineInfo.beginPos >= 0)
+            {
+                LogUtils::KeyLineInfos().emplace_back(lineInfo.lineIndex,
+                                                      lineInfo.line,
+                                                      lineInfo.keywordIndex,
+                                                      lineInfo.beginPos,
+                                                      lineInfo.endPos);
+            }
+
+            emit newLogAvailable(containKeyword, lineIndex, lineInfo.colorful());
+        }
+    }
+
+    emit operateFinish();
+}
+
 void LogLoaderThread::recolorful(const int toBeRecolorfulIndex, const bool ignoreKeyword)
 {
     if(toBeRecolorfulIndex < 0 || LogUtils::KeyLineInfos().empty())
@@ -39,6 +76,7 @@ void LogLoaderThread::remove(const int toBeRemovedIndex)
     if(toBeRemovedIndex < 0  || LogUtils::KeyLineInfos().empty())
         return;
 
+    // 并行一定会有问题，先注释
     //#pragma omp parallel for
     for(int i = LogUtils::KeyLineInfos().size() - 1; i >= 0; --i)
     {

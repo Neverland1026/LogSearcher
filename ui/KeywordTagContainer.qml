@@ -53,7 +53,7 @@ Rectangle {
                 }
 
                 onSigAccepted: {
-                    $LogSearcher.openLog("", true);
+                    $LogSearcher.refilterSearchResult();
                 }
 
                 onSigRecolorful: {

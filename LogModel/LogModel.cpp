@@ -11,9 +11,9 @@ QVariant LogModel::data(const QModelIndex &index, int role) const
     if (!index.isValid() || index.row() >= m_logDataList.size())
         return QVariant();
     if (role == Qt::UserRole)
-        return m_logDataList.at(index.row()).lineIndex;
+        return m_logDataList[index.row()].lineIndex;
     if (role == Qt::DisplayRole)
-        return m_logDataList.at(index.row()).content;
+        return m_logDataList[index.row()].content;
     if (role == VisibleRole) {
         return m_logDataList[index.row()].isVisible;
     }

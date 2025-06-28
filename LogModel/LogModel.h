@@ -41,7 +41,7 @@ private:
             this->isVisible = isVisible_;
         }
     };
-    QVector<LogDataItem> m_logDataList;
+    QList<LogDataItem> m_logDataList;
 };
 
 #endif // LOGMODEL_H

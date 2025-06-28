@@ -58,6 +58,7 @@ Rectangle {
                     radius: width
                     color: "yellow"
                     enabled: !root.ignoreKeyword
+                    opacity: root.ignoreKeyword ? 0.3 : 1.0
                     //border.color: "#000000"; border.width: 1;
 
                     MouseArea {
@@ -86,6 +87,7 @@ Rectangle {
         // 查询关键字
         TextInput {
             id: textInput
+            enabled: !root.ignoreKeyword
             height: contentRect.height
             anchors.left: colorMangerRect.right
             anchors.leftMargin: 10

@@ -72,6 +72,7 @@ ApplicationWindow {
             window.title = "LogSearcher" + (exist ? ("  -  " + logPath) : "");
             logPanel.resetCurrentIndex();
             summaryLogPanel.resetCurrentIndex();
+            findResultWindow.close();
         }
 
         function onFindFinish(targetKeyword, findCount, findTimeCost) {

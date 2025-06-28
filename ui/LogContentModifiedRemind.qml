@@ -21,6 +21,6 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        onPressed: { parent.visible = false; $LogSearcher.openLog("", true); }
+        onPressed: { parent.visible = false; $LogSearcher.refilterSearchResult(); }
     }
 }

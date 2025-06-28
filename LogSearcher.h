@@ -45,6 +45,9 @@ public:
     Q_INVOKABLE void openLog(const QString& filePath, const bool repeatOpen = false);
     Q_INVOKABLE void openLatestIndexLog(const int latestIndex);
 
+    // 重新过滤关键字
+    Q_INVOKABLE void refilterSearchResult();
+
     // 关键字重着色
     Q_INVOKABLE void recolorfulKeyword(const int index, const bool ignoreKeyword);
 

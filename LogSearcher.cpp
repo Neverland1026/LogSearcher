@@ -8,7 +8,7 @@ m_logLoaderThread = new LogLoaderThread;             \
 
 #define OPERATE_END m_thread->start();
 
-#define OPERATE_DELETE { m_thread->quit(); m_thread->deleteLater(); m_logLoaderThread->deleteLater(); };
+#define OPERATE_DELETE { /*m_thread->quit(); m_thread->deleteLater(); m_logLoaderThread->deleteLater();*/ };
 
 
 LogSearcher::LogSearcher(QObject *parent /*= nullptr*/)
@@ -178,6 +178,23 @@ void LogSearcher::openLatestIndexLog(const int latestIndex)
         const auto iter = std::next(filePathMap.begin(), filePathMap.size() - 1 - latestIndex);
         openLog(iter.value());
     }
+}
+
+void LogSearcher::refilterSearchResult()
+{
+    m_summaryModel->clearAll();
+
+    OPERATE_BEGIN;
+    QObject::connect(m_thread, &QThread::started, this, [this]() { m_logLoaderThread->refilterSearchResult(); });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [this](const bool containKeyword, const int lineIndex, const QString log) {
+        m_logModel->updateRow(lineIndex, log);
+        if(containKeyword)
+        {
+            m_summaryModel->appendLog(lineIndex, log);
+        }
+    });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::operateFinish, this, [this]() { /* */ OPERATE_DELETE; });
+    OPERATE_END;
 }
 
 void LogSearcher::recolorfulKeyword(const int index, const bool ignoreKeyword)
