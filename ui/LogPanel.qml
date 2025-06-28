@@ -113,6 +113,9 @@ Rectangle {
 
     signal sigDoubleClicked(var lineNumber);
 
+    signal sigCustomSummaryHeight(var number);
+
+    // 主布局
     ScrollView {
         anchors.fill: parent
 
@@ -373,6 +376,15 @@ Rectangle {
                             }
                         } else {
                             //console.log("event.key =", event.key);
+                            // 判断是否数字键（主键盘区）
+                            if (event.key >= Qt.Key_0 && event.key <= Qt.Key_9) {
+                                root.sigCustomSummaryHeight(event.key - Qt.Key_0);
+                            }
+                            // 判断是否小键盘数字键
+                            if (event.key >= Qt.Key_Keypad0 && event.key <= Qt.Key_Keypad9) {
+                                root.sigCustomSummaryHeight(event.key - Qt.Key_Keypad0);
+                            }
+                            // Up 和 Down
                             if (event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
                                 // 更新记录
                                 //console.log("event.key === Qt.Key_Up || event.key === Qt.Key_Down")
