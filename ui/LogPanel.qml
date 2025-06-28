@@ -288,7 +288,7 @@ Rectangle {
                                  wheel.accepted = true;
                              } else {
                                  var delta = wheel.angleDelta.y > 0 || wheel.pixelDelta.y > 0;
-                                 var step = root.modelCount > 1000 ? 5 : 3;
+                                 var step = root.modelCount > 300 ? 5 : 3;
                                  var newIndex = listView.currentIndex + (delta > 0 ? -1 : 1) * step;
                                  newIndex = Math.max(0, Math.min(newIndex, modelCount - 1));
                                  listView.positionViewAtIndex(newIndex, ListView.Center);
@@ -305,8 +305,19 @@ Rectangle {
                                } else if(mouse.button === Qt.RightButton) {
                                    if(modelCount > 0) {
                                        var pos = parent.mapToItem(root, mouseX, mouseY);
-                                       rightMenu.x =  pos.x;
-                                       rightMenu.y = pos.y;
+
+                                       // 计算菜单可能的位置
+                                       var menuWidth = rightMenu.width;
+                                       var menuHeight = rightMenu.height;
+                                       var windowWidth = root.width;
+                                       var windowHeight = root.height;
+
+                                       // 调整X坐标防止右侧超出
+                                       rightMenu.x = Math.min(pos.x, windowWidth - menuWidth);
+
+                                       // 调整Y坐标防止底部超出
+                                       rightMenu.y = Math.min(pos.y, windowHeight - menuHeight);
+
                                        rightMenu.visible = true
                                    }
                                }
