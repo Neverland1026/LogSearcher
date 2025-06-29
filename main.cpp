@@ -13,43 +13,29 @@
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-    QString text;
-    //    switch (type) {
-    //    case QtDebugMsg:
-    //        text = QString("Debug: %1").arg(msg);
-    //        break;
-    //    case QtInfoMsg:
-    //        text = QString("Info: %1").arg(msg);
-    //        break;
-    //    case QtWarningMsg:
-    //        text = QString("Warning: %1 in file %2:%3, line %4, function %5")
-    //                   .arg(msg)
-    //                   .arg(context.file())
-    //                   .arg(context.line())
-    //                   .arg(context.function());
-    //        break;
-    //    case QtCriticalMsg:
-    //        text = QString("Critical: %1 in file %2:%3, line %4, function %5")
-    //                   .arg(msg)
-    //                   .arg(context.file())
-    //                   .arg(context.line())
-    //                   .arg(context.function());
-    //        break;
-    //    case QtFatalMsg:
-    //        text = QString("Fatal: %1 in file %2:%3, line %4, function %5")
-    //                   .arg(msg)
-    //                   .arg(context.file())
-    //                   .arg(context.line())
-    //                   .arg(context.function());
-    //        abort(); // 或者你可以选择其他方式来处理致命错误
-    //    }
+    static QString logFileName = "./log/LogSearcher_%1.log";
+    static std::once_flag s_flag;
+    std::call_once(s_flag, [&]() {
+        const QString TimeStamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
+        logFileName = logFileName.arg(TimeStamp);
 
-    text = QString("Info: %1").arg(msg);
+        // 保留最近10次日志
+        const int maxFiles = 10;
+        QDir logDir("./log/");
+        QStringList nameFilters;
+        nameFilters << "*.log";
+        QFileInfoList logFiles = logDir.entryInfoList(nameFilters, QDir::Files, QDir::Time | QDir::Reversed);
+        while (logFiles.size() > maxFiles - 1) {
+            QFile::remove(logFiles.first().absoluteFilePath());
+            logFiles.removeFirst();
+        }
+    });
 
-    QFile outFile("./log.txt");
+    QFile outFile(logFileName);
     outFile.open(QIODevice::Append | QIODevice::Text);
     QTextStream ts(&outFile);
-    ts << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz") << " - " << text << "\n";
+    ts << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz") << "  " << msg << "\n";
+    outFile.close();
 }
 
 int main(int argc, char *argv[])
@@ -60,6 +46,9 @@ int main(int argc, char *argv[])
 
     app.setApplicationName("LogSearcher");
     app.setOrganizationName("LogSearcher_Organizatio");
+
+    QDir dir;
+    dir.mkpath("./log");
 
     qInstallMessageHandler(myMessageHandler);
 
