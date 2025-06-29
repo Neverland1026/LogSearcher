@@ -1,6 +1,7 @@
 ﻿#include "LogSearcher.h"
 #include "LogAnalysis/LogUtils.h"
 #include <windows.h>
+#include <iomanip>
 
 #define OPERATE_BEGIN m_thread = new QThread(this);  \
 m_logLoaderThread = new LogLoaderThread;             \
@@ -41,10 +42,9 @@ void LogSearcher::init()
     static std::once_flag s_flag;
     std::call_once(s_flag, [&]() {
         QString config = {};
-        qDebug() << "getSettingsAbsolutePath__() =" << getSettingsAbsolutePath__();
         if(!QFileInfo::exists(getSettingsAbsolutePath__()))
         {
-            const QString keyword = "__Default__";
+            const QString keyword = "__TIME_COST_STATISTICS__";
             QSettings settings(getSettingsAbsolutePath__(), QSettings::Format::IniFormat);
             settings.setValue("Global/Keywords", keyword);
             settings.sync();
@@ -109,7 +109,7 @@ void LogSearcher::removeKeyword(const int index)
 
 void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= false*/)
 {
-    qDebug() << "LogSearcher::openLog >>>" << filePath;
+    qDebug() << std::boolalpha << "LogSearcher::openLog [ filePath repeatOpen ] = [" << filePath  << repeatOpen << "]";
 
     emit loadStart();
 

@@ -279,8 +279,6 @@ Rectangle {
                 acceptedButtons: Qt.NoButton | Qt.RightButton
                 hoverEnabled: true
 
-                onEntered: listView.currentIndex = index
-
                 onWheel: (wheel) => {
                              if (wheel.modifiers & Qt.ControlModifier) {
                                  dynamicFontSize += (wheel.angleDelta.y > 0) ? 1 : -1;

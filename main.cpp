@@ -18,6 +18,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &context, const Q
     std::call_once(s_flag, [&]() {
         const QString TimeStamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
         logFileName = logFileName.arg(TimeStamp);
+        qDebug() << "Create log [" << logFileName << "]";
 
         // 保留最近10次日志
         const int maxFiles = 10;
@@ -51,6 +52,8 @@ int main(int argc, char *argv[])
     dir.mkpath("./log");
 
     qInstallMessageHandler(myMessageHandler);
+
+    qDebug() << "LogSearcher built on:" << __DATE__ << ", at" << __TIME__;
 
     QQmlApplicationEngine engine;
 

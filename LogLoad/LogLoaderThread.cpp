@@ -117,12 +117,12 @@ void LogLoaderThread::mapFile__(const QString& filePath)
         arguments << "x"
                   << transformedPath
                   << "-o" + TimeStamp;
-        qDebug() << "QProcess start -> " << program << arguments.join(" ");
+        qDebug() << "Unzip *.zst begin [" << program << arguments.join(" ") << "]";
         process.start(program, arguments);
 
         if (!process.waitForFinished(20000))
         {
-            qDebug() << "QProcess -> waitForFinished timeout";
+            qDebug() << "Unzip *.zst failed [ timeout ]";
             process.kill();
             return fail__();
         }
@@ -136,7 +136,7 @@ void LogLoaderThread::mapFile__(const QString& filePath)
 
             const QString fileName = QFileInfo(filePath).fileName();
             transformedPath = QCoreApplication::applicationDirPath() + "/" + TimeStamp + "/" + fileName.left(fileName.length() - 4);
-            qDebug() << "QProcess success ->" << transformedPath;
+            qDebug() << "Unzip *.zst succeed [" << transformedPath << "[";
         }
     }
 
@@ -170,7 +170,7 @@ void LogLoaderThread::mapFile__(const QString& filePath)
     if(is_ZST)
     {
         QDir dir(QFileInfo(transformedPath).absoluteDir());
-        qDebug() << "QProcess removeRecursively ->" << QFileInfo(transformedPath).absoluteDir();
+        qDebug() << "Unzip *.zst finish and removeRecursively [" << QFileInfo(transformedPath).absoluteDir() << "]";
         dir.removeRecursively();
     }
 
