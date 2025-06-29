@@ -29,7 +29,7 @@ Rectangle {
     readonly property string focusBackgroundColor: "#1FFF0000"
 
     // 当前行高亮颜色
-    readonly property string highlightBackgroundColor: "#7FFFFF00"
+    readonly property string highlightBackgroundColor: summaryMode ? "transparent" : "#7FFFFF00"
 
     // 行索引记录
     property var positionRecorder: QtObject {
@@ -151,15 +151,14 @@ Rectangle {
                 height: visible ? (dynamicFontSize * 1.2) : 0
 
                 visible: root.summaryMode ? isVisible : true
-                onVisibleChanged: {
-                    if(visible) {
-                        backgroundRect.color = ($LogSearcher.isHighlight(index) ? root.highlightBackgroundColor : "transparent");
-                    }
-                }
 
                 property alias backgroundRect: backgroundRect
 
                 Rectangle { id: backgroundRect; anchors.fill: parent }
+
+                Component.onCompleted: {
+                    backgroundRect.color = ($LogSearcher.isHighlight(index) ? root.highlightBackgroundColor : "transparent");
+                }
 
                 // 行号
                 Text {
