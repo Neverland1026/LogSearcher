@@ -5,6 +5,7 @@
 #include <QString>
 #include <QMap>
 #include <QVector>
+#include <QElapsedTimer>
 
 class LogLoaderThread : public QObject
 {
@@ -47,6 +48,9 @@ protected:
     void process__();
 
 private:
+
+    // 计时器
+    QElapsedTimer m_elapsedTimer;
 
 };
 

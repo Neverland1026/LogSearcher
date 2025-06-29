@@ -13,9 +13,12 @@ void LogLoaderThread::analyze(const QString& filePath)
 {
     LogUtils::SplitFileAllLines().resize(0);
     LogUtils::KeyLineInfos().resize(0);
+    LogUtils::HighlightLines().clear();
 
+    m_elapsedTimer.start();
     mapFile__(filePath);
     process__();
+    qDebug() << "LogLoaderThread::analyze finish, cost" << m_elapsedTimer.elapsed() << "ms";
 
     emit operateFinish();
 }

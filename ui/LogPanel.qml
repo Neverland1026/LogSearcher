@@ -57,14 +57,14 @@ Rectangle {
             var lastItem1 = listView.itemAtIndex(positionRecorder.first);
             if (lastItem1) {
                 var rect1 = lastItem1.backgroundRect;
-                rect1.color = (lastItem1.highlightLine ? root.highlightBackgroundColor : "transparent");
+                rect1.color = ($LogSearcher.isHighlight(positionRecorder.first) ? root.highlightBackgroundColor : "transparent");
             }
         }
         if(positionRecorder.second >= 0) {
             var lastItem2 = listView.itemAtIndex(positionRecorder.second);
             if (lastItem2) {
                 var rect2 = lastItem2.backgroundRect;
-                rect2.color = (lastItem2.highlightLine ? root.highlightBackgroundColor : "transparent");
+                rect2.color = ($LogSearcher.isHighlight(positionRecorder.second) ? root.highlightBackgroundColor : "transparent");
             }
         }
 
@@ -81,7 +81,7 @@ Rectangle {
         var curItem = listView.itemAtIndex(positionRecorder.first);
         if (curItem) {
             var rect = curItem.backgroundRect;
-            rect.color = (curItem.highlightLine ? root.highlightBackgroundColor : root.focusBackgroundColor);
+            rect.color = ($LogSearcher.isHighlight(positionRecorder.first) ? root.highlightBackgroundColor : root.focusBackgroundColor);
         }
     }
 
@@ -144,18 +144,20 @@ Rectangle {
             // 不转发给任何子元素
             Keys.forwardTo: []
 
-            delegate:  Item {
+            delegate: Item {
                 id: item
 
                 width: listView.width * 2
                 height: visible ? (dynamicFontSize * 1.2) : 0
 
                 visible: root.summaryMode ? isVisible : true
+                onVisibleChanged: {
+                    if(visible) {
+                        backgroundRect.color = ($LogSearcher.isHighlight(index) ? root.highlightBackgroundColor : "transparent");
+                    }
+                }
 
                 property alias backgroundRect: backgroundRect
-
-                // 是否高亮当前行
-                property bool highlightLine: false
 
                 Rectangle { id: backgroundRect; anchors.fill: parent }
 
@@ -178,8 +180,8 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            item.highlightLine = !item.highlightLine;
-                            backgroundRect.color = (item.highlightLine) ? root.highlightBackgroundColor : "transparent";
+                            $LogSearcher.toggleHighlight(index);
+                            backgroundRect.color = ($LogSearcher.isHighlight(index) ? root.highlightBackgroundColor : "transparent");
                         }
                     }
                 }
@@ -259,7 +261,7 @@ Rectangle {
                                 var lastTargetItem = listView.itemAtIndex(positionRecorder.second);
                                 if (lastTargetItem) {
                                     var rect = lastTargetItem.backgroundRect;
-                                    rect.color = (lastTargetItem.highlightLine ? root.highlightBackgroundColor : "transparent");
+                                    rect.color = ($LogSearcher.isHighlight(positionRecorder.second) ? root.highlightBackgroundColor : "transparent");
                                 }
                             }
 
@@ -337,13 +339,13 @@ Rectangle {
             $LogSearcher.insertKeyword(-1, root.selectedText, "");
         }
 
-        onSigHighlight: {
+        onSigToggleHighlight: {
             if(positionRecorder.first >= 0) {
                 var curItem = listView.itemAtIndex(positionRecorder.first);
                 if (curItem) {
                     var rect = curItem.backgroundRect;
-                    curItem.highlightLine = true;
-                    rect.color = (curItem.highlightLine ? root.highlightBackgroundColor : "transparent");
+                    $LogSearcher.toggleHighlight(positionRecorder.first);
+                    rect.color = ($LogSearcher.isHighlight(positionRecorder.first) ? root.highlightBackgroundColor : "transparent");
                 }
             }
         }

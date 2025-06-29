@@ -15,7 +15,7 @@ Popup {
 
     signal sigAddKeyword();
 
-    signal sigHighlight();
+    signal sigToggleHighlight();
 
     signal sigOpenLatestLog();
 
@@ -42,8 +42,8 @@ Popup {
                 func: function() { }
             }
             ListElement {
-                text: "高亮当前行"
-                func: function() { customMenu.sigHighlight(); }
+                text: "高亮/还原当前行"
+                func: function() { customMenu.sigToggleHighlight(); }
             }
             ListElement {
                 text: ""

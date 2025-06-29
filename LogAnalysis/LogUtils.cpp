@@ -6,6 +6,7 @@ QMap<int, QPair<QString, QString>> LogUtils::m_searchTarget = {};
 QMap<QString, QPair<int, QString>> LogUtils::m_transformedSearchTarget = {};
 QVector<QPair<int, QString>> LogUtils::m_splitFileAllLines = {};
 QVector<LogUtils::LineInfo> LogUtils::m_keyLineInfos = {};
+QSet<int> LogUtils::m_highlightLines = {};
 
 QMap<int, QPair<QString, QString>>& LogUtils::Keywords()
 {
@@ -60,6 +61,11 @@ QVector<QPair<int, QString>>& LogUtils::SplitFileAllLines()
 QVector<LogUtils::LineInfo>& LogUtils::KeyLineInfos()
 {
     return m_keyLineInfos;
+}
+
+QSet<int>& LogUtils::HighlightLines()
+{
+    return m_highlightLines;
 }
 
 bool LogUtils::ConvertHTML(const QString& normalLine,

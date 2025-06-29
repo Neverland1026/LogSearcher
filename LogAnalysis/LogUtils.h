@@ -76,6 +76,9 @@ public:
     // 获取检索到关键字的行信息
     static QVector<LogUtils::LineInfo>& KeyLineInfos();
 
+    // 高亮的行
+    static QSet<int>& HighlightLines();
+
     // 生成随机色
     static QColor GenerateRandomColorRGB_Safe();
 
@@ -92,6 +95,9 @@ private:
 
     // 检索到关键字的行信息
     static QVector<LineInfo> m_keyLineInfos;
+
+    // 高亮的行
+    static QSet<int> m_highlightLines;
 
 };
 

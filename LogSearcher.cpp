@@ -28,6 +28,7 @@ LogSearcher::~LogSearcher()
 void LogSearcher::setWId(WId winid)
 {
     m_winId = winid;
+    toggleTOPMOST();
 }
 
 void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2, LogModel* model3)
@@ -152,7 +153,9 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
             m_summaryModel->appendLog(lineIndex, log);
         }
     });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::openFileFailed, this, [this]() {  });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::openFileFailed, this, [this]() {
+        qDebug() << "LogSearcher::openLog failed";
+    });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::operateFinish, this, [this]() { emit loadFinish(m_focusedLog, QFileInfo::exists(m_focusedLog)); OPERATE_DELETE; });
     OPERATE_END;
 }
@@ -313,6 +316,23 @@ void LogSearcher::toggleTOPMOST()
         ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
                        HWND_NOTOPMOST, 0, 0, 0, 0,
                        SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+    }
+}
+
+bool LogSearcher::isHighlight(const int index)
+{
+    return LogUtils::HighlightLines().contains(index);
+}
+
+void LogSearcher::toggleHighlight(const int index)
+{
+    if(LogUtils::HighlightLines().contains(index))
+    {
+        LogUtils::HighlightLines().remove(index);
+    }
+    else
+    {
+        LogUtils::HighlightLines().insert(index);
     }
 }
 

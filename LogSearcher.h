@@ -65,6 +65,10 @@ public:
     // 置顶切换
     Q_INVOKABLE void toggleTOPMOST();
 
+    // 切换行高亮
+    Q_INVOKABLE bool isHighlight(const int index);
+    Q_INVOKABLE void toggleHighlight(const int index);
+
 protected:
 
     // 查找
