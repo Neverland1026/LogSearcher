@@ -135,7 +135,7 @@ Rectangle {
 
             model: logModel
 
-            cacheBuffer: 5000
+            cacheBuffer: 500
             boundsBehavior: Flickable.DragOverBounds
             maximumFlickVelocity: 1200
             flickDeceleration: 10000
