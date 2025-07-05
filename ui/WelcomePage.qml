@@ -7,7 +7,7 @@ Rectangle {
     id: root
 
     width: 350; height: 350
-    color: "white"
+    color: $LogSearcher.eyeProtectionMode ? $LogSearcher.eyeProtectionColor : "white"
 
     Column {
         width: parent.width
