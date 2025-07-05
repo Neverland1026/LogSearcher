@@ -137,8 +137,8 @@ Rectangle {
 
             cacheBuffer: 500
             boundsBehavior: Flickable.DragOverBounds
-            maximumFlickVelocity: 1200
-            flickDeceleration: 10000
+            //maximumFlickVelocity: 1200
+            //flickDeceleration: 10000
             clip: true
 
             // 不转发给任何子元素
