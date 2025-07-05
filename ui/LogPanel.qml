@@ -325,6 +325,17 @@ Rectangle {
         }
     }
 
+    // 行号掩膜
+    Rectangle {
+        color: "#6A5ACD"
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        width: lineNumWidth * 10
+        opacity: 0.1
+        z: 999999
+    }
+
     // 右键菜单
     RightMenu {
         id: rightMenu
