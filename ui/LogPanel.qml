@@ -329,6 +329,8 @@ Rectangle {
     RightMenu {
         id: rightMenu
 
+        majorPanel: !root.summaryMode
+
         onSigFindTargetKeyword: {
             /*root.openFindWindow(root.selectedText);*/
             $LogSearcher.find(root.selectedText, true, false);

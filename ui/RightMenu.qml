@@ -11,6 +11,8 @@ Popup {
 
     property bool existToBeFindKeyword: false
 
+    property bool majorPanel: false
+
     signal sigFindTargetKeyword();
 
     signal sigAddKeyword();
@@ -86,7 +88,12 @@ Popup {
             height: model.text === "" ? 2 : 40
             radius: 3
             color: model.text === "" ? "#D2D2D2" : (mouseArea.containsMouse ? "#E0E0E0" : "#F5F5F5")
-            enabled: model.text === "" ? false : ((index === 0 || index === 1) ? existToBeFindKeyword : true)
+            enabled: {
+                if(model.text === "") return false;
+                if(index === 0 || index === 1) return existToBeFindKeyword;
+                if(index === 3) return majorPanel;
+                return true;
+            }
             Row {
                 anchors.fill: parent
 
