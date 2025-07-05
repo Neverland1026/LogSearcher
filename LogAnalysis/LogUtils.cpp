@@ -117,7 +117,7 @@ bool LogUtils::ConvertHTML(const QString& normalLine,
     }
 
     //htmlLine = QString("<font color='#4A3C2A'>%1</font>").arg(htmlLine);
-    htmlLine = QString("<font color='#333333'>%1</font>").arg(htmlLine);
+    htmlLine = QString("<font color='#000000'>%1</font>").arg(htmlLine);
 
     return containKeyword;
 }
