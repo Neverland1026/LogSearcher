@@ -15,7 +15,12 @@ ApplicationWindow {
     property bool findResultWindowAlreadyCreated: false
 
     // 背景
-    Rectangle { anchors.fill: parent; color: "white"; border.width: 4; border.color: /*$LogSearcher.topMOST*/0 ? "#D81E06" : "transparent"}
+    Rectangle {
+        anchors.fill: parent
+        color: $LogSearcher.eyeProtectionMode ? $LogSearcher.eyeProtectionColor : "white"
+        border.width: 4
+        border.color: /*$LogSearcher.topMOST*/0 ? "#D81E06" : "transparent"
+    }
 
     // 容器用于存放动态创建的标签
     KeywordTagContainer { id: keywordTagContainer; anchors { top: parent.top; left: parent.left; right: parent.right; }}

@@ -62,6 +62,10 @@ Popup {
                 func: function() { }
             }
             ListElement {
+                text: "护眼/取消护眼"
+                func: function() { $LogSearcher.eyeProtectionMode = !$LogSearcher.eyeProtectionMode; }
+            }
+            ListElement {
                 text: "置顶/取消置顶"
                 func: function() { $LogSearcher.toggleTOPMOST(); }
             }

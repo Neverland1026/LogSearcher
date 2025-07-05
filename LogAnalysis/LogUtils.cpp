@@ -114,12 +114,10 @@ bool LogUtils::ConvertHTML(const QString& normalLine,
     {
         htmlLine.insert(endPos, QString("%1").arg("</b></font>"));
         htmlLine.insert(beginPos, QString("<font color='%1'><b>").arg("#FF0000"));
-        htmlLine = QString("<font color='#000000'>%1</font>").arg(htmlLine);
     }
-    else
-    {
-        htmlLine = QString("<font color='#000000'>%1</font>").arg(htmlLine);
-    }
+
+    //htmlLine = QString("<font color='#4A3C2A'>%1</font>").arg(htmlLine);
+    htmlLine = QString("<font color='#333333'>%1</font>").arg(htmlLine);
 
     return containKeyword;
 }

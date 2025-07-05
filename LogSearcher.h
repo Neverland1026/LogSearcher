@@ -27,6 +27,13 @@ public:
     bool topMOST() const { return m_topMOST; }
     void setTopMOST(bool topMOST) { if(m_topMOST != topMOST) { m_topMOST = topMOST; emit topMOSTChanged(m_topMOST); } }
 
+    Q_PROPERTY(bool eyeProtectionMode READ eyeProtectionMode WRITE setEyeProtectionMode NOTIFY eyeProtectionModeChanged);
+    bool eyeProtectionMode() const { return m_eyeProtectionMode; }
+    void setEyeProtectionMode(bool eyeProtectionMode) { if(m_eyeProtectionMode != eyeProtectionMode) { m_eyeProtectionMode = eyeProtectionMode; emit eyeProtectionModeChanged(m_eyeProtectionMode); } }
+
+    Q_PROPERTY(QString eyeProtectionColor READ eyeProtectionColor NOTIFY eyeProtectionColorChanged);
+    QString eyeProtectionColor() const { return m_eyeProtectionColor; }
+
     explicit LogSearcher(QObject *parent = nullptr);
     ~LogSearcher();
 
@@ -87,6 +94,8 @@ protected:
 signals:
 
     void topMOSTChanged(bool);
+    void eyeProtectionModeChanged(bool);
+    void eyeProtectionColorChanged(QString);
 
     // 新增关键字
     void addKeywordFinish(const QString keyword, const QString color);
@@ -141,6 +150,12 @@ private:
 
     // 软件置顶
     bool m_topMOST = false;
+
+    // 护眼模式
+    bool m_eyeProtectionMode = true;
+
+    // 护眼颜色
+    QString m_eyeProtectionColor = "#F7F3E8";
 
 };
 

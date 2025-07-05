@@ -29,7 +29,7 @@ Rectangle {
     readonly property string focusBackgroundColor: "#1FFF0000"
 
     // 当前行高亮颜色
-    readonly property string highlightBackgroundColor: summaryMode ? "transparent" : "#7FFFFF00"
+    readonly property string highlightBackgroundColor: summaryMode ? "transparent" : "#3FFFFF00"
 
     // 行索引记录
     property var positionRecorder: QtObject {

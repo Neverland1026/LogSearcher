@@ -25,7 +25,7 @@ Window {
     signal sigClose();
 
     // 背景
-    Rectangle { anchors.fill: parent; color: "white"; }
+    Rectangle { anchors.fill: parent; color: $LogSearcher.eyeProtectionMode ? $LogSearcher.eyeProtectionColor : "white"; }
 
     // 搜索结果
     LogPanel {

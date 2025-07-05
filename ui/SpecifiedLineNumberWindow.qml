@@ -13,7 +13,7 @@ Window {
     signal sigJumpToTheSpecifiedLine(var lineNumber);
 
     // 背景
-    Rectangle { anchors.fill: parent; color: "white"; }
+    Rectangle { anchors.fill: parent; color: $LogSearcher.eyeProtectionMode ? $LogSearcher.eyeProtectionColor : "white"; }
 
     TextField {
         id: textField

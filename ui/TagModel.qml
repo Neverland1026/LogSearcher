@@ -28,7 +28,7 @@ Rectangle {
         height: parent.height - 10
         anchors.centerIn: parent
         radius: 5
-        color: root.ignoreKeyword ? "#CFCFCF" : "white"
+        color: root.ignoreKeyword ? "#CFCFCF" : ($LogSearcher.eyeProtectionMode ? $LogSearcher.eyeProtectionColor : "white")
         //border.color: "black"; border.width: 0.5;
 
         // 控制窗口
