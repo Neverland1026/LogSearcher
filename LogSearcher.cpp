@@ -133,7 +133,7 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
     m_findModel->clearAll();
 
     // 开始监视日志
-    if(QFileInfo(m_focusedLog).suffix().toLower() != "zst")
+    if(QFileInfo(m_focusedLog).suffix().toLower() != FILE_SUUIFX_ZST)
     {
         m_fileSystemWatcher.disconnect();
         m_fileSystemWatcher.removePaths(m_fileSystemWatcher.files());

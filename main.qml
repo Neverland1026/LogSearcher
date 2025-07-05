@@ -77,7 +77,7 @@ ApplicationWindow {
         }
 
         function onLoadStart() {
-
+            logContentModifiedRemind.visible = false;
         }
 
         function onLoadFinish(logPath, exist) {
