@@ -28,7 +28,6 @@ LogSearcher::~LogSearcher()
 void LogSearcher::setWId(WId winid)
 {
     m_winId = winid;
-    //toggleTOPMOST();
 }
 
 void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2, LogModel* model3)
@@ -302,10 +301,9 @@ QList<int> LogSearcher::getKeywordPos(const int lineIndex, const QString& word)
 
 void LogSearcher::toggleTOPMOST()
 {
-    static bool TOPMOST__ = false;
+    setTopMOST(!m_topMOST);
 
-    TOPMOST__ = !TOPMOST__;
-    if(TOPMOST__)
+    if(m_topMOST)
     {
         ::SetWindowPos((HWND)(/*this->winId()*/m_winId),
                        HWND_TOPMOST, 0, 0, 0, 0,

@@ -15,5 +15,6 @@
         <file>ui/SpecifiedLineNumberWindow.qml</file>
         <file>image/logo.svg</file>
         <file>image/log.svg</file>
+        <file>image/topMOST.svg</file>
     </qresource>
 </RCC>

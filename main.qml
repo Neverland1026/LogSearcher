@@ -15,7 +15,7 @@ ApplicationWindow {
     property bool findResultWindowAlreadyCreated: false
 
     // 背景
-    Rectangle { anchors.fill: parent; color: "white"; }
+    Rectangle { anchors.fill: parent; color: "white"; border.width: 4; border.color: /*$LogSearcher.topMOST*/0 ? "#D81E06" : "transparent"}
 
     // 容器用于存放动态创建的标签
     KeywordTagContainer { id: keywordTagContainer; anchors { top: parent.top; left: parent.left; right: parent.right; }}
@@ -58,6 +58,21 @@ ApplicationWindow {
 
     // 文件有修改提示
     LogContentModifiedRemind { id: logContentModifiedRemind; anchors.horizontalCenter: parent.horizontalCenter; anchors.top: keywordTagContainer.bottom; }
+
+    // 置顶图标
+    Image {
+        visible: $LogSearcher.topMOST
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.margins: 5
+        width: 50
+        height: width
+        sourceSize.width: width * 2
+        sourceSize.height: height * 2
+        fillMode: Image.PreserveAspectFit
+        source: "qrc:/image/topMOST.svg"
+        MouseArea { anchors.fill: parent; onPressed: $LogSearcher.toggleTOPMOST(); }
+    }
 
     // C++ 消息响应
     Connections {

@@ -23,6 +23,10 @@ class LogSearcher : public QObject
 
 public:
 
+    Q_PROPERTY(bool topMOST READ topMOST WRITE setTopMOST NOTIFY topMOSTChanged);
+    bool topMOST() const { return m_topMOST; }
+    void setTopMOST(bool topMOST) { if(m_topMOST != topMOST) { m_topMOST = topMOST; emit topMOSTChanged(m_topMOST); } }
+
     explicit LogSearcher(QObject *parent = nullptr);
     ~LogSearcher();
 
@@ -82,6 +86,8 @@ protected:
 
 signals:
 
+    void topMOSTChanged(bool);
+
     // 新增关键字
     void addKeywordFinish(const QString keyword, const QString color);
 
@@ -132,6 +138,9 @@ private:
 
     // 文件监视器
     QFileSystemWatcher m_fileSystemWatcher;
+
+    // 软件置顶
+    bool m_topMOST = false;
 
 };
 
