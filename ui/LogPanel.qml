@@ -121,8 +121,37 @@ Rectangle {
 
         clip: true
 
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+        // 关键设置：禁用布局镜像，强制滚动条在右侧
+        LayoutMirroring.enabled: false
+        LayoutMirroring.childrenInherit: false
+
+        ScrollBar.vertical: ScrollBar {
+            id: verticalBar
+            policy: ScrollBar.AsNeeded
+            width: 16
+            hoverEnabled: true
+            height: parent.height
+            anchors.right: parent.right
+            anchors.rightMargin: 1
+            background: Rectangle {
+                implicitWidth: 16
+                color: "transparent"
+            }
+        }
+
+        ScrollBar.horizontal: ScrollBar {
+            id: horizontalBar
+            policy: ScrollBar.AsNeeded
+            height: 16
+            hoverEnabled: true
+            width: parent.width
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 1
+            background: Rectangle {
+                implicitWidth: 16
+                color: "transparent"
+            }
+        }
 
         ListView {
             id: listView
@@ -130,13 +159,14 @@ Rectangle {
             width: parent.width
             height: parent.height
 
-            anchors.centerIn: parent
             anchors.margins: 10
 
             model: logModel
 
-            cacheBuffer: 500
+            contentWidth: width * 2
+            flickableDirection: Flickable.HorizontalAndVerticalFlick
             boundsBehavior: Flickable.DragOverBounds
+            cacheBuffer: 500
             //maximumFlickVelocity: 1200
             //flickDeceleration: 10000
             clip: true
@@ -147,7 +177,7 @@ Rectangle {
             delegate: Item {
                 id: item
 
-                width: listView.width * 2
+                width: listView.contentWidth
                 height: visible ? (dynamicFontSize * 1.2) : 0
 
                 visible: root.summaryMode ? isVisible : true
