@@ -19,6 +19,9 @@ Rectangle {
     // 全局动态字体尺寸
     property real dynamicFontSize: 14
 
+    // 最大行宽度
+    property int lineMaximumWidth: -1
+
     // 文件行号宽度
     property int lineNumWidth: 7
 
@@ -163,7 +166,7 @@ Rectangle {
 
             model: logModel
 
-            contentWidth: width * 2
+            contentWidth: lineMaximumWidth * dynamicFontSize * 0.56
             flickableDirection: Flickable.HorizontalAndVerticalFlick
             boundsBehavior: Flickable.DragOverBounds
             cacheBuffer: 500

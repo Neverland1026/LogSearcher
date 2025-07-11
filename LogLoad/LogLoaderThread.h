@@ -27,6 +27,8 @@ public slots:
 
 signals:
 
+    void lineMaximumWidth(int width);
+
     void lineNumWidth(int width);
 
     void newLogAvailable(const bool containKeyword, const int lineIndex, const QString log);

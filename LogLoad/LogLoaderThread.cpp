@@ -155,6 +155,9 @@ void LogLoaderThread::mapFile__(const QString& filePath)
     const char *data = reinterpret_cast<const char*>(memory);
     if(data)
     {
+        // 行最大宽度
+        int maximumWidth = 0;
+
         // 直接赋值会导致 '\0' 截断
         /*Qstirng fileContent = QString(data);*/
 
@@ -163,8 +166,11 @@ void LogLoaderThread::mapFile__(const QString& filePath)
         const QList<QByteArray> splitByteArray = byteArray.split('\n');
         for(int lineIndex = 0; lineIndex < splitByteArray.size(); ++lineIndex)
         {
+            maximumWidth = std::fmax(maximumWidth, splitByteArray[lineIndex].size());
             LogUtils::SplitFileAllLines().emplace_back(lineIndex, splitByteArray[lineIndex]);
         }
+
+        emit lineMaximumWidth(maximumWidth);
     }
 
     file.unmap(memory);

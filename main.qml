@@ -91,6 +91,11 @@ ApplicationWindow {
             keywordTagContainer.remove(index);
         }
 
+        function onLineMaximumWidth(width) {
+            logPanel.lineMaximumWidth = width;
+            summaryLogPanel.lineMaximumWidth = width;
+        }
+
         function onLineNumWidth(width) {
             var minWidth = Math.max(width, 5);
             logPanel.lineNumWidth = summaryLogPanel.lineNumWidth = minWidth;
@@ -128,6 +133,7 @@ ApplicationWindow {
                 }
             }
 
+            findResultWindow.setLineMaximumWidth(logPanel.lineMaximumWidth);
             findResultWindow.setLineNumWidth(logPanel.lineNumWidth);
             findResultWindow.findCount = findCount;
             findResultWindow.findTimeCost = findTimeCost;
