@@ -107,8 +107,8 @@ ApplicationWindow {
 
         function onLoadFinish(logPath, exist) {
             window.title = "LogSearcher" + (exist ? ("  -  " + logPath) : "");
-            logPanel.resetCurrentIndex();
-            summaryLogPanel.resetCurrentIndex();
+            logPanel.reset();
+            summaryLogPanel.reset();
             if(findResultWindowAlreadyCreated) {
                 findResultWindow.close();
             }

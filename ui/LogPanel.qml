@@ -43,11 +43,13 @@ Rectangle {
     // 是否是搜索内容汇总模式
     property bool summaryMode: false
 
-    // 重置索引到第一行
-    function resetCurrentIndex() {
+    // 重置
+    function reset() {
         if(modelCount >= 0) {
             listView.currentIndex = 0;
         }
+
+        scrollView.ScrollBar.horizontal.position = 0;
     }
 
     // 跳转到指定行
@@ -120,6 +122,7 @@ Rectangle {
 
     // 主布局
     ScrollView {
+        id: scrollView
         anchors.fill: parent
 
         clip: true
