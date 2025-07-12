@@ -6,8 +6,8 @@ import CustomModels 1.0
 // FindResultWindow
 Window {
     id: root
-    width: Screen.width / 2
-    height: Screen.height / 2
+    width: Screen.width / 7 * 5
+    height: Screen.height / 7 * 5
     title: "Statistics"
 
     modality: Qt.NonModal
@@ -16,12 +16,20 @@ Window {
         id: chartView
         anchors.fill: parent
         antialiasing: true
-        animationOptions: ChartView.SeriesAnimations
+        animationOptions: ChartView.NoAnimation
         theme: ChartView.ChartThemeLight
 
         // X轴（类别轴）
         BarCategoryAxis {
             id: axisX
+            labelsAngle: -90
+            labelsFont {
+                //family: "Arial"
+                pixelSize: 14
+                //bold: true
+                italic: false
+            }
+            //labelsVisible: false
             titleText: "Time Point"
         }
 
@@ -29,7 +37,7 @@ Window {
         ValueAxis {
             id: axisY
             min: 0
-//            labelFormat: "%.1f"
+            labelFormat: "%d"
             titleText: "Memory"
         }
 
@@ -38,18 +46,24 @@ Window {
             id: lineSeries
             name: "Remain Memory"
             color: $LogSearcher.majorLogoColor
-            capStyle: Qt.RoundCap
+            capStyle: Qt.SquareCap
+            width: 2
             axisX: axisX
             axisY: axisY
             pointsVisible: true
 
-//            pointLabelsFormat: "(@xPoint, @yPoint)"
-//            pointLabelsVisible: true
+            //pointLabelsFormat: "@yPoint"
+            //pointLabelsVisible: true
 
-//            // 点击交互
-//            onClicked: (point) => {
-//                infoText.text = `选中点: X=${point.x.toFixed(2)}, Y=${point.y.toFixed(2)}`;
-//            }
+            onHovered: (point) => {
+                           console.log(axisX.categories[Math.round(point.x)], point.y);
+
+                           tooltip.show(chartView.mapToPosition(point).x,
+                                        chartView.mapToPosition(point).y,
+                                        axisX.categories[Math.round(point.x)],
+                                        point.y
+                                        );
+                       }
         }
     }
 
@@ -88,30 +102,34 @@ Window {
         }
     }
 
+    Rectangle {
+        id: tooltip
+        visible: false
+        width: 130
+        height: 40
+        color: "#f0f0e0"
+        border.color: "gray"
+        radius: 5
+        z: 10
+
+        property alias text: tooltipText.text
+
+        function show(xPos, yPos, label, value) {
+            x = xPos - width / 2;
+            y = yPos - height - 10;
+            text = `<b>Time Point: ${label}<br>Memory: ${value.toFixed(0)} MB</b>`;
+            visible = true;
+        }
+
+        function hide() { visible = false; }
+
+        Text {
+            id: tooltipText
+            anchors.centerIn: parent
+            textFormat: Text.RichText
+            font.pixelSize: 12
+        }
+    }
+
     Component.onCompleted: updateChart()
-
-    // 控制按钮
-    //    Row {
-    //        anchors {
-    //            bottom: parent.bottom
-    //            horizontalCenter: parent.horizontalCenter
-    //            margins: 20
-    //        }
-    //        spacing: 10
-
-    //        Button {
-    //            text: "Add Random Data"
-    //            onClicked: {
-    //                var months = ["Jun", "Jul", "Aug", "Sep", "Oct"];
-    //                var randomMonth = months[Math.floor(Math.random() * months.length)];
-    //                var randomValue = Math.floor(Math.random() * 100);
-    //                chartDataModel.appendData(randomMonth, randomValue);
-    //            }
-    //        }
-
-    //        Button {
-    //            text: "Clear"
-    //            onClicked: chartDataModel.clearData()
-    //        }
-    //    }
 }
