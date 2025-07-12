@@ -363,6 +363,18 @@ Rectangle {
                                }
                            }
             }
+
+            property bool verticalBarPressed: verticalBar.pressed
+            onVerticalBarPressedChanged: {
+                if (!verticalBarPressed) {
+                    var centerY = contentY + height / 2;
+                    var targetIndex = listView.indexAt(0, centerY);
+                    if(targetIndex >= 0) {
+                        listView.currentIndex = targetIndex;
+                    }
+                }
+            }
+
         }
     }
 
