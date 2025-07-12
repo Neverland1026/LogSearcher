@@ -34,7 +34,7 @@ Rectangle {
         // 控制窗口
         Rectangle {
             id: colorMangerRect
-            width: parent.height * 0.35
+            width: parent.height * 0.4
             height: parent.height
             radius: width
             color: "transparent"
