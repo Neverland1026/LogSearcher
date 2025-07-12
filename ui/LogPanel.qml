@@ -173,7 +173,7 @@ Rectangle {
 
             model: logModel
 
-            contentWidth: lineMaximumWidth_0 + lineMaximumWidth_1 + lineMaximumWidth_2
+            contentWidth: lineMaximumWidth_0 + lineMaximumWidth_1 + lineMaximumWidth_2 + 70/* 补偿误差 */
             flickableDirection: Flickable.HorizontalAndVerticalFlick
             boundsBehavior: Flickable.DragOverBounds
             cacheBuffer: 500

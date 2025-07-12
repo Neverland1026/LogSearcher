@@ -19,7 +19,7 @@ ApplicationWindow {
         anchors.fill: parent
         color: $LogSearcher.eyeProtectionMode ? $LogSearcher.eyeProtectionColor : "white"
         border.width: 4
-        border.color: /*$LogSearcher.topMOST*/0 ? "#D81E06" : "transparent"
+        border.color: /*$LogSearcher.topMOST*/0 ? $LogSearcher.majorLogoColor : "transparent"
     }
 
     // 容器用于存放动态创建的标签
@@ -35,7 +35,7 @@ ApplicationWindow {
             logModel: $LogModel
             onSigCustomSummaryHeight: SplitView.preferredHeight = parent.height * (1 - number * 0.1);
         }
-        handle: Rectangle { implicitHeight: 2; color: "#D81E06"; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; } }
+        handle: Rectangle { implicitHeight: 2; color: $LogSearcher.majorLogoColor; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; } }
         LogPanel {
             id: summaryLogPanel
             SplitView.fillWidth: true

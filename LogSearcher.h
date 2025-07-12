@@ -34,6 +34,9 @@ public:
     Q_PROPERTY(QString eyeProtectionColor READ eyeProtectionColor NOTIFY eyeProtectionColorChanged);
     QString eyeProtectionColor() const { return m_eyeProtectionColor; }
 
+    Q_PROPERTY(QString majorLogoColor READ majorLogoColor NOTIFY majorLogoColorChanged);
+    QString majorLogoColor() const { return m_majorLogoColor; }
+
     explicit LogSearcher(QObject *parent = nullptr);
     ~LogSearcher();
 
@@ -96,6 +99,7 @@ signals:
     void topMOSTChanged(bool);
     void eyeProtectionModeChanged(bool);
     void eyeProtectionColorChanged(QString);
+    void majorLogoColorChanged(QString);
 
     // 新增关键字
     void addKeywordFinish(const QString keyword, const QString color);
@@ -156,6 +160,9 @@ private:
 
     // 护眼颜色
     QString m_eyeProtectionColor = "#F7F3E8";
+
+    // Logo 主题色
+    QString m_majorLogoColor = "#D81E06";
 
 };
 

@@ -53,7 +53,7 @@ Rectangle {
                 font.pixelSize: root.width / 20
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-                color: "#D81E06"
+                color: $LogSearcher.majorLogoColor
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 SequentialAnimation {
