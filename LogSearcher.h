@@ -103,9 +103,6 @@ signals:
     // 删除关键字完成
     void removeKeywordFinish(const int index);
 
-    // 最大行宽度
-    void lineMaximumWidth(int width);
-
     // 行号显示宽度
     void lineNumWidth(int width);
 

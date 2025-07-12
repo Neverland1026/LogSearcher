@@ -20,7 +20,9 @@ Rectangle {
     property real dynamicFontSize: 14
 
     // 最大行宽度
-    property int lineMaximumWidth: -1
+    property int lineMaximumWidth_0: -1
+    property int lineMaximumWidth_1: -1
+    property int lineMaximumWidth_2: -1
 
     // 文件行号宽度
     property int lineNumWidth: 7
@@ -45,6 +47,8 @@ Rectangle {
 
     // 重置
     function reset() {
+        lineMaximumWidth_0 = lineMaximumWidth_1 = lineMaximumWidth_2 = -1;
+
         if(modelCount >= 0) {
             listView.currentIndex = 0;
         }
@@ -169,12 +173,10 @@ Rectangle {
 
             model: logModel
 
-            contentWidth: lineMaximumWidth * dynamicFontSize * 0.56
+            contentWidth: lineMaximumWidth_0 + lineMaximumWidth_1 + lineMaximumWidth_2
             flickableDirection: Flickable.HorizontalAndVerticalFlick
             boundsBehavior: Flickable.DragOverBounds
             cacheBuffer: 500
-            //maximumFlickVelocity: 1200
-            //flickDeceleration: 10000
             clip: true
 
             // 不转发给任何子元素
@@ -199,13 +201,14 @@ Rectangle {
                 // 行号
                 Text {
                     id: lineNumText
+                    onImplicitWidthChanged: lineMaximumWidth_0 = Math.max(lineMaximumWidth_0, implicitWidth)
                     anchors {
                         left: parent.left
                         top: parent.top
                         bottom: parent.bottom
                     }
                     width: lineNumWidth * 10
-                    text: index + 1
+                    text: root.summaryMode ? "行" : (index + 1)
                     font.family: "Consolas"
                     font.pixelSize: dynamicFontSize
                     horizontalAlignment: Text.AlignHCenter
@@ -224,6 +227,7 @@ Rectangle {
                 // 搜索汇总面板专用 - 对应真实文件中的行号
                 Text {
                     id: realLineNumText
+                    onImplicitWidthChanged: lineMaximumWidth_1 = Math.max(lineMaximumWidth_1, implicitWidth)
                     visible: root.summaryMode
                     anchors {
                         left: lineNumText.right
@@ -243,6 +247,7 @@ Rectangle {
                 // 内容
                 TextEdit {
                     id: textEdit
+                    onImplicitWidthChanged: root.lineMaximumWidth_2 = Math.max(lineMaximumWidth_2, implicitWidth)
                     anchors {
                         left: realLineNumText.right
                         leftMargin: 5

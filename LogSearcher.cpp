@@ -144,7 +144,6 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
 
     OPERATE_BEGIN;
     QObject::connect(m_thread, &QThread::started, this, [this]() { m_logLoaderThread->analyze(m_focusedLog); });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::lineMaximumWidth, this, [this](int width) { emit lineMaximumWidth(width); });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::lineNumWidth, this, [this](int width) { emit lineNumWidth(width); });
     QObject::connect(m_logLoaderThread, &LogLoaderThread::newLogAvailable, this, [this](const bool containKeyword, const int lineIndex, const QString log) {
         m_logModel->appendLog(lineIndex, log);

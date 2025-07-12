@@ -10,10 +10,6 @@ Window {
 
     modality: Qt.NonModal
 
-    function setLineMaximumWidth(width) {
-        logPanel.lineMaximumWidth = width;
-    }
-
     function setLineNumWidth(lineNumWidth) {
         logPanel.lineNumWidth = lineNumWidth;
     }
