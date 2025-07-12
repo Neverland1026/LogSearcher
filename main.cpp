@@ -39,6 +39,19 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &context, const Q
     outFile.close();
 }
 
+void registerRightClickMenu()
+{
+    QString appPath = QCoreApplication::applicationFilePath();
+    appPath = appPath.replace("/", "\\");  // 转换为Windows路径格式
+
+    QSettings reg("HKEY_CLASSES_ROOT\\Directory\\Background\\shell\\Neverland_LY_Qt_App", QSettings::NativeFormat);
+    reg.setValue(".", "Open with LogSearcher");  // 右键菜单显示名称
+    reg.setValue("Icon", appPath);  // 可选项：设置图标
+
+    QSettings cmdReg("HKEY_CLASSES_ROOT\\Directory\\Background\\shell\\Neverland_LY_Qt_App\\command", QSettings::NativeFormat);
+    cmdReg.setValue(".", QString("\"%1\" \"%V\"").arg(appPath));
+}
+
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
@@ -52,6 +65,8 @@ int main(int argc, char *argv[])
     dir.mkpath("./log");
 
     qInstallMessageHandler(myMessageHandler);
+
+    registerRightClickMenu();
 
     qDebug() << "LogSearcher built on:" << __DATE__ << ", at" << __TIME__;
 
