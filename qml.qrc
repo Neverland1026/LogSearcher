@@ -16,5 +16,6 @@
         <file>image/logo.svg</file>
         <file>image/log.svg</file>
         <file>image/topMOST.svg</file>
+        <file>ui/StatisticsWindow.qml</file>
     </qresource>
 </RCC>

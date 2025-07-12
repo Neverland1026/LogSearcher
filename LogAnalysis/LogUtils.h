@@ -57,8 +57,8 @@ public:
     // 查找
     static int Find(const QString& line,
                     const QString& keyword,
-                    const bool caseSensitivity = true,
-                    const bool wholeWordWrap = true);
+                    const bool caseSensitivity = false,
+                    const bool wholeWordWrap = false);
 
     // 将普通字符串转转化为HTML字符串
     static bool ConvertHTML(const QString& normalLine,
@@ -70,6 +70,11 @@ public:
                             const QString& specifiedFindTarget,
                             QString& htmlLine);
 
+    // 获取内存统计字段中的时间和内存值
+    static bool ExtractTimeRemainmemory(const QString& line,
+                                        QString& time,
+                                        int& remainMemory);
+
     // 分割后的文本內容
     static QVector<QPair<int, QString>>& SplitFileAllLines();
 
@@ -78,6 +83,9 @@ public:
 
     // 高亮的行
     static QSet<int>& HighlightLines();
+
+    // 内存统计
+    static QVector<QPair<QString, int>>& MemoryStatistics();
 
     // 生成随机色
     static QColor GenerateRandomColorRGB_Safe();
@@ -98,6 +106,9 @@ private:
 
     // 高亮的行
     static QSet<int> m_highlightLines;
+
+    // 内存统计
+    static QVector<QPair<QString, int>> m_memoryStatistics;
 
 };
 

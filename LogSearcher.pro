@@ -4,9 +4,13 @@ QT += quick
 SOURCES += \
         LogAnalysis/LogUtils.cpp \
         LogLoad/LogLoaderThread.cpp \
+        LogModel/ChartDataModel.cpp \
         LogModel/LogModel.cpp \
         LogSearcher.cpp \
         main.cpp
+
+QT += quick quickcontrols2 charts
+QT += charts
 
 RESOURCES += qml.qrc
 
@@ -35,6 +39,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
         LogAnalysis/LogUtils.h \
         LogLoad/LogLoaderThread.h \
+        LogModel/ChartDataModel.h \
         LogModel/LogModel.h \
         LogSearcher.h \
         LogUltraSearchTool.h

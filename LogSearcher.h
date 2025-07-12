@@ -15,6 +15,7 @@
 #include <thread>
 
 #include "LogModel/LogModel.h"
+#include "LogModel/ChartDataModel.h"
 #include "LogLoad/LogLoaderThread.h"
 
 class LogSearcher : public QObject
@@ -44,7 +45,7 @@ public:
     void setWId(WId winid);
 
     // 设置日志对象
-    Q_INVOKABLE void setSearchModel(LogModel* model1, LogModel* model2, LogModel* model3);
+    Q_INVOKABLE void setSearchModel(LogModel* model1, LogModel* model2, LogModel* model3, ChartDataModel* model4);
 
     // 初始化
     Q_INVOKABLE void init();
@@ -137,6 +138,7 @@ private:
     LogModel* m_logModel = nullptr;
     LogModel* m_summaryModel = nullptr;
     LogModel* m_findModel = nullptr;
+    ChartDataModel* m_chartDataModel = nullptr;
 
     // 当前的目标日志
     QString m_focusedLog = "";

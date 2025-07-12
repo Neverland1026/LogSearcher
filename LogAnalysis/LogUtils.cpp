@@ -7,6 +7,7 @@ QMap<QString, QPair<int, QString>> LogUtils::m_transformedSearchTarget = {};
 QVector<QPair<int, QString>> LogUtils::m_splitFileAllLines = {};
 QVector<LogUtils::LineInfo> LogUtils::m_keyLineInfos = {};
 QSet<int> LogUtils::m_highlightLines = {};
+QVector<QPair<QString, int>> LogUtils::m_memoryStatistics = {};
 
 QMap<int, QPair<QString, QString>>& LogUtils::Keywords()
 {
@@ -24,8 +25,8 @@ void LogUtils::FormatedKeywordMap()
 
 int LogUtils::Find(const QString& line,
                    const QString& keyword,
-                   const bool caseSensitivity /*= true*/,
-                   const bool wholeWordWrap /*= true*/)
+                   const bool caseSensitivity /*= false*/,
+                   const bool wholeWordWrap /*= false*/)
 {
     if(false == wholeWordWrap)
     {
@@ -66,6 +67,11 @@ QVector<LogUtils::LineInfo>& LogUtils::KeyLineInfos()
 QSet<int>& LogUtils::HighlightLines()
 {
     return m_highlightLines;
+}
+
+QVector<QPair<QString, int>>& LogUtils::MemoryStatistics()
+{
+    return m_memoryStatistics;
 }
 
 bool LogUtils::ConvertHTML(const QString& normalLine,
@@ -120,6 +126,33 @@ bool LogUtils::ConvertHTML(const QString& normalLine,
     htmlLine = QString("<font color='#000000'>%1</font>").arg(htmlLine);
 
     return containKeyword;
+}
+
+bool LogUtils::ExtractTimeRemainmemory(const QString& line,
+                                       QString& time,
+                                       int& remainMemory)
+{
+    // 内存日志示例
+    // D0708 15:11:39.218458 6496 sn3dnavigationcontroller.cpp:1621] void __cdecl Sn3DNavigationController::onRemainMemory(int,__int64) remainMemory info QMap(("cmd", QVariant(QString, "systemDetection"))("items", QVariant(QVariantMap, QMap(("remainMemory", QVariant(QVariantMap, QMap(("percent", QVariant(int, 63))("remain", QVariant(qlonglong, 16197)))))))))
+
+    time.clear();
+    remainMemory = -1;
+
+    int index_0 = LogUtils::Find(line, ":");
+    int index_1 = line.lastIndexOf(",");
+    int index_2 = line.lastIndexOf(")))))))))");
+    if(index_0 >= 0 && index_1 >= 0 && index_2 >= 0)
+    {
+        index_0 -= 2;
+        index_1 += 2;
+
+        time = line.mid(index_0, 8);
+        remainMemory = line.mid(index_1, index_2 - index_1).toInt();
+
+        return true;
+    }
+
+    return false;
 }
 
 QColor LogUtils::GenerateRandomColorRGB_Safe()

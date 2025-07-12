@@ -14,6 +14,7 @@ void LogLoaderThread::analyze(const QString& filePath)
     LogUtils::SplitFileAllLines().resize(0);
     LogUtils::KeyLineInfos().resize(0);
     LogUtils::HighlightLines().clear();
+    LogUtils::MemoryStatistics().clear();
 
     m_elapsedTimer.start();
     mapFile__(filePath);
@@ -207,6 +208,16 @@ void LogLoaderThread::process__()
                                                             lineInfo.beginPos,
                                                             lineInfo.endPos);
 
+        QString time;
+        int remainMemory;
+        bool extractTimeRemainMemoryRet = (LogUtils::Find(LogUtils::SplitFileAllLines()[lineIndex].second, "remainMemory") >= 0);
+        if(extractTimeRemainMemoryRet)
+        {
+            extractTimeRemainMemoryRet = LogUtils::ExtractTimeRemainmemory(LogUtils::SplitFileAllLines()[lineIndex].second,
+                                                                           time,
+                                                                           remainMemory);
+        }
+
 #pragma omp ordered
         {
             if(lineInfo.beginPos >= 0)
@@ -216,6 +227,11 @@ void LogLoaderThread::process__()
                                                       lineInfo.keywordIndex,
                                                       lineInfo.beginPos,
                                                       lineInfo.endPos);
+            }
+
+            if(extractTimeRemainMemoryRet)
+            {
+                LogUtils::MemoryStatistics().emplace_back(time, remainMemory);
             }
 
             emit newLogAvailable(containKeyword, lineIndex, lineInfo.colorful());

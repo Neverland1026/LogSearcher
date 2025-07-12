@@ -107,6 +107,11 @@ ApplicationWindow {
             if(findResultWindowAlreadyCreated) {
                 findResultWindow.close();
             }
+
+            console.log("DataModel available?", !!$ChartDataModel) // 应输出true
+            if ($ChartDataModel) {
+                console.log("Initial data count:", $ChartDataModel.count)
+            }
         }
 
         function onFindFinish(targetKeyword, findCount, findTimeCost) {

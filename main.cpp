@@ -1,4 +1,4 @@
-﻿#include <QGuiApplication>
+﻿#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QIcon>
 #include <QQmlContext>
@@ -54,7 +54,7 @@ void registerRightClickMenu()
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     app.setWindowIcon(QIcon(":/image/logo.ico"));
 
@@ -64,7 +64,9 @@ int main(int argc, char *argv[])
     QDir dir;
     dir.mkpath("./log");
 
-    qInstallMessageHandler(myMessageHandler);
+    qmlRegisterType<ChartDataModel>("CustomModels", 1, 0, "ChartDataModel");
+
+    //qInstallMessageHandler(myMessageHandler);
 
     registerRightClickMenu();
 
@@ -84,7 +86,10 @@ int main(int argc, char *argv[])
     LogModel* findModel = new LogModel();
     engine.rootContext()->setContextProperty("$FindModel", findModel);
 
-    searcher->setSearchModel(logModel, summaryModel, findModel);
+    ChartDataModel* chartDataModel = new ChartDataModel(&app);
+    engine.rootContext()->setContextProperty("$ChartDataModel", chartDataModel);
+
+    searcher->setSearchModel(logModel, summaryModel, findModel, chartDataModel);
 
     const QUrl url(u"qrc:/main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

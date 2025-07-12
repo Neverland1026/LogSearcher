@@ -120,6 +120,15 @@ Rectangle {
         }
     }
 
+    // 打开统计框
+    function openStatisticsWindow() {
+        var component3 = Qt.createComponent("qrc:/ui/StatisticsWindow.qml");
+        if (component3.status === Component.Ready) {
+            var findResultWindow = component3.createObject(window);
+            findResultWindow.show();
+        }
+    }
+
     signal sigDoubleClicked(var lineNumber);
 
     signal sigCustomSummaryHeight(var number);
@@ -448,6 +457,9 @@ Rectangle {
                                 event.accepted = true;
                             } else if (event.key === Qt.Key_G) {
                                 root.openSpecifiedLineNumberWindow();
+                                event.accepted = true;
+                            } else if (event.key === Qt.Key_H) {
+                                root.openStatisticsWindow()();
                                 event.accepted = true;
                             }
                         } else {

@@ -30,11 +30,12 @@ void LogSearcher::setWId(WId winid)
     m_winId = winid;
 }
 
-void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2, LogModel* model3)
+void LogSearcher::setSearchModel(LogModel* model1, LogModel* model2, LogModel* model3, ChartDataModel* model4)
 {
     m_logModel = model1;
     m_summaryModel = model2;
     m_findModel = model3;
+    m_chartDataModel = model4;
 }
 
 void LogSearcher::init()
@@ -155,7 +156,7 @@ void LogSearcher::openLog(const QString& filePath, const bool repeatOpen /*= fal
     QObject::connect(m_logLoaderThread, &LogLoaderThread::openFileFailed, this, [this]() {
         qDebug() << "LogSearcher::openLog failed";
     });
-    QObject::connect(m_logLoaderThread, &LogLoaderThread::operateFinish, this, [this]() { emit loadFinish(m_focusedLog, QFileInfo::exists(m_focusedLog)); OPERATE_DELETE; });
+    QObject::connect(m_logLoaderThread, &LogLoaderThread::operateFinish, this, [this]() { emit loadFinish(m_focusedLog, QFileInfo::exists(m_focusedLog)); m_chartDataModel->setData(LogUtils::MemoryStatistics()); OPERATE_DELETE; });
     OPERATE_END;
 }
 
