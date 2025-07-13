@@ -12,6 +12,11 @@ Window {
 
     modality: Qt.NonModal
 
+    property int globalX: -1
+    property int globalY: -1
+
+    property int realtimeRemainMemory: -1
+
     ChartView {
         id: chartView
         anchors.fill: parent
@@ -19,7 +24,6 @@ Window {
         animationOptions: ChartView.NoAnimation
         theme: ChartView.ChartThemeLight
 
-        // X轴（类别轴）
         BarCategoryAxis {
             id: axisX
             labelsAngle: -90
@@ -29,11 +33,12 @@ Window {
                 //bold: true
                 italic: false
             }
-            //labelsVisible: false
+            gridVisible: false  // 关键设置
+            minorGridVisible: false
+            lineVisible: true   // 保持轴线可见
             titleText: "Time Point"
         }
 
-        // Y轴（数值轴）
         ValueAxis {
             id: axisY
             min: 0
@@ -41,7 +46,6 @@ Window {
             titleText: "Memory"
         }
 
-        // 折线系列
         LineSeries {
             id: lineSeries
             name: "Remain Memory"
@@ -51,19 +55,70 @@ Window {
             axisX: axisX
             axisY: axisY
             pointsVisible: true
+        }
 
-            //pointLabelsFormat: "@yPoint"
-            //pointLabelsVisible: true
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
 
-            onHovered: (point) => {
-                           console.log(axisX.categories[Math.round(point.x)], point.y);
+            onPositionChanged: (mouse) => {
+                                   var point1 = chartView.mapToValue(Qt.point(mouse.x, mouse.y), lineSeries)
+                                   root.realtimeRemainMemory = parseInt(point1.y);
 
-                           tooltip.show(chartView.mapToPosition(point).x,
-                                        chartView.mapToPosition(point).y,
-                                        axisX.categories[Math.round(point.x)],
-                                        point.y
-                                        );
-                       }
+                                   root.globalX = mouse.x;
+                                   root.globalY = mouse.y;
+                                   canvas.requestPaint();
+                               }
+        }
+    }
+
+    Text {
+        id: text
+        visible: false
+        anchors.centerIn: parent
+        font.family: "Consolas"
+        font.pixelSize: 30
+        text: root.realtimeRemainMemory
+    }
+
+    // 动态十字线
+    Canvas {
+        id: canvas
+        onVisibleChanged: if(visible) requestPaint()
+        anchors.fill: parent
+
+        onPaint: {
+            if(visible) {
+                var ctx = getContext("2d");
+                draw(ctx);
+            }
+        }
+
+        function draw(ctx) {
+            ctx.clearRect(0, 0, root.width, root.height);
+
+            ctx.strokeStyle = $LogSearcher.majorLogoColor;
+            ctx.lineWidth = 1;
+
+            // 绘制竖向线
+            ctx.beginPath();
+            ctx.moveTo(root.globalX, 0);
+            ctx.lineTo(root.globalX, root.height);
+            ctx.stroke();
+
+            // 绘制横向线
+            ctx.beginPath();
+            ctx.moveTo(0, root.globalY);
+            ctx.lineTo(root.width, root.globalY);
+            ctx.stroke();
+
+            // 图像坐标
+            ctx.font = 'bold 25px sans-serif';
+            ctx.fillStyle = $LogSearcher.majorLogoColor;
+            var bias = root.globalX > (parent.width - 350) ? -350 : 0;
+            context.fillText("Remain memory: " + Math.max(0, root.realtimeRemainMemory) + "Mb",
+                             root.globalX + 10 + bias,
+                             root.globalY + 30);
         }
     }
 
@@ -81,8 +136,6 @@ Window {
         var categories = [];
 
         // 填充新数据
-        console.log("$ChartDataModel =", $ChartDataModel.count)
-        console.log("$ChartDataModel.count =", $ChartDataModel.count)
         for (var i = 0; i < $ChartDataModel.count; ++i) {
             var item = $ChartDataModel.get(i);
             lineSeries.append(i, item.value);
@@ -99,35 +152,6 @@ Window {
                 maxValue = Math.max(maxValue, $ChartDataModel.get(i).value);
             }
             axisY.max = maxValue * 1.2; // 留20%余量
-        }
-    }
-
-    Rectangle {
-        id: tooltip
-        visible: false
-        width: 130
-        height: 40
-        color: "#f0f0e0"
-        border.color: "gray"
-        radius: 5
-        z: 10
-
-        property alias text: tooltipText.text
-
-        function show(xPos, yPos, label, value) {
-            x = xPos - width / 2;
-            y = yPos - height - 10;
-            text = `<b>Time Point: ${label}<br>Memory: ${value.toFixed(0)} MB</b>`;
-            visible = true;
-        }
-
-        function hide() { visible = false; }
-
-        Text {
-            id: tooltipText
-            anchors.centerIn: parent
-            textFormat: Text.RichText
-            font.pixelSize: 12
         }
     }
 

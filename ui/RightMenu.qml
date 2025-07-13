@@ -23,6 +23,8 @@ Popup {
 
     signal sigOpenNextLatestLog();
 
+    signal sigStatisticMemory();
+
     background: Rectangle {
         color: "#00000000"  // 完全透明背景
         border.color: "#00FFFFFF"  // 半透明边框（可选）
@@ -58,6 +60,14 @@ Popup {
             ListElement {
                 text: "打开次新服务端日志"
                 func: function() { customMenu.sigOpenNextLatestLog(); }
+            }
+            ListElement {
+                text: ""
+                func: function() { }
+            }
+            ListElement {
+                text: "内存波动可视化"
+                func: function() { customMenu.sigStatisticMemory(); }
             }
             ListElement {
                 text: ""

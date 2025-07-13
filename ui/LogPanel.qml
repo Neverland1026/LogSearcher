@@ -431,6 +431,10 @@ Rectangle {
         onSigOpenNextLatestLog: {
             $LogSearcher.openLatestIndexLog(1);
         }
+
+        onSigStatisticMemory: {
+            root.openStatisticsWindow();;
+        }
     }
 
     // 延时高亮跳转到的行，不延时会有问题
@@ -459,7 +463,7 @@ Rectangle {
                                 root.openSpecifiedLineNumberWindow();
                                 event.accepted = true;
                             } else if (event.key === Qt.Key_H) {
-                                root.openStatisticsWindow()();
+                                root.openStatisticsWindow();
                                 event.accepted = true;
                             }
                         } else {
