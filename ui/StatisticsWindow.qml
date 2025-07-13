@@ -60,6 +60,7 @@ Window {
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
+            cursorShape: Qt.CrossCursor
 
             onPositionChanged: (mouse) => {
                                    var point1 = chartView.mapToValue(Qt.point(mouse.x, mouse.y), lineSeries)
