@@ -7,7 +7,7 @@ Rectangle {
 
     width: 350; height: 350
     color: "transparent"
-    //border.color: "cyan"; border.width: 1
+    //border.color: "blue"; border.width: 3
     clip: true
 
     // 数据模型

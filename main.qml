@@ -1,6 +1,7 @@
 ﻿import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Window 2.15
+import QtQuick.Layouts 1.15
 import "./ui"
 
 ApplicationWindow {
@@ -39,18 +40,18 @@ ApplicationWindow {
         Item {
             id: findResultItem
             SplitView.fillWidth: true
-            property string findTargetKeyword: ""
+            property string findTargetKeyword: "-/-"
             property int findCount: 0
             property int findTimeCost: 0
-            Column {
-                // 分隔符
-                Rectangle { width: parent.width; height: 2; color: "transparent" }
-                // 查找关键字、数量及耗时
+            ColumnLayout {
                 anchors.fill: parent
+                spacing: 0
+                // 分隔符
+                Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 2; color: "transparent" }
+                // 查找关键字、数量及耗时
                 Text {
-                    visible: findResultItem.findTargetKeyword !== ""
-                    width: parent.width
-                    height: 15
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 15
                     color: "black"
                     text: "<font color='#000000'>&nbsp;匹配到 "
                           + ("<font color='#FF0000'><b>%1</b></font>").arg(findResultItem.findTargetKeyword)
@@ -66,11 +67,13 @@ ApplicationWindow {
                     verticalAlignment: Text.AlignVCenter
                 }
                 // 分隔符
-                Rectangle { visible: findResultItem.findTargetKeyword !== ""; width: parent.width; height: 1; color: "black" }
+                Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; width: parent.width; height: 1; color: "black" }
                 // 查找结果
                 LogPanel {
                     id: findLogPanel
                     width: parent.width
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
                     logModel: $FindModel
                     summaryMode: true
                     onSigCustomSummaryHeight: logPanel.SplitView.preferredHeight = parent.height * (1 - number * 0.1);

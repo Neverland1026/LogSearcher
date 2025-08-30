@@ -2,6 +2,7 @@
 #include "LogAnalysis/LogUtils.h"
 #include <windows.h>
 #include <iomanip>
+#include <cmath>
 
 #define OPERATE_BEGIN m_thread = new QThread(this);  \
 m_logLoaderThread = new LogLoaderThread;             \
