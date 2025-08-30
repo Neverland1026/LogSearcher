@@ -191,6 +191,67 @@ Rectangle {
             // 不转发给任何子元素
             Keys.forwardTo: []
 
+            // 以下都是动态选中字段
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            onContentYChanged: {
+                updateVisibleItemsHighlight()
+            }
+
+            onMovementEnded: {
+                updateVisibleItemsHighlight()
+            }
+
+            // 更新高亮文本时
+            property string rootSelectedText: root.selectedText
+            onRootSelectedTextChanged: {
+                updateVisibleItemsHighlight()
+            }
+
+            function updateVisibleItemsHighlight() {
+                return
+                if (rootSelectedText === "")
+                    return
+
+                // 使用定时器避免频繁更新
+                highlightTimer.restart();
+            }
+
+            // 防抖定时器
+            Timer {
+                id: highlightTimer
+                interval: 50 // 50ms延迟，避免滚动时频繁更新
+                onTriggered: {
+                    listView.updateActualHighlight();
+                }
+            }
+
+            function updateActualHighlight() {
+                var firstVisibleIndex = indexAt(1, contentY);
+                var lastVisibleIndex = indexAt(1, contentY + height - 1);
+                //console.log("__UP__ firstVisibleIndex =", firstVisibleIndex, "lastVisibleIndex =", lastVisibleIndex);
+                if (firstVisibleIndex === -1 || lastVisibleIndex === -1) return
+
+                // 更新当前可见的索引范围
+                var currentVisibleIndices = []
+                for (var i = firstVisibleIndex; i <= lastVisibleIndex; i++) {
+                    currentVisibleIndices.push(i);
+                }
+                //console.log("__UP__ currentVisibleIndices =", currentVisibleIndices);
+
+                // 更新可见项的高亮
+                for (var j = firstVisibleIndex; j <= lastVisibleIndex; j++) {
+                    var targetitem = itemAt(0, j * (dynamicFontSize * 1.2))
+                    if (targetitem && targetitem.children[3]) {
+                        //console.log("__UP__ 666");
+                        var textEdit = targetitem.children[3]
+                        textEdit.applyHighlight()
+                    } else {
+                        console.log("__UP__ -1-1-1");
+                    }
+                }
+            }
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
             delegate: Item {
                 id: item
 
@@ -256,6 +317,21 @@ Rectangle {
                 // 内容
                 TextEdit {
                     id: textEdit
+
+                    function applyHighlight() {
+                        if (root.selectedText === "") {
+                            deselect();
+                            return;
+                        }
+
+                        var index = text.toLowerCase().indexOf(root.selectedText.toLowerCase()) + 22
+                        if (index !== -1) {
+                            select(index, index + root.selectedText.length);
+                        } else {
+                            deselect();
+                        }
+                    }
+
                     onImplicitWidthChanged: root.lineMaximumWidth_2 = Math.max(lineMaximumWidth_2, implicitWidth)
                     anchors {
                         left: realLineNumText.right
@@ -263,6 +339,13 @@ Rectangle {
                         right: parent.right
                         top: parent.top
                         bottom: parent.bottom
+                    }
+                    onVisibleChanged: {
+                        if (visible && listView.selectedText !== "") {
+                            applyHighlight();
+                        } else {
+                            deselect();
+                        }
                     }
                     text: lineContent
                     textFormat: TextEdit.RichText
@@ -278,18 +361,6 @@ Rectangle {
                         root.selectedText = selectedText;
                         rightMenu.existToBeFindKeyword = (selectedText !== "");
                     }
-
-                    function find_and_select() {
-                        var retVal = $LogSearcher.getKeywordPos(lineNumber, root.selectedText);
-                        if(retVal[0] >= 0 && lineNumber !== positionRecorder.first) {
-                            textEdit.select(retVal[0], retVal[1]);
-                        } else {
-                            textEdit.deselect();
-                        }
-                    }
-
-                    property string rootSelectedText: root.selectedText
-                    //onRootSelectedTextChanged: find_and_select()
 
                     TapHandler {
                         cursorShape: Qt.BusyCursor
