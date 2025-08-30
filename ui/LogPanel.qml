@@ -268,7 +268,7 @@ Rectangle {
                     textFormat: TextEdit.RichText
                     verticalAlignment: Text.AlignVCenter
                     readOnly: true
-                    selectByMouse: true
+                    selectByMouse: !summaryMode
                     selectionColor: "lightblue"
                     selectedTextColor: "navy"
                     font.family: "Consolas"
@@ -389,6 +389,7 @@ Rectangle {
 
     // 行号掩膜
     Rectangle {
+        visible: false
         color: "#6A5ACD"
         anchors.top: parent.top
         anchors.left: parent.left
@@ -405,7 +406,6 @@ Rectangle {
         majorPanel: !root.summaryMode
 
         onSigFindTargetKeyword: {
-            /*root.openFindWindow(root.selectedText);*/
             $LogSearcher.find(root.selectedText, true, false);
         }
 

@@ -36,13 +36,47 @@ ApplicationWindow {
             onSigCustomSummaryHeight: SplitView.preferredHeight = parent.height * (1 - number * 0.1);
         }
         handle: Rectangle { implicitHeight: 2; color: $LogSearcher.majorLogoColor; MouseArea { anchors.fill: parent; cursorShape: Qt.SizeVerCursor; } }
-        LogPanel {
-            id: summaryLogPanel
+        Item {
+            id: findResultItem
             SplitView.fillWidth: true
-            summaryMode: true
-            logModel: $SummaryModel
-            onSigCustomSummaryHeight: logPanel.SplitView.preferredHeight = parent.height * (1 - number * 0.1);
-            onSigDoubleClicked: logPanel.positionViewAtIndex(lineNumber)
+            property string findTargetKeyword: ""
+            property int findCount: 0
+            property int findTimeCost: 0
+            Column {
+                // 分隔符
+                Rectangle { width: parent.width; height: 2; color: "transparent" }
+                // 查找关键字、数量及耗时
+                anchors.fill: parent
+                Text {
+                    visible: findResultItem.findTargetKeyword !== ""
+                    width: parent.width
+                    height: 15
+                    color: "black"
+                    text: "<font color='#000000'>&nbsp;匹配到 "
+                          + ("<font color='#FF0000'><b>%1</b></font>").arg(findResultItem.findTargetKeyword)
+                          + ("<font color='#000000'> 共 </font>")
+                          + ("<font color='#FF0000'><b>%1</b></font>").arg(findResultItem.findCount)
+                          + ("<font color='#000000'> 项，耗时 </font>")
+                          + ("<font color='#FF0000'><b>%1</b>ms</font>").arg(findResultItem.findTimeCost)
+                          + ("</font>")
+                    font.family: "Consolas"
+                    font.pixelSize: 14
+                    textFormat: TextEdit.RichText
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                }
+                // 分隔符
+                Rectangle { visible: findResultItem.findTargetKeyword !== ""; width: parent.width; height: 1; color: "black" }
+                // 查找结果
+                LogPanel {
+                    id: findLogPanel
+                    width: parent.width
+                    logModel: $FindModel
+                    summaryMode: true
+                    onSigCustomSummaryHeight: logPanel.SplitView.preferredHeight = parent.height * (1 - number * 0.1);
+                    onSigDoubleClicked: logPanel.positionViewAtIndex(lineNumber)
+                }
+            }
         }
     }
 
@@ -93,7 +127,7 @@ ApplicationWindow {
 
         function onLineNumWidth(width) {
             var minWidth = Math.max(width, 5);
-            logPanel.lineNumWidth = summaryLogPanel.lineNumWidth = minWidth;
+            logPanel.lineNumWidth = findLogPanel.lineNumWidth = minWidth;
         }
 
         function onLoadStart() {
@@ -103,7 +137,7 @@ ApplicationWindow {
         function onLoadFinish(logPath, exist) {
             window.title = "LogSearcher" + (exist ? ("  -  " + logPath) : "");
             logPanel.reset();
-            summaryLogPanel.reset();
+            findLogPanel.reset();
             if(findResultWindowAlreadyCreated) {
                 findResultWindow.close();
             }
@@ -115,28 +149,31 @@ ApplicationWindow {
         }
 
         function onFindFinish(targetKeyword, findCount, findTimeCost) {
-            if(!findResultWindowAlreadyCreated) {
-                var component = Qt.createComponent("qrc:/ui/FindResultWindow.qml");
-                if (component.status === Component.Ready) {
-                    findResultWindow = component.createObject(window);
-                    findResultWindow.show();
+            findResultItem.findTargetKeyword = targetKeyword;
+            findResultItem.findCount = findCount;
+            findResultItem.findTimeCost = findTimeCost;
+//            if(!findResultWindowAlreadyCreated) {
+//                var component = Qt.createComponent("qrc:/ui/FindResultWindow.qml");
+//                if (component.status === Component.Ready) {
+//                    findResultWindow = component.createObject(window);
+//                    findResultWindow.show();
 
-                    findResultWindowAlreadyCreated = true;
+//                    findResultWindowAlreadyCreated = true;
 
-                    // 连接新窗口的信号到主窗口的槽
-                    findResultWindow.sigPositionViewAtIndex.connect(function cb(lineNumber) {
-                        logPanel.positionViewAtIndex(lineNumber);
-                    });
-                    findResultWindow.sigClose.connect(function cb() {
-                        findResultWindowAlreadyCreated = false;
-                    });
-                }
-            }
+//                    // 连接新窗口的信号到主窗口的槽
+//                    findResultWindow.sigPositionViewAtIndex.connect(function cb(lineNumber) {
+//                        logPanel.positionViewAtIndex(lineNumber);
+//                    });
+//                    findResultWindow.sigClose.connect(function cb() {
+//                        findResultWindowAlreadyCreated = false;
+//                    });
+//                }
+//            }
 
-            findResultWindow.setLineNumWidth(logPanel.lineNumWidth);
-            findResultWindow.findCount = findCount;
-            findResultWindow.findTimeCost = findTimeCost;
-            findResultWindow.title = "Find Result" + "  -  " + targetKeyword;
+//            findResultWindow.setLineNumWidth(logPanel.lineNumWidth);
+//            findResultWindow.findCount = findCount;
+//            findResultWindow.findTimeCost = findTimeCost;
+//            findResultWindow.title = "Find Result" + "  -  " + targetKeyword;
         }
 
         function onLogContentModified() {
