@@ -8,7 +8,7 @@
         <file>ui/LogPanel.qml</file>
         <file>ui/KeywordTagContainer.qml</file>
         <file>ui/RightMenu.qml</file>
-        <file>ui/FindResultWindow.qml</file>
+        <file>ui/SummaryWindow.qml</file>
         <file>ui/FindWindow.qml</file>
         <file>ui/WelcomePage.qml</file>
         <file>ui/LogContentModifiedRemind.qml</file>
@@ -17,5 +17,8 @@
         <file>image/log.svg</file>
         <file>image/topMOST.svg</file>
         <file>ui/StatisticsWindow.qml</file>
+        <file>image/AI.svg</file>
+        <file>image/ask.svg</file>
+        <file>image/summary.svg</file>
     </qresource>
 </RCC>

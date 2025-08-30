@@ -12,8 +12,8 @@ ApplicationWindow {
     title: "LogSearcher"
 
     // 搜索窗口
-    property FindResultWindow findResultWindow: null
-    property bool findResultWindowAlreadyCreated: false
+    property SummaryWindow summaryWindow: null
+    property bool summaryWindowAlreadyCreated: false
 
     // 背景
     Rectangle {
@@ -116,6 +116,43 @@ ApplicationWindow {
         MouseArea { anchors.fill: parent; onPressed: $LogSearcher.toggleTOPMOST(); }
     }
 
+    // 智能分析
+    Image {
+        anchors.right: parent.right
+        anchors.top: keywordTagContainer.bottom
+        anchors.margins: 5
+        width: 50
+        height: width
+        sourceSize.width: width * 2
+        sourceSize.height: height * 2
+        fillMode: Image.PreserveAspectFit
+        source: "qrc:/image/AI.svg"
+        MouseArea {
+            anchors.fill: parent
+            onPressed: {
+                if(!summaryWindowAlreadyCreated) {
+                    var component = Qt.createComponent("qrc:/ui/SummaryWindow.qml");
+                    if (component.status === Component.Ready) {
+                        summaryWindow = component.createObject(window);
+                        summaryWindow.show();
+
+                        summaryWindowAlreadyCreated = true;
+
+                        // 连接新窗口的信号到主窗口的槽
+                        summaryWindow.sigPositionViewAtIndex.connect(function cb(lineNumber) {
+                            logPanel.positionViewAtIndex(lineNumber);
+                        });
+                        summaryWindow.sigClose.connect(function cb() {
+                            summaryWindowAlreadyCreated = false;
+                        });
+
+                        summaryWindow.setLineNumWidth(logPanel.lineNumWidth);
+                    }
+                }
+            }
+        }
+    }
+
     // C++ 消息响应
     Connections {
         target: $LogSearcher
@@ -141,8 +178,8 @@ ApplicationWindow {
             window.title = "LogSearcher" + (exist ? ("  -  " + logPath) : "");
             logPanel.reset();
             findLogPanel.reset();
-            if(findResultWindowAlreadyCreated) {
-                findResultWindow.close();
+            if(summaryWindowAlreadyCreated) {
+                summaryWindow.close();
             }
 
             console.log("DataModel available?", !!$ChartDataModel) // 应输出true
@@ -155,28 +192,6 @@ ApplicationWindow {
             findResultItem.findTargetKeyword = targetKeyword;
             findResultItem.findCount = findCount;
             findResultItem.findTimeCost = findTimeCost;
-//            if(!findResultWindowAlreadyCreated) {
-//                var component = Qt.createComponent("qrc:/ui/FindResultWindow.qml");
-//                if (component.status === Component.Ready) {
-//                    findResultWindow = component.createObject(window);
-//                    findResultWindow.show();
-
-//                    findResultWindowAlreadyCreated = true;
-
-//                    // 连接新窗口的信号到主窗口的槽
-//                    findResultWindow.sigPositionViewAtIndex.connect(function cb(lineNumber) {
-//                        logPanel.positionViewAtIndex(lineNumber);
-//                    });
-//                    findResultWindow.sigClose.connect(function cb() {
-//                        findResultWindowAlreadyCreated = false;
-//                    });
-//                }
-//            }
-
-//            findResultWindow.setLineNumWidth(logPanel.lineNumWidth);
-//            findResultWindow.findCount = findCount;
-//            findResultWindow.findTimeCost = findTimeCost;
-//            findResultWindow.title = "Find Result" + "  -  " + targetKeyword;
         }
 
         function onLogContentModified() {
